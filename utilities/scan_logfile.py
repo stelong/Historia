@@ -1,11 +1,6 @@
-#
-#
-#
 import re
 
-#--------
-
-class return_values(object):
+class LogValues():
 	def __init__(self, conv, t, phase, lv_v, lv_p, p):
 		self.conv = conv
 		self.t = t
@@ -16,6 +11,7 @@ class return_values(object):
 
 def extract_info(tag):
 
+	p0 = re.compile('LV\sCavity\svolume\s=\s(\d+\.\d+)')
 	p1 = re.compile('(?<=\*\sT\s->\s)\d+\.\d+')
 	p2 = re.compile('Phase\s=\s([1-4]).*?Volume\s=\s([-]?\d+\.\d+).*?LVP\s=\s(\d+\.\d+)')
 	p3 = re.compile('[=]+\sSimulation\scompleted\ssuccessfully[\s\S]+')
@@ -29,25 +25,12 @@ def extract_info(tag):
 	par7 = re.compile('[-]koff\s+=\s+(\S+)$')
 	par8 = re.compile('[-]Tref\s+=\s+(\S+)$')
 
-	p0 = re.compile('LV\sCavity\svolume\s=\s(\d+\.\d+)')
-
-	c1 = 0
-	p = 0
-	ap = 0
-	z = 0
-	ca50 = 0
-	kxb = 0
-	koff = 0
-	Tref = 0
+	c1 = p = ap = z = ca50 = kxb = koff = Tref = lv_v0 = conv = 0
 
 	t = []
 	phase = []
 	lv_dv = []
 	lv_p = []
-
-	lv_v0 = 0
-
-	conv = 0
 
 	for line in open(tag, 'r'):
 		if lv_v0 == 0:
@@ -101,8 +84,8 @@ def extract_info(tag):
 
 	parameters = [c1, p, ap, z, ca50, kxb, koff, Tref]
 
-	lv_v = list(map(lambda x: x + lv_v0, lv_dv))
+	lv_v = [x + lv_v0 for x in lv_dv]
 
-	return return_values(conv, t, phase, lv_v, lv_p, parameters)
+	return LogValues(conv, t, phase, lv_v, lv_p, parameters)
 
 #--------
