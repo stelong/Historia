@@ -2,7 +2,9 @@
 #
 #
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as grsp
 from utilities import scan_logfile as slf
+import numpy as np
 
 # nf = 4
 # nsf = 200
@@ -19,13 +21,23 @@ from utilities import scan_logfile as slf
 tag = 'data/output_log.txt'
 S = slf.extract_info(tag)
 
-fig, axes = plt.subplots(1, 3, figsize=(12,4))
-for i, a in enumerate(axes.flatten()):
-	if i == 0:
-		a.plot(S.t, S.lv_v)
-	elif i == 1:
-		a.plot(S.t, S.lv_p)
-	else:
-		a.plot(S.lv_v, S.lv_p)
 
-plt.show()
+# gs = grsp.GridSpec(2, 2)
+
+# fig = plt.figure(figsize=(14, 8))
+# for i in range(2):
+# 	ax = fig.add_subplot(gs[i, 0])
+# 	if i == 0:
+# 		ax.plot(S.t, S.lv_v)
+# 	else:
+# 		ax.plot(S.t, S.lv_p)
+
+# ax = fig.add_subplot(gs[:, 1])
+# ax.plot(S.lv_v, S.lv_p)
+
+# plt.show()
+
+
+M1, M3 = slf.display_allout(S.t, S.phase, S.lv_v, S.lv_p)
+print(M1)
+print(M3)
