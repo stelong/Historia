@@ -10,8 +10,21 @@ class LogValues():
 		self.lv_p = lv_p
 		self.p = p
 
-def extract_info(tag):
+class LeftVentricleFeatures():
+	def __init__(self, edv, esv, ef, ict, et, irt, tdiast, peakp, tpeak, maxdp, mindp):
+		self.edv = edv
+		self.esv = esv
+		self.ef = ef
+		self.ict = ict
+		self.et = et
+		self.irt = irt
+		self.tdiast = tdiast
+		self.peakp = peakp
+		self.tpeak = tpeak
+		self.maxdp = maxdp
+		self.mindp = mindp
 
+def extract_info(tag):
 	p0 = re.compile('LV\sCavity\svolume\s=\s(\d+\.\d+)')
 	p1 = re.compile('(?<=\*\sT\s->\s)\d+\.\d+')
 	p2 = re.compile('Phase\s=\s([1-4]).*?Volume\s=\s([-]?\d+\.\d+).*?LVP\s=\s(\d+\.\d+)')
@@ -180,4 +193,67 @@ def display_allout(t, phase, lv_v, lv_p):
 	M1 = isl_ranges(np.where(np.asarray(phase) == 1)[0], cp[0])
 	M3 = isl_ranges(np.where(np.asarray(phase) == 3)[0], cp[2])
 
-	return M1, M3
+	ind = np.sort(np.concatenate((np.reshape(M1, cp[0]*2), np.reshape(M3, cp[2]*2)), axis=0))
+	ind_r = ind[-6:-1]
+	interval = list(range(ind_r[0], ind_r[-1]))
+
+	ts = [t[i] for i in interval]
+	ps = [phase[i] for i in interval]
+	LVP = [lv_p[i] for i in interval]
+	LVV = [lv_v[i] for i in interval]
+
+	t1 = t[ind_r[0]]
+	t2 = t[ind_r[1]]
+	t3 = t[ind_r[2]]
+	t4 = t[ind_r[3]]
+	t5 = t[ind_r[4]]
+
+	dP = der1(ts, LVP)
+	m = max(LVP)
+	ind_m = list(LVP).index(m)
+
+	ps1 = list(np.where(np.asarray(ps) == 1)[0])
+	lvv1 = [LVV[i] for i in ps1]
+
+	p1 = max(lvv1)        # EDV    (end diastolic volume)
+	p2 = min(LVV)         # ESV    (end systolic volume)
+	p3 = 100*(p1 - p2)/p1 # EF     (ejection fraction)
+	p4 = t2 - t1          # ICT    (isovolumetric contraction time)
+	p5 = t3 - t2          # ET     (ejection time)
+	p6 = t4 - t3          # IRT    (isovolumetric relaxation time)
+	p7 = t5 - t4          # Tdiast (diastolic time)
+
+	q1 = m                  # PeakP (maximum pressure)
+	q2 = ts[ind_m] - ts[0]  # Tpeak (time to peak)
+	q3 = max(dP)            # maxdP (maximum pressure gradient value) 
+	q4 = min(dP)            # mindP (minimum pressure gradient value)
+
+	return LeftVentricleFeatures(p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4)
+
+def der1(t, y):
+	N = len(t)
+	dt = (t[-1] - t[0])/N
+
+	p2 = [-1.0/2.0, 1.0/2.0]
+	p4 = [1.0/12.0, -2.0/3.0, 2.0/3.0, -1.0/12.0]
+	p6 = [-1.0/60.0, 3.0/20.0, -3.0/4.0, 3.0/4.0, -3.0/20.0, 1.0/60.0]
+	p8 = [1.0/280.0, -4.0/105.0, 1.0/5.0, -4.0/5.0, 4.0/5.0, -1.0/5.0, 4.0/105.0, -1.0/280.0]
+
+	dy = np.zeros(shape=(N,), dtype=float)
+
+	dy[0] = ( y[1] - y[0] )/dt
+	dy[-1] = ( y[-1] - y[-2] )/dt
+
+	dy[1] = ( p2[0]*y[0] + p2[1]*y[2] )/dt
+	dy[-2] = ( p2[0]*y[-3] + p2[1]*y[-1] )/dt
+
+	dy[2] = ( p4[0]*y[0] + p4[1]*y[1] + p4[2]*y[3] + p4[3]*y[4] )/dt
+	dy[-3] = ( p4[0]*y[-5] + p4[1]*y[-4] + p4[2]*y[-2] + p4[3]*y[-1] )/dt
+
+	dy[3] = ( p6[0]*y[0] + p6[1]*y[1] + p6[2]*y[2] + p6[3]*y[4] + p6[4]*y[5] + p6[5]*y[6] )/dt
+	dy[-4] = ( p6[0]*y[-7] + p6[1]*y[-6] + p6[2]*y[-5] + p6[3]*y[-3] + p6[4]*y[-2] + p6[5]*y[-1] )/dt
+
+	for i in range(4, N-4):
+		dy[i] = ( p8[0]*y[i-4] + p8[1]*y[i-3] + p8[2]*y[i-2] + p8[3]*y[i-1] + p8[4]*y[i+1] + p8[5]*y[i+2] + p8[6]*y[i+3] + p8[7]*y[i+4] )/dt
+
+	return dy
