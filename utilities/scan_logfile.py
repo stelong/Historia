@@ -10,19 +10,13 @@ class LogValues():
 		self.lv_p = lv_p
 		self.p = p
 
-class LeftVentricleFeatures():
-	def __init__(self, edv, esv, ef, ict, et, irt, tdiast, peakp, tpeak, maxdp, mindp):
-		self.edv = edv
-		self.esv = esv
-		self.ef = ef
-		self.ict = ict
-		self.et = et
-		self.irt = irt
-		self.tdiast = tdiast
-		self.peakp = peakp
-		self.tpeak = tpeak
-		self.maxdp = maxdp
-		self.mindp = mindp
+class LeftVentricularFeatures():
+	def __init__(self, ts, ps, lv_vs, lv_ps, f):
+		self.ts = ts
+		self.ps = ps
+		self.lv_vs = lv_vs
+		self.lv_ps = lv_ps
+		self.f = f
 
 def extract_info(tag):
 	p0 = re.compile('LV\sCavity\svolume\s=\s(\d+\.\d+)')
@@ -138,7 +132,7 @@ def extract_info(tag):
 
 		i = i + 1
 
-	parameters = [c1, p, ap, z, ca50, kxb, koff, Tref]
+	parameters = [p, ap, z, c1, ca50, kxb, Tref] #koff]
 
 	lv_v = [x + lv_v0 for x in lv_dv]
 
@@ -199,8 +193,8 @@ def display_allout(t, phase, lv_v, lv_p):
 
 	ts = [t[i] for i in interval]
 	ps = [phase[i] for i in interval]
-	LVP = [lv_p[i] for i in interval]
-	LVV = [lv_v[i] for i in interval]
+	lv_ps = [lv_p[i] for i in interval]
+	lv_vs = [lv_v[i] for i in interval]
 
 	t1 = t[ind_r[0]]
 	t2 = t[ind_r[1]]
@@ -208,15 +202,15 @@ def display_allout(t, phase, lv_v, lv_p):
 	t4 = t[ind_r[3]]
 	t5 = t[ind_r[4]]
 
-	dP = der1(ts, LVP)
-	m = max(LVP)
-	ind_m = list(LVP).index(m)
+	dP = der(ts, lv_ps)
+	m = max(lv_ps)
+	ind_m = list(lv_ps).index(m)
 
 	ps1 = list(np.where(np.asarray(ps) == 1)[0])
-	lvv1 = [LVV[i] for i in ps1]
+	lvv1 = [lv_vs[i] for i in ps1]
 
 	p1 = max(lvv1)        # EDV    (end diastolic volume)
-	p2 = min(LVV)         # ESV    (end systolic volume)
+	p2 = min(lv_vs)         # ESV    (end systolic volume)
 	p3 = 100*(p1 - p2)/p1 # EF     (ejection fraction)
 	p4 = t2 - t1          # ICT    (isovolumetric contraction time)
 	p5 = t3 - t2          # ET     (ejection time)
@@ -228,9 +222,13 @@ def display_allout(t, phase, lv_v, lv_p):
 	q3 = max(dP)            # maxdP (maximum pressure gradient value) 
 	q4 = min(dP)            # mindP (minimum pressure gradient value)
 
-	return LeftVentricleFeatures(p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4)
+	# ts = [x - ts[0] for x in ts]
 
-def der1(t, y):
+	features = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4]
+
+	return LeftVentricularFeatures(ts, ps, lv_vs, lv_ps, features)
+
+def der(t, y):
 	N = len(t)
 	dt = (t[-1] - t[0])/N
 
