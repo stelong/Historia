@@ -37,13 +37,13 @@ def display_allout(t, phase, lv_v, lv_p):
 	ps1 = list(np.where(np.asarray(ps) == 1)[0])
 	lvv1 = [lv_vs[i] for i in ps1]
 
-	p1 = max(lvv1)        # EDV    (end diastolic volume)
-	p2 = min(lv_vs)         # ESV    (end systolic volume)
-	p3 = 100*(p1 - p2)/p1 # EF     (ejection fraction)
-	p4 = t2 - t1          # ICT    (isovolumetric contraction time)
-	p5 = t3 - t2          # ET     (ejection time)
-	p6 = t4 - t3          # IRT    (isovolumetric relaxation time)
-	p7 = t5 - t4          # Tdiast (diastolic time)
+	p1 = max(lvv1)         # EDV    (end diastolic volume)
+	p2 = min(lv_vs)        # ESV    (end systolic volume)
+	p3 = 100*(p1 - p2)/p1  # EF     (ejection fraction)
+	p4 = t2 - t1           # ICT    (isovolumetric contraction time)
+	p5 = t3 - t2           # ET     (ejection time)
+	p6 = t4 - t3           # IRT    (isovolumetric relaxation time)
+	p7 = t5 - t4           # Tdiast (diastolic time)
 
 	q1 = m                  # PeakP (maximum pressure)
 	q2 = ts[ind_m] - ts[0]  # Tpeak (time to peak)
