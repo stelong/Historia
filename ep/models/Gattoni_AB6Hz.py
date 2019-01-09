@@ -1,56 +1,55 @@
 #
-# 6Hz paced SHAM rat heart electrophysiological model (Gattoni 2016).
+# 6Hz paced AB rat heart electrophysiological model (Gattoni 2016).
 #
 from math import *
-import matplotlib.pyplot as plt
 
 def initStates():
-	sizeStates = 18
-	states = sizeStates*[0.0]
+    sizeStates = 18
+    states = sizeStates*[0.0]
 
-	states[0] = -85.5696059816548
-	states[1] = 12.960204722764
-	states[2] = 0.00194320513549252
-	states[3] = 0.824266840236936
-	states[4] = 0.722995966352439
-	states[5] = 139.994789812443
-	states[6] = 0.00140717973440432
-	states[7] = 0.954569649396715
-	states[8] = 0.300568843000913
-	states[9] = 0.00189620611861644
-	states[10] = 0.310616913661423
-	states[11] = 0.00395453931879583
-	states[12] = 0.000463188750506148
-	states[13] = 1.0663135643117
-	states[14] = 0.915759670501361
-	states[15] = 0.0116308821918943
-	states[16] = 0.0716996181298885
-	states[17] = 0.0462772817360074
+    states[0] = -86.2742001770196
+    states[1] = 10.83563050735
+    states[2] = 0.00174392847776228
+    states[3] = 0.831855538514125
+    states[4] = 0.585528587217805
+    states[5] = 140.1638657529
+    states[6] = 0.00132309740749641
+    states[7] = 0.913059928712858
+    states[8] = 0.215036691884835
+    states[9] = 0.00178817500396492
+    states[10] = 0.209855226174927
+    states[11] = 0.0025539544569868
+    states[12] = 0.000145080891755077
+    states[13] = 1.78499523287115
+    states[14] = 0.650490049579104
+    states[15] = 0.00570189155987283
+    states[16] = 0.340821224038804
+    states[17] = 0.0590608556435992
 
-	return states
+    return states
 
 def initParams():
-	sizeParameters = 11
-	parameters = sizeParameters*[0.0]
+    sizeParameters = 11
+    parameters = sizeParameters*[0.0]
 
-	parameters[0] = 50000 # N
-	parameters[1] = 1.45e-6 # g_f
-	parameters[2] = 2e-5 # g_to
-	parameters[3] = 4e-5 # g_K1
-	parameters[4] = 5e-6 # g_pCa
-	parameters[5] = 0.0234 # g_NCX
-	parameters[6] = 0.0007 # g_Na
-	parameters[7] = 0.00051 # g_SERCA
-	parameters[8] = 1e-6 # g_SRL
-	parameters[9] = 1.3e-5 # g_ss
-	parameters[10] = 0.00138 # i_NaK_max
-
-	return parameters
+    parameters[0] = 50000 # N
+    parameters[1] = 1.45e-6 # g_f
+    parameters[2] = 1.4e-5 # g_to
+    parameters[3] = 1.5e-5 # g_K1
+    parameters[4] = 5e-6 # g_pCa
+    parameters[5] = 0.0456 # g_NCX
+    parameters[6] = 0.0007 # g_Na
+    parameters[7] = 0.00049 # g_SERCA
+    parameters[8] = 1e-6 # g_SRL
+    parameters[9] = 1e-6 # g_ss
+    parameters[10] = 0.00138 # i_NaK_max
+   
+    return parameters
 
 def initConsts(parameters):
     sizeConstants = 71
     constants = sizeConstants*[0.0]
-
+    
     constants[0] = 8314
     constants[1] = 310
     constants[2] = 96487
@@ -83,9 +82,9 @@ def initConsts(parameters):
     constants[29] = 1.8
     constants[30] = 0.1
     constants[31] = 0.02
-    constants[32] = 0.0008
+    constants[32] = 0.0012
     constants[33] = parameters[0]
-    constants[34] = -9
+    constants[34] = -13
     constants[35] = 7
     constants[36] = 11.5
     constants[37] = 1
@@ -95,7 +94,7 @@ def initConsts(parameters):
     constants[41] = 0.05
     constants[42] = 0.012
     constants[43] = 0.065
-    constants[44] = 0.00038
+    constants[44] = 0.00016
     constants[45] = 0.0625
     constants[46] = 14
     constants[47] = 0.01
@@ -106,10 +105,10 @@ def initConsts(parameters):
     constants[52] = 0.1
     constants[53] = parameters[5]
     constants[54] = parameters[7]
-    constants[55] = 0.00069
+    constants[55] = 0.00025
     constants[56] = parameters[4]
     constants[57] = 0.00035
-    constants[58] = 2e-8
+    constants[58] = 6e-9
     constants[59] = parameters[8]
     constants[60] = 0.04
     constants[61] = 40
@@ -135,17 +134,17 @@ def computeAlgebraic(constants, states, voi):
     algebraic[2] = 1.00000/(1.00000+exp((states[0]+76.1000)/6.07000))
     
     if states[0] >= -40.0000:
-    	algebraic[12] = 0.453700*(1.00000+exp(-(states[0]+10.6600)/11.1000))
+        algebraic[12] = 0.453700*(1.00000+exp(-(states[0]+10.6600)/11.1000))
     else:
-    	algebraic[12] = 3.49000/(0.135000*exp(-(states[0]+80.0000)/6.80000)+3.56000*exp(0.0790000*states[0])+310000.*exp(0.350000*states[0]))
+        algebraic[12] = 3.49000/(0.135000*exp(-(states[0]+80.0000)/6.80000)+3.56000*exp(0.0790000*states[0])+310000.*exp(0.350000*states[0]))
     
     algebraic[3] = 1.00000/(1.00000+exp((states[0]+76.1000)/6.07000))
     
     if states[0] >= -40.0000:
-    	algebraic[13] = (11.6300*(1.00000+exp(-0.100000*(states[0]+32.0000))))/exp(-2.53500e-07*states[0])
+        algebraic[13] = (11.6300*(1.00000+exp(-0.100000*(states[0]+32.0000))))/exp(-2.53500e-07*states[0])
     else:
-    	algebraic[13] = 3.49000/(((states[0]+37.7800)/(1.00000+exp(0.311000*(states[0]+79.2300))))*(-127140.*exp(0.244400*states[0])-3.47400e-05*exp(-0.0439100*states[0]))+(0.121200*exp(-0.0105200*states[0]))/(1.00000+exp(-0.137800*(states[0]+40.1400))))
-
+        algebraic[13] = 3.49000/(((states[0]+37.7800)/(1.00000+exp(0.311000*(states[0]+79.2300))))*(-127140.*exp(0.244400*states[0])-3.47400e-05*exp(-0.0439100*states[0]))+(0.121200*exp(-0.0105200*states[0]))/(1.00000+exp(-0.137800*(states[0]+40.1400))))
+    
     algebraic[14] = 100.000/(45.1600*exp(0.0357700*(states[0]+50.0000))+98.9000*exp(-0.100000*(states[0]+38.0000)))
     algebraic[4] = 1.00000/(1.00000+exp((states[0]+10.6000)/-11.4200))
     algebraic[15] = 20.0000*exp(-(pow((states[0]+70.0000)/25.0000, 2.00000)))+35.0000
@@ -165,18 +164,18 @@ def computeAlgebraic(constants, states, voi):
     algebraic[34] = (constants[22]*(constants[23]+1.00000))/algebraic[33]
     
     if voi-floor(voi/constants[4])*constants[4] >= 0.00000 and voi-floor(voi/constants[4])*constants[4] <= constants[5]:
-    	algebraic[20] = constants[6]
+        algebraic[20] = constants[6]
     else:
-    	algebraic[20] = 0.00000
+        algebraic[20] = 0.00000
     
     algebraic[28] = constants[18]*states[11]*constants[68]*(states[0]-algebraic[23])
     algebraic[0] = (constants[2]*states[0])/(constants[0]*constants[1])
     algebraic[19] = 2.00000*algebraic[0]
     
     if fabs(algebraic[19]) > 1.00000e-09:
-    	algebraic[44] = (states[12]+((constants[32]/constants[30])*constants[29]*algebraic[19]*exp(-algebraic[19]))/(1.00000-exp(-algebraic[19])))/(1.00000+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))
+        algebraic[44] = (states[12]+((constants[32]/constants[30])*constants[29]*algebraic[19]*exp(-algebraic[19]))/(1.00000-exp(-algebraic[19])))/(1.00000+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))
     else:
-    	algebraic[44] = (states[12]+(constants[32]/constants[30])*constants[29])/(1.00000+constants[32]/constants[30])
+        algebraic[44] = (states[12]+(constants[32]/constants[30])*constants[29])/(1.00000+constants[32]/constants[30])
     
     algebraic[46] = (pow(algebraic[44], 2.00000)+constants[47]*(pow(constants[43], 2.00000)))/(constants[40]*(pow(algebraic[44], 2.00000)+pow(constants[43], 2.00000)))
     algebraic[40] = (pow(states[12], 2.00000)+constants[47]*(pow(constants[43], 2.00000)))/(constants[40]*(pow(states[12], 2.00000)+pow(constants[43], 2.00000)))
@@ -214,14 +213,14 @@ def computeAlgebraic(constants, states, voi):
     algebraic[78] = algebraic[77]*2.00000*constants[2]*constants[8]
     
     if fabs(algebraic[19]) > 1.00000e-05:
-    	algebraic[51] = (((constants[32]*algebraic[19])/(1.00000-exp(-algebraic[19])))*((constants[29]*exp(-algebraic[19])-states[12])+(constants[31]/constants[30])*(constants[29]*exp(-algebraic[19])-states[13])))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(algebraic[19])))
+        algebraic[51] = (((constants[32]*algebraic[19])/(1.00000-exp(-algebraic[19])))*((constants[29]*exp(-algebraic[19])-states[12])+(constants[31]/constants[30])*(constants[29]*exp(-algebraic[19])-states[13])))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(algebraic[19])))
     else:
-    	algebraic[51] = (((constants[32]*1.00000e-05)/(1.00000-exp(-1.00000e-05)))*((constants[29]*exp(-1.00000e-05)-states[12])+(constants[31]/constants[30])*(constants[29]*exp(-1.00000e-05)-states[13])))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))
+        algebraic[51] = (((constants[32]*1.00000e-05)/(1.00000-exp(-1.00000e-05)))*((constants[29]*exp(-1.00000e-05)-states[12])+(constants[31]/constants[30])*(constants[29]*exp(-1.00000e-05)-states[13])))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))
     
     if fabs(algebraic[19]) > 1.00000e-05:
-    	algebraic[50] = (((constants[32]*algebraic[19])/(1.00000-exp(-algebraic[19])))*(constants[29]*exp(-algebraic[19])-states[12]))/(1.00000+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))
+        algebraic[50] = (((constants[32]*algebraic[19])/(1.00000-exp(-algebraic[19])))*(constants[29]*exp(-algebraic[19])-states[12]))/(1.00000+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))
     else:
-    	algebraic[50] = (((constants[32]*1.00000e-05)/(1.00000-exp(-1.00000e-05)))*(constants[29]*exp(-1.00000e-05)-states[12]))/(1.00000+((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))
+        algebraic[50] = (((constants[32]*1.00000e-05)/(1.00000-exp(-1.00000e-05)))*(constants[29]*exp(-1.00000e-05)-states[12]))/(1.00000+((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))
     
     algebraic[55] = (algebraic[36]*(algebraic[45]*(algebraic[36]+constants[70]+algebraic[37])+algebraic[37]*constants[69]))/algebraic[52]
     algebraic[66] = algebraic[51]*algebraic[55]+algebraic[50]*algebraic[53]
@@ -234,9 +233,9 @@ def computeAlgebraic(constants, states, voi):
     algebraic[48] = (constants[31]*(states[13]-states[12]))/(1.00000+constants[31]/constants[30])
     
     if fabs(algebraic[19]) > 1.00000e-05:
-    	algebraic[49] = (constants[31]*((states[13]-states[12])+(((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))*(states[13]-constants[29]*exp(-algebraic[19]))))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))
+        algebraic[49] = (constants[31]*((states[13]-states[12])+(((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))*(states[13]-constants[29]*exp(-algebraic[19]))))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*algebraic[19])/(1.00000-exp(-algebraic[19])))
     else:
-    	algebraic[49] = (constants[31]*((states[13]-states[12])+(((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))*(states[13]-constants[29]*exp(-1.00000e-05))))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))
+        algebraic[49] = (constants[31]*((states[13]-states[12])+(((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))*(states[13]-constants[29]*exp(-1.00000e-05))))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*1.00000e-05)/(1.00000-exp(-1.00000e-05)))
     
     algebraic[58] = algebraic[55]*algebraic[49]+algebraic[48]*algebraic[54]
     algebraic[60] = (algebraic[48]*algebraic[37])/(constants[70]+algebraic[37])
@@ -248,13 +247,13 @@ def computeAlgebraic(constants, states, voi):
     algebraic[84] = pow(1.00000+(constants[63]*constants[64])/(pow(constants[63]+states[12], 2.00000))+(constants[65]*constants[66])/(pow(constants[66]+states[12], 2.00000)), -1.00000)
     algebraic[10] = states[12]
     algebraic[32] = algebraic[30]+algebraic[31]
-
+    
     return algebraic
 
 def computeRates(constants, algebraic, states, voi):
     sizeRates = 18
     rates = sizeRates*[0.0]
-    
+
     rates[0] = -(algebraic[22]+algebraic[24]+algebraic[25]+algebraic[29]+algebraic[26]+algebraic[30]+algebraic[31]+algebraic[34]+algebraic[81]+algebraic[75]+algebraic[78]+algebraic[72]+algebraic[20])/constants[3]
     rates[1] = (-(algebraic[22]+algebraic[30]+algebraic[75]*3.00000+algebraic[34]*3.00000+algebraic[27])*1.00000)/(constants[8]*constants[2])
     rates[2] = (algebraic[1]-states[2])/algebraic[11]
@@ -273,20 +272,11 @@ def computeRates(constants, algebraic, states, voi):
     rates[15] = (algebraic[57]*states[14]-(algebraic[59]+algebraic[69])*states[15])+algebraic[71]*algebraic[73]
     rates[16] = (algebraic[65]*states[14]-(algebraic[67]+algebraic[61])*states[16])+algebraic[63]*algebraic[73]
     rates[17] = algebraic[83]
-
+    
     return rates
 
-def model(voi, states, constants, parameters):
+def odesys(voi, states, constants, parameters):
     algebraic = computeAlgebraic(constants, states, voi)
     rates = computeRates(constants, algebraic, states, voi)
 
     return rates
-
-def plot_calcium(sol):
-    plt.plot(sol.t, 1e3*sol.y[12,:], c='b')
-    plt.xlim(sol.t[0], sol.t[-1])
-    plt.xlabel('Time [ms]')
-    plt.ylabel('Intracellular calcium [$\mu$M]')
-    plt.show()
-
-    return
