@@ -13,7 +13,7 @@ def solve_electr2ss(model):
 	c = model.initConsts(p)
 	Y0 = model.initStates()
 	tspan = [0, 170]
-	t = np.linspace(0, 170, 1701)
+	t = range(0, 171)
 
 	Y = solve_ivp(fun=lambda t, y: model.odesys(t, y, c, p), t_span=tspan, y0=Y0, t_eval=t)
 
