@@ -35,11 +35,13 @@ def solve_electr2ss(model):
 
 	return Solution(b, Y.t, 1e3*Y.y[12, :])
 
-def plot_calcium(sol):
+def plot_calcium(sol, scene='do_not_show'):
 	plt.plot(sol.t, sol.ca)
-	plt.xlim(sol.t[0], sol.t[-1])
-	plt.xlabel('Time [ms]')
-	plt.ylabel('Intracellular calcium [$\mu$M]')
-	plt.show()
+
+	if scene == 'show':
+		plt.xlim(sol.t[0], sol.t[-1])
+		plt.xlabel('Time [ms]')
+		plt.ylabel('Intracellular calcium [$\mu$M]')
+		plt.show()
 
 	return
