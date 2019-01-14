@@ -3,35 +3,58 @@ from scipy import optimize
 from scipy.optimize import curve_fit, brentq
 import matplotlib.pyplot as plt
 
-class CalciumBiomarkers():
-	def __init__(self, ts, cas, b, a):
-		self.ts = ts
-		self.cas = cas
+class TruncCalcium:
+	def __init__(self, t, ca):
+		self.t = t[4:-1] - 4
+		self.ca = ca[4:-1]
+		self.a1 = []
+		self.bio = []
+
+	def get_cabiomarkers(self):
+		a0 = A_output(self.ca)
+		a0[2] = np.log(2)/a0[2]
+
+		self.a1 = curve_fit(f, shift_for_a_sec(self.t), self.ca, p0=a0)[0]
+
+		DCa = self.a1[0]
+		TP = brentq(df1, self.t[1], self.t[-1], args=self.a1)
+		PCa = f(TP, *self.a1)
+
+		try:
+			RT50 = brentq(df2, TP, self.t[-1], args=(self.a1, TP)) - TP
+		except:
+			RT50 = -1
+
+		self.bio = [DCa, PCa, RT50, TP]
+
+	def visualize_biomarkers(self, scene='do_not_show'):
+		if len(self.a1) == 0 and len(self.bio) == 0:
+			print('Error: first get calcium biomarkers!')
+		else:
+			plt.plot(self.t, f(self.t, *self.a1))
+			plt.scatter(self.bio[3], self.bio[1], c='r')
+			plt.scatter(self.bio[2]+self.bio[3], f(self.bio[2]+self.bio[3], *self.a1), c='r')
+			plt.axvline(x=self.bio[3], c='r', linestyle='dashed')
+			plt.axvline(x=self.bio[2]+self.bio[3], c='r', linestyle='dashed')
+			plt.axhline(y=self.bio[0], c='r', linestyle='dashed')
+			plt.axhline(y=self.bio[1], c='r', linestyle='dashed')
+			if scene == 'show':
+				plt.xlim(self.t[0], self.t[-1])
+				plt.xlabel('Time [ms]')
+				plt.ylabel('Truncated Calcium + Biomarkers')
+				plt.show()
+
+class PhenCalcium:
+	def __init__(self, t, a):
+		self.t = t
+		self.ca = np.zeros((167,), dtype=float)
 		self.a = a
-		self.bio = bio
 
-def get_cabiomarkers(t, ca):
-	ts = t[4:-1] - 4
-	cas = ca[4:-1]
+	def F(self):
+		if check_ca(self.a):
+			self.ca = 
 
-	a0 = A_output(cas)
-	a0[2] = np.log(2)/a0[2]
-
-	a1 = curve_fit(F, shift_for_a_sec(ts), cas, p0=a0)[0]
-
-	DCa = a1[0]
-	TP = brentq(df1, ts[1], ts[-1], args=a1)
-	PCa = F(TP, *a1)
-
-	try:
-		RT50 = brentq(df2, TP, ts[-1], args=(a1, TP)) - TP
-	except:
-		RT50 = -1
-
-	biomarkers = [DCa, PCa, RT50, TP]
-
-	return CalciumBiomarkers(ts, cas, a1, biomarkers)
-
+	
 def shift_for_a_sec(ts):
 	return [x + 1e-16 for x in ts]
 
@@ -51,14 +74,14 @@ def A_output(ca):
 
 	return [DCa, PCa, RT50, TP]
 
-def F(t, *a):
+def f(t, *a):
 	return (a[1] - a[0]) * np.power(np.power(t/a[3], -1.0) + np.exp(a[2]*(t - a[3])), -1.0) + a[0]
 
 def df1(t, a):
 	return np.power(np.power(t/a[3], -1.0) + np.exp(a[2]*(t - a[3])), -2.0) * (-a[3]*np.power(t, -2.0) + a[2]*np.exp(a[2]*(t - a[3])))
 
 def df2(t, a, b):
-	return F(t, *a) - 0.5*(F(b, *a) + F(0, *a))
+	return f(t, *a) - 0.5*(f(b, *a) + f(0, *a))
 
 def check_ca(a):
 	if a[2] == -1:
@@ -71,20 +94,3 @@ def check_ca(a):
 		conv = 1
 
 	return conv
-
-def visualize_biomarkers(ts, a, bio, scene='do_not_show'):
-	plt.plot(ts, F(ts, *a))
-	plt.scatter(bio[3], bio[1], c='r')
-	plt.scatter(bio[2]+bio[3], F(bio[2]+bio[3], *a), c='r')
-	plt.axvline(x=bio[3], c='r', linestyle='dashed')
-	plt.axvline(x=bio[2]+bio[3], c='r', linestyle='dashed')
-	plt.axhline(y=bio[0], c='r', linestyle='dashed')
-	plt.axhline(y=bio[1], c='r', linestyle='dashed')
-
-	if scene == 'show':
-		plt.xlim(ts[0], ts[-1])
-		plt.xlabel('Time [ms]')
-		plt.ylabel('Truncated Calcium + Biomarkers')
-		plt.show()
-
-	return
