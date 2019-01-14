@@ -5,16 +5,19 @@ from utils import ep_out as e
 
 def main():
 
-	sol = s.solve_electr2ss(sham)
-	C = e.get_cabiomarkers(sol.t,sol.ca)
+	p = ab.initParams()
 
-	ts = C.ts
-	cas = C.cas
-	a = C.a
-	bio = C.bio
+	S = s.EPSolution(ab)
+	S.run2sc(p)
+	S.plot_calcium(scene='show')
 
-	s.plot_calcium(sol, scene='show')
-	e.visualize_biomarkers(ts, a, bio, scene='show')
+	# C = e.get_cabiomarkers(sol.t, sol.ca)
+	# ts = C.ts
+	# cas = C.cas
+	# a = C.a
+	# bio = C.bio
+	# s.plot_calcium(sol, scene='show')
+	# e.visualize_biomarkers(ts, a, bio, scene='show')
 
 #-------------------------
 
