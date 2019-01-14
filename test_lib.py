@@ -1,18 +1,21 @@
 import numpy as np
-from utils import scan_logfile as slf
+from mech import scan_logfile as slf
 from utils import math_tools as mt
-from mech import get_lvfeatures as glv
+from utils import mech_out as glv
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as grsp
 
-def main():
+# def main():
 
-	tag = 'data/AB_6/options1/19/output_log.txt'
-	S = slf.extract_info(tag)
-	conv = glv.check_conv(S.conv, S.phase, 2)
-	if conv:
-		V = glv.display_allout(S.t, S.phase, S.lv_v, S.lv_p)
-		print(V.f)
+tag = 'data/AB_7/options1/188/output_log.txt'
+S = slf.extract_info(tag)
+
+# conv = glv.check_conv(S.conv, S.phase, 2)
+# if conv:
+# 	V = glv.get_lvfeatures(S.t, S.phase, S.lv_v, S.lv_p)
+# 	print(V.f)
+
+
 
 # n_par = 7
 # n_var = 100
@@ -49,12 +52,12 @@ def main():
 # 		s = 'data/AB_7/options' + str(k+1) + '/'
 # 		P = np.zeros(shape=(1, 7), dtype=float)
 		
-# 		for j in range(100):
+# 		for j in range(200):
 # 			tag = s + str(j+1) + '/output_log.txt'
 # 			S = slf.extract_info(tag)
-# 			conv = slf.check_conv(S.conv, S.phase, 2)
+# 			conv = glv.check_conv(S.conv, S.phase, 2)
 # 			if conv:
-# 				V = slf.display_allout(S.t, S.phase, S.lv_v, S.lv_p)
+# 				V = glv.get_lvfeatures(S.t, S.phase, S.lv_v, S.lv_p)
 # 				P = np.vstack((P, np.asarray(S.p)))
 # 		np.savetxt(f1, P[1:, :], fmt='%f')
 # f1.close()							
@@ -65,34 +68,34 @@ def main():
 # 		s = 'data/AB_7/options' + str(k+1) + '/'
 # 		M = np.zeros(shape=(1, 11), dtype=float)
 
-# 		for j in range(100):
+# 		for j in range(200):
 # 			tag = s + str(j+1) + '/output_log.txt'
 # 			S = slf.extract_info(tag)
-# 			conv = slf.check_conv(S.conv, S.phase, 2)
+# 			conv = glv.check_conv(S.conv, S.phase, 2)
 # 			if conv:
-# 				V = slf.display_allout(S.t, S.phase, S.lv_v, S.lv_p)
+# 				V = glv.get_lvfeatures(S.t, S.phase, S.lv_v, S.lv_p)
 # 				M = np.vstack((M, np.asarray(V.f)))
 # 		np.savetxt(f2, M[1:, :], fmt='%f')
 # f2.close()
 
-# gs = grsp.GridSpec(2, 2)
-# fig = plt.figure(figsize=(14, 8))
-# for i in range(2):
-# 	ax = fig.add_subplot(gs[i, 0])
-# 	if i == 0:
-# 		ax.plot(S.t, S.lv_v, color='b', linewidth=1.0)
-# 		ax.plot(V.ts, V.lv_vs, color='b', linewidth=2.5)
-# 		plt.xlim(0, V.ts[-1])
-# 	else:
-# 		ax.plot(S.t, S.lv_p, color='b', linewidth=1.0)
-# 		ax.plot(V.ts, V.lv_ps, color='b', linewidth=2.5)
-# 		plt.xlim(0, V.ts[-1])
+gs = grsp.GridSpec(2, 2)
+fig = plt.figure(figsize=(14, 8))
+for i in range(2):
+	ax = fig.add_subplot(gs[i, 0])
+	if i == 0:
+		ax.plot(S.t, S.lv_v, color='b', linewidth=1.0)
+		ax.plot(V.ts, V.lv_vs, color='b', linewidth=2.5)
+		plt.xlim(0, V.ts[-1])
+	else:
+		ax.plot(S.t, S.lv_p, color='b', linewidth=1.0)
+		ax.plot(V.ts, V.lv_ps, color='b', linewidth=2.5)
+		plt.xlim(0, V.ts[-1])
 
-# ax = fig.add_subplot(gs[:, 1])
-# ax.plot(V.lv_vs, V.lv_ps, color='b', linewidth=2.5)
-# plt.show()
+ax = fig.add_subplot(gs[:, 1])
+ax.plot(V.lv_vs, V.lv_ps, color='b', linewidth=2.5)
+plt.show()
 
 #-------------------------
 
-if __name__ == '__main__':
-	main()
+# if __name__ == '__main__':
+# 	main()
