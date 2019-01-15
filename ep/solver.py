@@ -40,7 +40,7 @@ class EPSolution:
 		else:
 			print('\n=== Error: unable to reach the steady-state!\n')
 
-	def plot_calcium(self, scene='do_not_show'):
+	def plot_ca(self, scene='do_not_show'):
 		plt.plot(self.t, self.ca)
 		if scene == 'show':
 			plt.xlim(self.t[0], self.t[-1])
