@@ -1,60 +1,92 @@
 import numpy as np
 from utils import math_tools as mt
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as grsp
 
-class LeftVentricularFeatures():
-	def __init__(self, ts, ps, lv_vs, lv_ps, f):
-		self.ts = ts
-		self.ps = ps
-		self.lv_vs = lv_vs
-		self.lv_ps = lv_ps
-		self.f = f
+class LeftVentricle:
+	def __init__(self):
+		self.conv = 0
+		self.t = []
+		self.phase = []
+		self.lv_v = []
+		self.lv_p = []
+		self.f = []
 
-def get_lvfeatures(t, phase, lv_v, lv_p):
-	cp = ph_counter(phase)
+	def get_lvfeatures(self, M, nc):
+		if M.conv:
+			cp = ph_counter(M.phase)
 
-	M1 = isl_ranges(np.where(np.asarray(phase) == 1)[0], cp[0])
-	M3 = isl_ranges(np.where(np.asarray(phase) == 3)[0], cp[2])
+			if cp[3] >= nc + 1:
+				self.conv = 1
 
-	ind = np.sort(np.concatenate((np.reshape(M1, cp[0]*2), np.reshape(M3, cp[2]*2)), axis=0))
-	ind_r = ind[-6:-1]
-	interval = list(range(ind_r[0], ind_r[-1]))
+			if self.conv:
+				M1 = isl_ranges(np.where(np.asarray(M.phase) == 1)[0], cp[0])
+				M3 = isl_ranges(np.where(np.asarray(M.phase) == 3)[0], cp[2])
 
-	ts = [t[i] for i in interval]
-	ps = [phase[i] for i in interval]
-	lv_ps = [lv_p[i] for i in interval]
-	lv_vs = [lv_v[i] for i in interval]
+				ind = np.sort(np.concatenate((np.reshape(M1, cp[0]*2), np.reshape(M3, cp[2]*2)), axis=0))
+				ind_r = ind[-6:-1]
+				interval = list(range(ind_r[0], ind_r[-1]))
 
-	t1 = t[ind_r[0]]
-	t2 = t[ind_r[1]]
-	t3 = t[ind_r[2]]
-	t4 = t[ind_r[3]]
-	t5 = t[ind_r[4]]
+				self.t = [M.t[i] for i in interval]
+				self.phase = [M.phase[i] for i in interval]
+				self.lv_p = [M.lv_p[i] for i in interval]
+				self.lv_v = [M.lv_v[i] for i in interval]
 
-	dP = mt.der(ts, lv_ps)
-	m = max(lv_ps)
-	ind_m = list(lv_ps).index(m)
+				t1 = M.t[ind_r[0]]
+				t2 = M.t[ind_r[1]]
+				t3 = M.t[ind_r[2]]
+				t4 = M.t[ind_r[3]]
+				t5 = M.t[ind_r[4]]
 
-	ps1 = list(np.where(np.asarray(ps) == 1)[0])
-	lvv1 = [lv_vs[i] for i in ps1]
+				dP = mt.der(self.t, self.lv_p)
+				m = max(self.lv_p)
+				ind_m = list(self.lv_p).index(m)
 
-	p1 = max(lvv1)         # EDV    (end diastolic volume)
-	p2 = min(lv_vs)        # ESV    (end systolic volume)
-	p3 = 100*(p1 - p2)/p1  # EF     (ejection fraction)
-	p4 = t2 - t1           # ICT    (isovolumetric contraction time)
-	p5 = t3 - t2           # ET     (ejection time)
-	p6 = t4 - t3           # IRT    (isovolumetric relaxation time)
-	p7 = t5 - t4           # Tdiast (diastolic time)
+				ps1 = list(np.where(np.asarray(self.phase) == 1)[0])
+				lvv1 = [self.lv_v[i] for i in ps1]
 
-	q1 = m                  # PeakP (maximum pressure)
-	q2 = ts[ind_m] - ts[0]  # Tpeak (time to peak)
-	q3 = max(dP)            # maxdP (maximum pressure gradient value) 
-	q4 = min(dP)            # mindP (minimum pressure gradient value)
+				p1 = max(lvv1)         # EDV    (end diastolic volume)
+				p2 = min(self.lv_v)    # ESV    (end systolic volume)
+				p3 = 100*(p1 - p2)/p1  # EF     (ejection fraction)
+				p4 = t2 - t1           # ICT    (isovolumetric contraction time)
+				p5 = t3 - t2           # ET     (ejection time)
+				p6 = t4 - t3           # IRT    (isovolumetric relaxation time)
+				p7 = t5 - t4           # Tdiast (diastolic time)
 
-	# ts = [x - ts[0] for x in ts]
+				q1 = m                          # PeakP (maximum pressure)
+				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak)
+				q3 = max(dP)                    # maxdP (maximum pressure gradient value) 
+				q4 = min(dP)                    # mindP (minimum pressure gradient value)
 
-	features = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4]
+				# self.t = [x - self.t[0] for x in self.t]
 
-	return LeftVentricularFeatures(ts, ps, lv_vs, lv_ps, features)
+				self.f = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4]
+
+	def plot(self, M):
+		gs = grsp.GridSpec(2, 2)
+		fig = plt.figure(figsize=(14, 8))
+		for i in range(2):
+			ax = fig.add_subplot(gs[i, 0])
+			if i == 0:
+				ax.plot(M.t, M.lv_v, color='b', linewidth=1.0)
+				ax.plot(self.t, self.lv_v, color='b', linewidth=2.5)
+				plt.xlim(M.t[0], self.t[-1])
+				plt.xlabel('Time [ms]')
+				plt.ylabel('LVV [$\mu$L]')
+			else:
+				ax.plot(M.t, M.lv_p, color='b', linewidth=1.0)
+				ax.plot(self.t, self.lv_p, color='b', linewidth=2.5)
+				plt.xlim(M.t[0], self.t[-1])
+				plt.xlabel('Time [ms]')
+				plt.ylabel('LVP [kPa]')
+
+		ax = fig.add_subplot(gs[:, 1])
+		ax.plot(self.lv_v, self.lv_p, color='b', linewidth=2.5)
+		plt.xlabel('Volume [$\mu$L]')
+		plt.ylabel('Pressure [kPa]')
+		plt.show()
+
+# --------------------
 
 def ph_counter(phase):
 	n = len(phase)
@@ -72,14 +104,6 @@ def ph_counter(phase):
 				j = j + 1
 
 	return cp
-
-def check_conv(conv, phase, n_cycle):
-	if conv:
-		cp = ph_counter(phase)
-		if cp[3] < n_cycle + 1:
-			conv = 0
-
-	return conv
 
 def isl_ranges(l, n_isl):
 	len_l = len(l)

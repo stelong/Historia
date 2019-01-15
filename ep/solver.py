@@ -32,7 +32,6 @@ class EPSolution:
 			if ssnc == thre:
 				b = 0
 				break
-
 		if b:
 			print('\n=== Number of cycles needed to reach the steady-state: {}\n'.format(ssnc))
 			self.ca = 1e3*Y.y[12, :]

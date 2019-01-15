@@ -61,6 +61,8 @@ class PhenCalcium:
 			plt.ylabel('Intracellular calcium [$\mu$M]')
 			plt.show()
 	
+# ---------------
+
 def A_output(ca):
 	N = len(ca)
 	t = np.linspace(0, N-1, N)
