@@ -2,6 +2,7 @@ from ep import solver as s
 from ep.models import Gattoni_SHAM6Hz as sham
 from ep.models import Gattoni_AB6Hz as ab
 from utils import ep_out as e
+from classifier import svm as c
 import numpy as np
 import matplotlib.pyplot as plt
 
