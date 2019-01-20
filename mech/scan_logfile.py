@@ -121,5 +121,5 @@ class MECHSolution:
 
 			i = i + 1
 
-		self.p = [p, ap, z, c1, ca50, kxb, Tref] # koff, Tref]
+		self.p = [p, ap, z, c1, ca50, kxb, koff, Tref]
 		self.lv_v = [x + lv_v0 for x in lv_dv]

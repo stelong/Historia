@@ -11,14 +11,18 @@ def main():
 
 	clf = c.SVMCla()
 
-	inFile1 = 'data/inputs_12.txt'
-	inFile2 = 'data/outputs_2.txt'
+	inFile1 = 'AB_9_in.txt'
+	inFile2 = 'AB_9_conv.txt'
 	X = np.loadtxt(inFile1, dtype=float)
 	y = np.loadtxt(inFile2, dtype=int)
 
 	clf.fit(X, y)
 
-	# D = clf.hlc_sample(100)
+	D = clf.hlc_sample(800)
+
+	with open('AB_9_new.txt', 'w') as f:
+		np.savetxt(f, D, fmt='%f')
+	f.close()
 
 	# print(D.shape)
 	# print(D)

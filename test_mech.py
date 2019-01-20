@@ -18,11 +18,11 @@ def main():
 
 	# ------------------------------------------------------------------------------
 
-	file_in = 'AB_8_in.txt'
+	file_in = 'AB_9_in.txt'
 	with open(file_in, 'w') as f1:
 		for k in range(4):
-			s = 'data/AB_8/options' + str(k+1) + '/'
-			P = np.zeros(shape=(1, 7), dtype=float)
+			s = 'data/AB_9/options' + str(k+1) + '/'
+			P = np.zeros(shape=(1, 8), dtype=float)
 		
 			for j in range(200):
 				tag = s + str(j+1) + '/output_log.txt'
@@ -30,27 +30,43 @@ def main():
 				S.extract_loginfo()
 				V = glv.LeftVentricle()
 				V.get_lvfeatures(S, 2)
-				if V.conv:
-					P = np.vstack((P, np.asarray(S.p)))
+				# if V.conv:
+				P = np.vstack((P, np.asarray(S.p)))
 			np.savetxt(f1, P[1:, :], fmt='%f')
-	f1.close()							
-	
-	file_out = 'AB_8_out.txt'
-	with open(file_out, 'w') as f2:
-		for k in range(4):
-			s = 'data/AB_8/options' + str(k+1) + '/'
-			M = np.zeros(shape=(1, 11), dtype=float)
+	f1.close()
 
-			for j in range(200):
-				tag = s + str(j+1) + '/output_log.txt'
-				S = slf.MECHSolution(tag)
-				S.extract_loginfo()
-				V = glv.LeftVentricle()
-				V.get_lvfeatures(S, 2)
-				if V.conv:
-					M = np.vstack((M, np.asarray(V.f)))
-			np.savetxt(f2, M[1:, :], fmt='%f')
-	f2.close()
+	# vconv = []
+	# for k in range(4):
+	# 	s = 'data/AB_9/options' + str(k+1) + '/'
+	# 	for j in range(200):
+	# 		tag = s + str(j+1) + '/output_log.txt'
+	# 		S = slf.MECHSolution(tag)
+	# 		S.extract_loginfo()	
+	# 		V = glv.LeftVentricle()
+	# 		V.get_lvfeatures(S, 2)	
+	# 		vconv.append(V.conv)
+
+	# file = 'AB_9_conv.txt'
+	# with open(file, 'w') as f:
+	# 	np.savetxt(f, vconv, fmt='%d')
+	# f.close()		
+	
+	# file_out = 'AB_9_out.txt'
+	# with open(file_out, 'w') as f2:
+	# 	for k in range(4):
+	# 		s = 'data/AB_9/options' + str(k+1) + '/'
+	# 		M = np.zeros(shape=(1, 11), dtype=float)
+
+	# 		for j in range(200):
+	# 			tag = s + str(j+1) + '/output_log.txt'
+	# 			S = slf.MECHSolution(tag)
+	# 			S.extract_loginfo()
+	# 			V = glv.LeftVentricle()
+	# 			V.get_lvfeatures(S, 2)
+	# 			if V.conv:
+	# 				M = np.vstack((M, np.asarray(V.f)))
+	# 		np.savetxt(f2, M[1:, :], fmt='%f')
+	# f2.close()
 
 # ------------------------
 
