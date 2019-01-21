@@ -43,8 +43,7 @@ class PhenCalcium:
 			self.conv = 0
 
 	def build_ca(self):
-		if self.conv:
-			self.ca = f(self.t, *self.a)
+		self.ca = f(self.t, *self.a)
 
 	def plot(self, visbio=False, scene='do_not_show'):
 		plt.plot(self.t, f(self.t, *self.a))
@@ -60,7 +59,11 @@ class PhenCalcium:
 			plt.xlabel('Time [ms]')
 			plt.ylabel('Intracellular calcium [$\mu$M]')
 			plt.show()
-	
+
+	def print_ca(self, f, stim):
+		f.write('ca{} 166 1 '.format(stim))
+		np.savetxt(f, self.ca.reshape(1, -1), fmt='%f')
+
 # ---------------
 
 def A_output(ca):
@@ -76,6 +79,8 @@ def A_output(ca):
 		if ca[i] <= 0.5*(DCa + PCa):
 			RT50 = t[i] - TP
 			break
+		else:
+			RT50 = t[-1] - TP
 
 	return [DCa, PCa, RT50, TP]
 

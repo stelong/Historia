@@ -11,10 +11,10 @@ def main():
 
 	clf = c.SVMCla()
 
-	inFile1 = 'AB_10_inputs.txt'
-	inFile2 = 'AB_11_inputs.txt'
-	outFile1 = 'AB_10_outputs.txt' 
-	outFile2 = 'AB_11_outputs.txt'
+	inFile1 = 'data/AB_10_inputs.txt'
+	inFile2 = 'data/AB_11_inputs.txt'
+	outFile1 = 'data/AB_10_outputs.txt' 
+	outFile2 = 'data/AB_11_outputs.txt'
 
 	X1 = np.loadtxt(inFile1, dtype=float)
 	X2 = np.loadtxt(inFile2, dtype=float)
@@ -22,9 +22,9 @@ def main():
 	y2 = np.loadtxt(outFile2, dtype=int)
 
 	X = np.vstack((X1, X2))
-	y = np.vstack((y1, y2))
+	y = np.vstack((y1.reshape(-1, 1), y2.reshape(-1, 1)))
 
-	clf.fit(X, y)
+	clf.fit(X, y.ravel())
 
 	D = clf.hlc_sample(800)
 

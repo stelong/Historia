@@ -2,6 +2,20 @@
 # 6Hz paced SHAM rat heart electrophysiological model (Gattoni 2016).
 #
 import numpy as np
+import time
+
+class TimeCounter:
+    def __init__(self, f):
+        self.time = 0
+        self.f = f
+
+    def __call__(self, *args, **kwargs):
+        start = time.time()
+        result = self.f(*args, **kwargs)
+        elapsed = time.time() - start
+        self.time += elapsed
+        print(f"Spent {self.time} in {self.f.__name__} so far.")
+        return result
 
 def initStates():
 	sizeStates = 18
@@ -250,7 +264,9 @@ def computeAlgebraic(constants, states, voi):
 
     return algebraic
 
-def computeRates(constants, algebraic, states, voi):
+def odesys(voi, states, constants):
+    algebraic = computeAlgebraic(constants, states, voi)
+
     sizeRates = 18
     rates = np.zeros(shape=(sizeRates,), dtype=float)
     
@@ -272,11 +288,5 @@ def computeRates(constants, algebraic, states, voi):
     rates[15] = (algebraic[57]*states[14]-(algebraic[59]+algebraic[69])*states[15])+algebraic[71]*algebraic[73]
     rates[16] = (algebraic[65]*states[14]-(algebraic[67]+algebraic[61])*states[16])+algebraic[63]*algebraic[73]
     rates[17] = algebraic[83]
-
-    return rates
-
-def odesys(voi, states, constants, parameters):
-    algebraic = computeAlgebraic(constants, states, voi)
-    rates = computeRates(constants, algebraic, states, voi)
 
     return rates

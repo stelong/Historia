@@ -14,7 +14,7 @@ class EPSolution:
 		Y0 = self.model.initStates()
 		tspan = [0, 170]
 
-		Y = solve_ivp(fun=lambda t, y: self.model.odesys(t, y, c, parameters), t_span=tspan, y0=Y0, t_eval=self.t)
+		Y = solve_ivp(fun=lambda t, y: self.model.odesys(t, y, c), t_span=tspan, y0=Y0, t_eval=self.t)
 		self.ca = 1e3*Y.y[12, :]
 		self.conv = 1
 
@@ -22,12 +22,12 @@ class EPSolution:
 		c = self.model.initConsts(parameters)
 		Y0 = self.model.initStates()
 		tspan = [0, 170]
-		Y = solve_ivp(fun=lambda t, y: self.model.odesys(t, y, c, parameters), t_span=tspan, y0=Y0, t_eval=self.t)
+		Y = solve_ivp(fun=lambda t, y: self.model.odesys(t, y, c), t_span=tspan, y0=Y0, t_eval=self.t)
 
 		thre = 10000
 		ssnc = b = 1
 		while np.linalg.norm(Y.y[:, -1] - Y.y[:, 0], ord=np.inf) > 1e-4:
-			Y = solve_ivp(fun=lambda t, y: self.model.odesys(t, y, c, parameters), t_span=tspan, y0=Y.y[:, -1], t_eval=self.t)
+			Y = solve_ivp(fun=lambda t, y: self.model.odesys(t, y, c), t_span=tspan, y0=Y.y[:, -1], t_eval=self.t)
 			ssnc += 1
 			if ssnc == thre:
 				b = 0
