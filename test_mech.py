@@ -17,7 +17,7 @@ def looknsave_all(name):
 				S.extract_loginfo()
 				M = np.vstack((M, np.asarray(S.p)))
 				V = glv.LeftVentricle()
-				V.get_lvfeatures(S, 2)
+				V.get_lvfeatures(S, 4)
 				vc.append(V.conv)
 			np.savetxt(f, M[1:, :], fmt='%f')
 	f.close()
@@ -45,7 +45,7 @@ def looknsave_conly(name, suffix):
 				S = slf.MECHSolution(tag)
 				S.extract_loginfo()
 				V = glv.LeftVentricle()
-				V.get_lvfeatures(S, 2)
+				V.get_lvfeatures(S, 4)
 				if V.conv:
 					if suffix == 'inputs':
 						M = np.vstack((M, np.asarray(S.p)))
@@ -56,7 +56,7 @@ def looknsave_conly(name, suffix):
 	return
 
 def main():
-	name = 'AB_11'
+	name = 'SHAM_15'
 
 	looknsave_conly(name, 'inputs')
 	looknsave_conly(name, 'outputs')
