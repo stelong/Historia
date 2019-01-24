@@ -1,23 +1,7 @@
-from ep import solver as s
-from ep.models import Gattoni_SHAM6Hz as sham
-from ep.models import Gattoni_AB6Hz as ab
-from utils import ep_out as e
-from classifier import svm as c
-from emulator import gp
 import numpy as np
-import matplotlib.pyplot as plt
+import pickle
+from emulator import gp
 from sklearn.model_selection import train_test_split
-
-def my_custom_loss_func(Y_true, Y_pred):
-	n_samp = Y_true.shape[0]
-
-	e = np.zeros(shape=(n_samp,), dtype=float)
-	for i in range(n_samp):
-		e[i] = np.linalg.norm((Y_pred[i, :] - Y_true[i, :])/Y_true[i, :], ord=1)
-
-	metric = np.sum(e)/n_samp
-
-	return metric
 
 def main():
 
@@ -27,19 +11,31 @@ def main():
 	inFile2 = 'data/outputs.txt'
 	
 	X = np.loadtxt(inFile1, dtype=float)
-	Y = np.loadtxt(inFile2, dtype=float)[:, 2]
+	Y = np.loadtxt(inFile2, dtype=float)
 
-	X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+	X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.15, random_state=0)
 	
+	# Test class is working properly 
+	# ------------------------------
 	emul.fit(X_train, Y_train)
-	print(emul.gp)
-	print(emul.gp.kernel_)
-	
-
-	# print(emul.accuracy(X_test, Y_test))
 	Y_pred = emul.predict(X_test)
-	print(Y_pred)
-	print(my_custom_loss_func(Y_test, Y_pred))
+	print(emul.accuracy(Y_test, Y_pred))
+	emul.save('model')
+
+	## Test pickle.load module
+	## -----------------------
+	# with open('model.pkl', 'rb') as f:
+	# 	emul = pickle.load(f)
+
+	# print(emul.X.shape)
+	# print(emul.Y.shape)
+	# print(emul.mean.steps[0][1])
+	# print(emul.mean.steps[1][1])
+	# print(emul.gp)
+	# print(emul.gp.kernel_)
+
+	# Y_pred = emul.predict(X_test)
+	# print(emul.accuracy(Y_test, Y_pred))
 
 
 #-------------------------
