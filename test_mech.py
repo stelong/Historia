@@ -56,7 +56,7 @@ def looknsave_conly(name, suffix):
 	return
 
 def main():
-	name = 'AB_13'
+	name = 'SHAM_16'
 
 	looknsave_conly(name, 'inputs')
 	looknsave_conly(name, 'outputs')
