@@ -1,33 +1,55 @@
+from ep.models import Gattoni_6Hz as odesys
+from ep.models import SHAM_init as sham
+from ep.models import AB_init as ab
 from ep import solver as s
-from ep.models import Gattoni_SHAM6Hz as sham
-from ep.models import Gattoni_AB6Hz as ab
 from utils import ep_out as e
 from utils import design_tools as des
-from classifier import svm as c
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 
+class TimeCounter:
+    def __init__(self, f):
+        self.time = 0
+        self.f = f
+
+    def __call__(self, *args, **kwargs):
+        start = time.time()
+        result = self.f(*args, **kwargs)
+        elapsed = time.time() - start
+        self.time += elapsed
+        print(f'Spent {self.time} in {self.f.__name__} so far.')
+        return result
+
+@TimeCounter
 def main():
+
+	S = s.EPSolution(odesys, sham)
+	p0 = sham.initParams()
+	S.run2sc(p0)
+	S.plot_calcium(scene='show')
+
+	#--------
 
 	# n = 10
 	# p0 = sham.initParams()
-	# E = np.array([[50, 50], [50, 50], [50, 50], [50, 50], [50, 50], [50, 50], [50, 50], [50, 50], [50, 50], [50, 50], [50, 50]])
+	# E = np.array([[100, 100], [100, 100], [100, 100], [100, 100], [100, 100], [100, 100], [100, 100], [100, 100], [100, 100], [100, 100], [100, 100]])
 	# H = des.lhd(p0, E, n)
+
+	# print(H)
 
 	# lista = []
 	# B = np.zeros((1, 4), dtype=float)
 	# for i in range(n):
 	# 	print(i)
-	# 	S = s.EPSolution(sham)
+	# 	S = s.EPSolution(odesys, sham)
 	# 	S.run2sc(H[i, :])
-	# 	S.plot_ca(scene='show')
-		# C = e.PhenCalcium(S.t, S.ca)
-		# C.fit()
-		# C.get_biomarkers()
-		# if C.conv:
-		# 	lista.append(i)
-		# 	B = np.vstack((B, np.asarray(C.a1)))
+	# 	S.plot_calcium(scene='show')
+	# 	C = e.PhenCalcium(S.t, S.ca)
+	# 	C.fit()
+	# 	C.get_biomarkers()
+	# 	if C.conv:
+	# 		lista.append(i)
+	# 		B = np.vstack((B, np.asarray(C.a1)))
 
 	# P = np.copy(H[lista, :])
 	# F = np.copy(B[1:, :])
@@ -40,16 +62,7 @@ def main():
 	# 	np.savetxt(f, F, fmt='%f')
 	# f.close()
 
-	# ---------------------------------------
-
-	start_time = time.time()
-	p0 = ab.initParams()
-	S = s.EPSolution(ab)
-	S.run2sc(p0)
-	elapsed_time = time.time() - start_time
-	print(elapsed_time)
-
-	# ---------------------------------------
+	#--------
 
 	# j = 1
 	# with open('ciao.txt', 'w') as f:
@@ -63,7 +76,7 @@ def main():
 	# 			break
 	# f.close()
 
-	# ---------------------------------------
+	#--------
 
 	# j = 0
 	# converged = []

@@ -9,12 +9,15 @@ from sklearn.gaussian_process.kernels import RBF, Matern
 
 def mare(Y_true, Y_pred):
 	sample_dim = Y_true.shape[0]
+	out_dim = Y_true.shape[1]
 
-	e = np.zeros(shape=(sample_dim,), dtype=float)
-	for i in range(sample_dim):
-		e[i] = np.linalg.norm((Y_pred[i, :] - Y_true[i, :])/Y_true[i, :], ord=1)
-
-	return np.sum(e)/sample_dim
+	if out_dim == 1:
+		return np.linalg.norm((Y_pred - Y_true)/Y_true, ord=1)/sample_dim
+	else:
+		e = np.zeros((sample_dim,), dtype=float)
+		for i in range(sample_dim):
+			e[i] = np.linalg.norm((Y_pred[i, :] - Y_true[i, :])/Y_true[i, :], ord=1)/out_dim
+		return np.sum(e)/sample_dim
 
 class GPEmul:
 	def __init__(self):
@@ -43,8 +46,8 @@ class GPEmul:
 
 		residuals = self.Y - self.mean.predict(self.X)
 
-		param_grid2 = {'kernel': [Matern(length_scale=in_dim*[1.0], nu=i) for i in [1.5, 2.5]] + [RBF(length_scale=in_dim*[1.0])],
-			'alpha': [1e-15, 1e-10, 1e-5, 1e-0]}
+		param_grid2 = {'kernel': [Matern(length_scale=in_dim*[1.0], nu=i) for i in [1.5, 2.5]] + [RBF(length_scale=in_dim*[1.0])]}
+			# 'alpha': [1e-15, 1e-10, 1e-5, 1e-0]}
 		gs2 = GridSearchCV(GaussianProcessRegressor(n_restarts_optimizer=10), param_grid2,
 			n_jobs=-1, iid=False, cv=5, return_train_score=False)
 		gs2.fit(self.X, residuals)

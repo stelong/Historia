@@ -42,7 +42,7 @@ class PhenCalcium:
 		elif self.bio[0] >= self.bio[1]:
 			self.conv = 0
 
-	def build_ca(self):
+	def build_calcium(self):
 		self.ca = f(self.t, *self.a)
 
 	def plot(self, visbio=False, scene='do_not_show'):
@@ -60,7 +60,7 @@ class PhenCalcium:
 			plt.ylabel('Intracellular calcium [$\mu$M]')
 			plt.show()
 
-	def print_ca(self, f, stim):
+	def print_calcium(self, f, stim):
 		f.write('ca{} 166 1 '.format(stim))
 		np.savetxt(f, self.ca.reshape(1, -1), fmt='%f')
 

@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import metrics
@@ -65,6 +66,11 @@ class SVMCla:
 				D = np.vstack((D, d))
 
 		return D[1:, :]
+
+	def save(self, name):
+		with open(name + '.pkl', 'wb') as f:
+			pickle.dump(self, f)
+		f.close()
 
 	def plot_accuracy_demo(self, X_test, y_test):
 		score = self.accuracy(X_test, y_test)
