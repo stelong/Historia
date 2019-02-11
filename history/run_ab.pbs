@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -N AB
+#PBS -M stefano.longobardi@kcl.ac.uk 
+#PBS -m ea 
+#PBS -l walltime=10:00:00 
+#PBS -l select=1:ncpus=1:mpiprocs=1:mem=1gb
+#PBS -l place=pack:shared
+#PBS -r y
+#PBS -J 1-256
+
+ulimit -s unlimited
+
+export PBS_O_WORKDIR=$(readlink -f $PBS_O_WORKDIR)
+cd $PBS_O_WORKDIR
+
+LAUNCHER='mpiexec_mpt'
+
+NPROC=$(qstat -f $PBS_JOBID | awk '/Resource_List\.ncpus/ {print $3}')
+
+EXE='/scratch/sl18/Codes/elecmech'
+
+INFOLD='../problems/AB/MeshFlatBase.in'
+OUTFOLD='./'
+
+SUBJOB=$PBS_ARRAY_INDEX
+
+WNB='2'
+
+OPTIONS=$(sed "${SUBJOB}q;d" 'options/ab/w'${WNB}'_opt.txt')
+
+${LAUNCHER} -np ${NPROC} dplace -s1 ${EXE} -input ${INFOLD} -ca_stim_name 'ca1' -tag ${OUTFOLD}'ab/'${SUBJOB} ${OPTIONS}
