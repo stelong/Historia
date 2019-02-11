@@ -1,6 +1,5 @@
 import numpy as np
 from mech import scan_logfile as slf
-from utils import math_tools as mt
 from utils import mech_out as glv
 
 def looknsave_all(name):
@@ -56,7 +55,7 @@ def looknsave_conly(name, suffix):
 	return
 
 def main():
-	name = 'AB_17'
+	name = 'SHAM_19'
 
 	looknsave_conly(name, 'inputs')
 	looknsave_conly(name, 'outputs')

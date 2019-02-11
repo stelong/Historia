@@ -1,8 +1,8 @@
 import numpy as np
 
 def get_biomarkers(name):
-	X = np.loadtxt('data/' + name + '/inputs.txt', dtype=float)
-	Y = np.loadtxt('data/' + name + '/outputs.txt', dtype=float)
+	X = np.loadtxt('data/' + name + '/sham/inputs.txt', dtype=float)
+	Y = np.loadtxt('data/' + name + '/sham/outputs.txt', dtype=float)
 
 	sample_dim = X.shape[0]
 	in_dim = X.shape[1]
@@ -64,7 +64,7 @@ def get_biomarkers(name):
 	f.close()
 
 def main():
-	name = 'EP_3'
+	name = 'ep'
 	get_biomarkers(name)
 
 #-------------------------
