@@ -19,3 +19,18 @@ def lhd(p0, E, n_samp):
 		H[:, j] = pmin[j] + (pmax[j] - pmin[j])*D[:, j]
 
 	return H
+
+def putlab(X, name_out):
+	n_samp = X.shape[0]
+
+	labels = ['-p', '-ap', '-z', '-c1', '-ca50', '-kxb', '-koff', '-Tref']
+	n_par = len(labels)
+
+	with open(name_out, 'w') as f:
+		for i in range(n_samp):
+			for j in range(n_par):
+				f.write('%s %g ' % (labels[j], X[i, j]))
+			f.write('\n')
+	f.close()
+
+	return
