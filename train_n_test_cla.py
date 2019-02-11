@@ -7,19 +7,25 @@ def main():
 
 	cla = svm.SVMCla()
 
-	inFile1 = 'data/mech/inputs_all.txt'
-	inFile2 = 'data/mech/outputs_all.txt'
+	inFile1 = 'data/mech/sham/inputs_all.txt'
+	inFile2 = 'data/mech/sham/outputs_all.txt'
 	
 	X = np.loadtxt(inFile1, dtype=float)
 	y = np.loadtxt(inFile2, dtype=float)
 
-	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=None)
+	# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=None)
 
-	cla.fit(X_train, y_train)
+	cla.fit(X, y)
 	cla.save('cla')
 
 	# with open('cla.pkl', 'rb') as f:
 	# 	cla = pickle.load(f)
+	# f.close()
+
+	# H = cla.hlc_sample(800)
+
+	# with open('hi_disegno_sham_new.txt', 'w') as f:
+	# 	np.savetxt(f, H, fmt='%f')
 	# f.close()
 
 	# cla.plot_accuracy_demo(X_test, y_test)
