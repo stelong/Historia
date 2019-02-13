@@ -6,6 +6,7 @@ from utils import ep_out as e
 from utils import design_tools as des
 import numpy as np
 import time
+import pandas as pd
 
 class TimeCounter:
     def __init__(self, f):
@@ -25,8 +26,19 @@ def main():
 
 	S = s.EPSolution(odesys, sham)
 	p0 = sham.initParams()
-	S.run2sc(p0)
-	S.plot_calcium(scene='show')
+	S.run2ss(p0)
+	# S.plot_calcium()
+	S.plot_solution(0)
+
+	S = s.EPSolution(odesys, ab)
+	p0 = ab.initParams()
+	S.run2ss(p0)
+	# S.plot_calcium(scene='show')
+	S.plot_solution(0, scene='show')
+	
+
+	# data = pd.DataFrame(data=np.hstack((S.t.reshape(-1, 1), S.ca.reshape(-1, 1))), columns=['t', 'ca'])
+	# S.plotsns(data)
 
 	#--------
 

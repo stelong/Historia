@@ -7,8 +7,8 @@ def main():
 
 	cla = svm.SVMCla()
 
-	inFile1 = 'data/mech/sham/inputs_all.txt'
-	inFile2 = 'data/mech/sham/outputs_all.txt'
+	inFile1 = 'data/ep/sham/inputs_all.txt'
+	inFile2 = 'data/ep/sham/outputs_all.txt'
 	
 	X = np.loadtxt(inFile1, dtype=float)
 	y = np.loadtxt(inFile2, dtype=float)
