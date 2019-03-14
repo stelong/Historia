@@ -1,13 +1,24 @@
 import numpy as np
 import pickle
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn import metrics
-from sklearn import pipeline
-from sklearn import preprocessing
-from sklearn import svm
-from sklearn import model_selection
 from scipy.stats import uniform
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+
+def lhd(I, n_samp):
+	n_par = I.shape[0]
+	D = np.zeros(shape=(n_samp, n_par))
+	H = np.zeros(shape=(n_samp, n_par))
+	dp = 1./n_samp
+	for j in range(n_par):
+		for i in range(n_samp):
+			a = i*dp
+			D[i, j] = uniform.rvs(loc=a, scale=dp, size=1)
+
+		D[:, j] = np.random.permutation(D[:, j])
+		H[:, j] = I[j, 0] + (I[j, 1] - I[j, 0])*D[:, j]
+	return H
 
 class SVMCla:
 	def __init__(self):
@@ -20,15 +31,15 @@ class SVMCla:
 		self.X = X
 		self.y = y
 
-		pipe = pipeline.Pipeline([
-			('scaler', preprocessing.StandardScaler()),
-			('cla', svm.SVC(cache_size=1000, class_weight='balanced'))
+		pipe = Pipeline([
+			('scaler', StandardScaler()),
+			('cla', SVC(cache_size=1000, class_weight='balanced'))
 		])
 		param_grid = [{'cla__kernel': ['linear'], 'cla__C': [1, 10, 100, 1000]},
 		{'cla__kernel': ['poly'], 'cla__C': [1, 10, 100, 1000], 'cla__degree': [2, 3, 4, 5], 'cla__gamma': [1e-1, 1e-2, 1e-3, 1e-4]},
 		{'cla__kernel': ['rbf'], 'cla__C': [1, 10, 100, 1000], 'cla__gamma': [1e-1, 1e-2, 1e-3, 1e-4]}]
 
-		gs = model_selection.GridSearchCV(pipe, param_grid, scoring='accuracy', n_jobs=-1,
+		gs = GridSearchCV(pipe, param_grid, scoring='accuracy', n_jobs=-1,
 			cv=5, error_score=0, return_train_score=False)
 		gs.fit(self.X, self.y)
 
@@ -44,43 +55,25 @@ class SVMCla:
 
 	def hlc_sample(self, n_points):
 		in_dim = self.X.shape[1]
-	
-		p_min = np.zeros(shape=(in_dim,), dtype=float)
-		p_max = np.zeros(shape=(in_dim,), dtype=float)
-		for i in range(in_dim):
-			p_min[i] = np.min(self.X[:, i]) 
-			p_max[i] = np.max(self.X[:, i])
-
-		np.random.seed()
-		
-		D = np.zeros(shape=(1, in_dim), dtype=float)
-		while D.shape[0] - 1 < n_points:
-			zu = uniform.rvs(loc=0, scale=1, size=in_dim)
-			d = np.zeros(shape=(1, in_dim), dtype=float)
-
-			for i in range(in_dim):
-				d[0, i] = p_min[i] + (p_max[i] - p_min[i])*zu[i]
-
-			pred = self.predict(d)
-			if pred:
-				D = np.vstack((D, d))
-
+		I = np.hstack((np.asarray([np.min(self.X[:, i]) for i in range(in_dim)]).reshape(-1, 1), np.asarray([np.max(self.X[:, i]) for i in range(in_dim)]).reshape(-1, 1)))
+		D = np.zeros((1, in_dim), dtype=float)
+		while D[1:, :].shape[0] < n_points:
+			H = lhd(I, n_points)
+			for i in range(n_points):
+				if self.predict(H[i, :].reshape(1, -1))[0]:
+					D = np.vstack((D, H[i, :]))
+					if D[1:, :].shape[0] == n_points:
+						break
 		return D[1:, :]
 
 	def save(self, name):
 		with open(name + '.pkl', 'wb') as f:
 			pickle.dump(self, f)
-		f.close()
 
-	def plot_accuracy_demo(self, X_test, y_test):
-		score = self.accuracy(X_test, y_test)
-		y_pred = self.predict(X_test)
-		cm = metrics.confusion_matrix(y_test, y_pred)
-		
-		plt.figure(figsize=(9,9))
-		sns.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap = 'Blues_r');
-		plt.ylabel('Actual label');
-		plt.xlabel('Predicted label');
-		all_sample_title = 'Accuracy score: {0}'.format(score)
-		plt.title(all_sample_title, size = 15);
-		plt.show()
+	def load(self, name):
+		with open(name + '.pkl', 'rb') as f:
+			vars = pickle.load(f)
+		self.X = vars.X
+		self.y = vars.y
+		self.scaler = vars.scaler
+		self.cla = vars.cla
