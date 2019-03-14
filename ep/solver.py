@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
 
 class EPSolution:
 	def __init__(self, odesys, model):
@@ -40,17 +39,3 @@ class EPSolution:
 			self.ca = 1e3*Y.y[12, :]			
 		else:
 			print('\n=== Error: unable to reach the steady-state!\n')
-
-	def plot_calcium(self, scene='do_not_show'):
-		plt.plot(self.t, self.ca)
-		if scene == 'show':
-			plt.xlim(self.t[0], self.t[-1])
-			plt.xlabel('Time [ms]')
-			plt.ylabel('Intracellular calcium [$\mu$M]')
-			plt.show()
-
-	def plot_solution(self, index, scene='do_not_show'):
-		plt.plot(self.t, self.Y[index, :])
-		if scene == 'show':
-			plt.xlim(self.t[0], self.t[-1])
-			plt.show()
