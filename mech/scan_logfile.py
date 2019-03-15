@@ -123,3 +123,5 @@ class MECHSolution:
 
 		self.p = [p, ap, z, c1, ca50, kxb, koff, Tref]
 		self.lv_v = [x + lv_v0 for x in lv_dv]
+
+		f.close()
