@@ -1,3 +1,4 @@
+from Historia.shared import design_utils as desu
 import numpy as np
 import pickle
 from scipy.stats import uniform
@@ -5,20 +6,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-
-def lhd(I, n_samp):
-	n_par = I.shape[0]
-	D = np.zeros(shape=(n_samp, n_par))
-	H = np.zeros(shape=(n_samp, n_par))
-	dp = 1./n_samp
-	for j in range(n_par):
-		for i in range(n_samp):
-			a = i*dp
-			D[i, j] = uniform.rvs(loc=a, scale=dp, size=1)
-
-		D[:, j] = np.random.permutation(D[:, j])
-		H[:, j] = I[j, 0] + (I[j, 1] - I[j, 0])*D[:, j]
-	return H
 
 class SVMCla:
 	def __init__(self):
@@ -58,7 +45,7 @@ class SVMCla:
 		I = np.hstack((np.asarray([np.min(self.X[:, i]) for i in range(in_dim)]).reshape(-1, 1), np.asarray([np.max(self.X[:, i]) for i in range(in_dim)]).reshape(-1, 1)))
 		D = np.zeros((1, in_dim), dtype=float)
 		while D[1:, :].shape[0] < n_points:
-			H = lhd(I, n_points)
+			H = desu.lhd_int(I, n_points)
 			for i in range(n_points):
 				if self.predict(H[i, :].reshape(1, -1))[0]:
 					D = np.vstack((D, H[i, :]))
