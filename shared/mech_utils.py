@@ -28,8 +28,8 @@ def extract_features(path_in, dim, path_out):
 			X = np.vstack((X, np.asarray(S.p)))
 			Y = np.vstack((Y, np.asarray(V.f)))
 
-	desu.write_txt(XA, '%f', name_out)
-	desu.write_txt(X, '%f', name_out)
-	desu.write_txt(YA, '%d', name_out)
-	desu.write_txt(Y, '%f', name_out)
+	desu.write_txt(XA, '%f', path_out + '_inputs')
+	desu.write_txt(X, '%f', path_out + '_conly_inputs')
+	desu.write_txt(YA, '%d', path_out + '_outputs')
+	desu.write_txt(Y, '%f', path_out + '_conly_outputs')
 	return
