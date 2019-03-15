@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.stats import uniform
 
-def write_txt(X, name_out):
+def write_txt(X, fmtstr, name_out):
 	with open(name_out + '.txt', 'w'):
-		np.savetxt(f, X, fmt='%f')
+		np.savetxt(f, X, fmt=fmtstr)
 
 def lhd(p0, E, n_samp):
 	pmin = pmax = p0
