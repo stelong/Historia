@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import uniform
 
 def write_txt(X, fmtstr, name_out):
-	with open(name_out + '.txt', 'w'):
+	with open(name_out + '.txt', 'w') as f:
 		np.savetxt(f, X, fmt=fmtstr)
 
 def lhd(p0, E, n_samp):

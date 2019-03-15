@@ -1,6 +1,7 @@
-from Historia.share import design_utils as desu
-from mech import mech_out as glv
-from mech import scan_logfile as slf
+from Historia.shared import design_utils as desu
+from Historia.mech import mech_out as glv
+from Historia.mech import scan_logfile as slf
+import numpy as np
 
 def extract_features(path_in, dim, path_out):
 	XA = np.zeros(shape=(1, 8), dtype=float)
@@ -28,8 +29,8 @@ def extract_features(path_in, dim, path_out):
 			X = np.vstack((X, np.asarray(S.p)))
 			Y = np.vstack((Y, np.asarray(V.f)))
 
-	desu.write_txt(XA, '%f', path_out + '_inputs')
-	desu.write_txt(X, '%f', path_out + '_conly_inputs')
+	desu.write_txt(XA[1:], '%f', path_out + '_inputs')
+	desu.write_txt(X[1:], '%f', path_out + '_conly_inputs')
 	desu.write_txt(YA, '%d', path_out + '_outputs')
-	desu.write_txt(Y, '%f', path_out + '_conly_outputs')
+	desu.write_txt(Y[1:], '%f', path_out + '_conly_outputs')
 	return
