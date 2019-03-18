@@ -5,6 +5,9 @@ def write_txt(X, fmtstr, name_out):
 	with open(name_out + '.txt', 'w') as f:
 		np.savetxt(f, X, fmt=fmtstr)
 
+def read_txt(name_in, dtypestr):
+	return np.loadtxt(name_in + '.txt', dtype=np.dtype(dtypestr))
+
 def lhd(p0, E, n_samp):
 	pmin = pmax = p0
 	n_par = len(p0)
