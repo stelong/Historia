@@ -12,13 +12,13 @@ def extract_features(path_in, dim, path_out):
 
 	for i in range(dim):
 		tag = path_in + str(i+1) + '/output_log.txt'
+		S = slf.MECHSolution(tag)
 		try:
-			S = slf.MECHSolution(tag)
+			S.extract_loginfo()
 		except FileNotFoundError:
-			print('\n=== Logfile not found! Don''t worry about it, I will fix everything for you.')
+			print('\n=== Logfile not found! Don\'t worry about it, I will fix everything for you.')
 			continue
 
-		S.extract_loginfo()
 		XA = np.vstack((XA, np.asarray(S.p)))
 
 		V = glv.LeftVentricle()
@@ -33,4 +33,27 @@ def extract_features(path_in, dim, path_out):
 	desu.write_txt(X[1:], '%f', path_out + '_conly_inputs')
 	desu.write_txt(YA, '%d', path_out + '_outputs')
 	desu.write_txt(Y[1:], '%f', path_out + '_conly_outputs')
+	return
+
+def extract_features_xhm(path_in, dim, path_out):
+	X = np.zeros(shape=(1, 8), dtype=float)
+	Y = np.zeros(shape=(1, 11), dtype=float)
+
+	for i in range(dim):
+		tag = path_in + str(i+1) + '/output_log.txt'
+		S = slf.MECHSolution(tag)
+		try:
+			S.extract_loginfo()
+		except FileNotFoundError:
+			continue
+
+		V = glv.LeftVentricle()
+		V.get_lvfeatures(S, 2)
+
+		if V.conv:
+			X = np.vstack((X, np.asarray(S.p)))
+			Y = np.vstack((Y, np.asarray(V.f)))
+
+	desu.write_txt(X[1:], '%f', path_out + '_in')
+	desu.write_txt(Y[1:], '%f', path_out + '_out')
 	return
