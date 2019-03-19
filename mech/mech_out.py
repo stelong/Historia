@@ -19,7 +19,10 @@ class LeftVentricle:
 
 			if self.conv:
 				M1 = isl_ranges(np.where(np.asarray(M.phase) == 1)[0], cp[0])
-				M3 = isl_ranges(np.where(np.asarray(M.phase) == 3)[0], cp[2])
+				v = np.where(np.asarray(M.phase) == 3)[0]
+				if v[-1] != v[-2] + 1:
+					v = v[:-1]
+				M3 = isl_ranges(v, cp[2])
 
 				ind = np.sort(np.concatenate((np.reshape(M1, cp[0]*2), np.reshape(M3, cp[2]*2)), axis=0))
 				ind_r = ind[-6:-1]
