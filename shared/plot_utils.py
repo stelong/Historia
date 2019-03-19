@@ -33,6 +33,22 @@ def plot_pairwise(Xdata, xlabels):
 	plt.show()
 	return
 
+def plot_obs_vs_pred(X_test, Y_true, Y_pred, xlabels, ylabels):
+	sample_dim = X_test.shape[0]
+	in_dim = X_test.shape[1]
+	out_dim = Y_true.shape[1]
+	fig, axes = plt.subplots(nrows=out_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(16, 16))                   
+	for i, axis in enumerate(axes.flatten()):
+		axis.scatter(X_test[:, i % in_dim], Y_true[:, i // in_dim], c='b')
+		axis.scatter(X_test[:, i % in_dim], Y_pred[:, i // in_dim], c='r')
+		if i // in_dim == out_dim - 1:
+			axis.set_xlabel(xlabels[i % in_dim])
+		if i % in_dim == 0:
+			axis.set_ylabel(ylabels[i // in_dim])
+	plt.suptitle('Sample dimension = {} points'.format(sample_dim))
+	plt.show()
+	return
+
 #-----------------------------------
 
 # import matplotlib.gridspec as grsp
