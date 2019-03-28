@@ -1,9 +1,17 @@
 import numpy as np
 from scipy.stats import uniform
 
+def read_labels(name_in):
+	labels = []
+	with open(name_in + '.txt', 'r') as f:
+		for line in f:
+			labels.append(line.replace('\n', ''))
+	return labels
+
 def write_txt(X, fmtstr, name_out):
 	with open(name_out + '.txt', 'w') as f:
 		np.savetxt(f, X, fmt=fmtstr)
+	return
 
 def read_txt(name_in, dtypestr):
 	return np.loadtxt(name_in + '.txt', dtype=np.dtype(dtypestr))
