@@ -7,11 +7,40 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 	fig, axes = plt.subplots(nrows=out_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(16, 16))                   
 	for i, axis in enumerate(axes.flatten()):
 		axis.scatter(Xdata[:, i % in_dim], Ydata[:, i // in_dim])
+		inf = min(Xdata[:, i % in_dim])
+		sup = max(Xdata[:, i % in_dim])
+		mean = 0.5*(inf+sup)
+		delta = sup-mean
 		if i // in_dim == out_dim - 1:
 			axis.set_xlabel(xlabels[i % in_dim])
+			axis.set_xlim(left=inf-0.3*delta, right=sup+0.3*delta)
+			axis.ticklabel_format(axis='x', style='sci', scilimits=(0, 0))
 		if i % in_dim == 0:
 			axis.set_ylabel(ylabels[i // in_dim])
 	plt.suptitle('Sample dimension = {} points'.format(sample_dim))
+	plt.show()
+	return
+
+def plot_overlapping_d(Xdata1, Ydata1, Xdata2, Ydata2, xlabels, ylabels):
+	sample_dim1 = Xdata1.shape[0]
+	sample_dim2 = Xdata2.shape[0]
+	in_dim = Xdata1.shape[1]
+	out_dim = Ydata1.shape[1]
+	fig, axes = plt.subplots(nrows=out_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(16, 16))                   
+	for i, axis in enumerate(axes.flatten()):
+		axis.scatter(Xdata1[:, i % in_dim], Ydata1[:, i // in_dim], c='steelblue')
+		axis.scatter(Xdata2[:, i % in_dim], Ydata2[:, i // in_dim], c='lightsteelblue')
+		inf = min(Xdata1[:, i % in_dim])
+		sup = max(Xdata1[:, i % in_dim])
+		mean = 0.5*(inf+sup)
+		delta = sup-mean
+		if i // in_dim == out_dim - 1:
+			axis.set_xlabel(xlabels[i % in_dim])
+			axis.set_xlim(left=inf-0.3*delta, right=sup+0.3*delta)
+			axis.ticklabel_format(axis='x', style='sci', scilimits=(0, 0))
+		if i % in_dim == 0:
+			axis.set_ylabel(ylabels[i // in_dim])
+	plt.suptitle('Sample dimension = {} points'.format(sample_dim1))
 	plt.show()
 	return
 
