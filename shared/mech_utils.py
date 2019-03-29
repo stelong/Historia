@@ -22,7 +22,7 @@ def extract_features(path_in, dim, path_out):
 		XA = np.vstack((XA, np.asarray(S.p)))
 
 		V = glv.LeftVentricle()
-		V.get_lvfeatures(S, 2)
+		V.get_lvfeatures(S, 4)
 		YA.append(V.conv)
 
 		if V.conv:

@@ -20,23 +20,27 @@ def restrict_kth_comp(data, k, ib, ub):
 			l.append(i)
 	return l
 
-def whereq_whernot(M, SM):
-	l = []
+def find_start_seq(index, feat_dim):
 	i = 0
-	while i < SM.shape[0]:
-		for j in range(M.shape[0]):
-			if not np.sum(SM[i, :] - M[j, :]):
-				l.append(j)
-				i += 1
-				break
-	return l, diff(range(M.shape[0]), l)
+	while i < len(index):
+		if index[i:8+i] == list(range(feat_dim)):
+			return i
+		else:
+			i += 1
+	return
 
-
-def whereq_whernot_b(M, SM): # PROBABLY A BUG IN NPWHERE
+def whereq_whernot(X, SX):
+	feat_dim = X.shape[1]	
 	l = []
-	for i in range(SM.shape[0]):
-		l.append(np.where(M == SM[i, :])[0][0])
-	return l, diff(range(M.shape[0]), l)
+	for i in range(SX.shape[0]):
+		index = np.where(X == SX[i, :])
+		if len(list(index[1])) > 8:
+			l.append(index[0][find_start_seq(list(index[1]), feat_dim)])
+		else:
+			l.append(index[0][0])
+	nl = diff(range(X.shape[0]), l)
+	nl.sort()
+	return l, nl
 
 def filter_zscore(X):
 	samp_dim = X.shape[0]

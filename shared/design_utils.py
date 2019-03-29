@@ -1,13 +1,6 @@
 import numpy as np
 from scipy.stats import uniform
 
-def read_labels(name_in):
-	labels = []
-	with open(name_in + '.txt', 'r') as f:
-		for line in f:
-			labels.append(line.replace('\n', ''))
-	return labels
-
 def write_txt(X, fmtstr, name_out):
 	with open(name_out + '.txt', 'w') as f:
 		np.savetxt(f, X, fmt=fmtstr)
@@ -15,6 +8,13 @@ def write_txt(X, fmtstr, name_out):
 
 def read_txt(name_in, dtypestr):
 	return np.loadtxt(name_in + '.txt', dtype=np.dtype(dtypestr))
+
+def read_labels(name_in):
+	labels = []
+	with open(name_in + '.txt', 'r') as f:
+		for line in f:
+			labels.append(line.replace('\n', ''))
+	return labels
 
 def lhd(p0, E, n_samp):
 	pmin = pmax = p0
@@ -66,3 +66,7 @@ def putlab(X, name_out):
 				f.write('{} {:g} '.format(labels[j], X[i, j]))
 			f.write('\n')
 	return
+
+def get_minmax(X):
+	feat_dim = X.shape[1]
+	return np.hstack((np.asarray([np.min(X[:, i]) for i in range(feat_dim)]).reshape(-1, 1), np.asarray([np.max(X[:, i]) for i in range(feat_dim)]).reshape(-1, 1)))
