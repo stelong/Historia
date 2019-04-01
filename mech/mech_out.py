@@ -1,5 +1,6 @@
 import numpy as np
 from Historia.shared import math_utils as mu
+import matplotlib.pyplot as plt
 
 class LeftVentricle:
 	def __init__(self):
@@ -46,25 +47,16 @@ class LeftVentricle:
 				ind_r = ind[-9:]
 				interval = list(range(ind_r[0], ind_r[-1]))
 
-				print(interval)
-
 				self.t = [S.t[i] for i in interval]
 				self.phase = [S.phase[i] for i in interval]
 				self.lv_p = [S.lv_p[i] for i in interval]
 				self.lv_v = [S.lv_v[i] for i in interval]
 
-				print(self.phase)
-
 				t1 = S.t[ind_r[0]]
 				t2 = S.t[ind_r[1]]
-				t3 = S.t[ind_r[2]]
-				t4 = S.t[ind_r[3]]
-				t5 = S.t[ind_r[4]]
-
-				print(len(self.t))
-				print(len(self.lv_v))
-				print(len(self.lv_p))
-				print(len(self.phase))
+				t3 = S.t[ind_r[4]]
+				t4 = S.t[ind_r[5]]
+				t5 = S.t[ind_r[7]]
 
 				dP = mu.der(self.t, self.lv_p)
 				m = max(self.lv_p)
@@ -79,7 +71,7 @@ class LeftVentricle:
 				p4 = t2 - t1           # IVCT   (isovolumetric contraction time)
 				p5 = t3 - t2           # ET     (ejection time)
 				p6 = t4 - t3           # IVRT   (isovolumetric relaxation time)
-				p7 = t5 - t4           # Tdiast (diastolic time)
+				p7 = t5 - t3           # Tdiast (diastolic time)
 
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
