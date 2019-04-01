@@ -23,7 +23,7 @@ def restrict_kth_comp(data, k, ib, ub):
 def find_start_seq(index, feat_dim):
 	i = 0
 	while i < len(index):
-		if index[i:8+i] == list(range(feat_dim)):
+		if index[i:feat_dim+i] == list(range(feat_dim)):
 			return i
 		else:
 			i += 1
@@ -34,7 +34,7 @@ def whereq_whernot(X, SX):
 	l = []
 	for i in range(SX.shape[0]):
 		index = np.where(X == SX[i, :])
-		if len(list(index[1])) > 8:
+		if len(list(index[1])) > feat_dim:
 			l.append(index[0][find_start_seq(list(index[1]), feat_dim)])
 		else:
 			l.append(index[0][0])
@@ -51,5 +51,5 @@ def filter_zscore(X):
 		z = np.abs(zscore(X[:, j]))
 		L.append(list(np.where(z > 3)[0]))
 	l = union_many(L)
-	l.sort()
-	return l
+	_, nl = whereq_whernot(X, X[l])
+	return l, nl

@@ -1,5 +1,16 @@
 import numpy as np
 
+def mare(Y_true, Y_pred):
+	sample_dim = Y_true.shape[0]
+	out_dim = Y_true.shape[1]
+	if out_dim == 1:
+		return np.linalg.norm((Y_pred - Y_true)/Y_true, ord=1)/sample_dim
+	else:
+		e = np.zeros((sample_dim,), dtype=float)
+		for i in range(sample_dim):
+			e[i] = np.linalg.norm((Y_pred[i, :] - Y_true[i, :])/Y_true[i, :], ord=1)/out_dim
+		return np.sum(e)/sample_dim
+
 def centroid(M):
 	c = []
 	for j in range(M.shape[1]):

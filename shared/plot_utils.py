@@ -1,3 +1,4 @@
+import matplotlib.gridspec as grsp
 import matplotlib.pyplot as plt
 
 def plot_dataset(Xdata, Ydata, xlabels, ylabels):
@@ -14,7 +15,7 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 		if i // in_dim == out_dim - 1:
 			axis.set_xlabel(xlabels[i % in_dim])
 			axis.set_xlim(left=inf-0.3*delta, right=sup+0.3*delta)
-			axis.ticklabel_format(axis='x', style='sci', scilimits=(0, 0))
+			# axis.ticklabel_format(axis='x', style='sci', scilimits=(0, 0))
 		if i % in_dim == 0:
 			axis.set_ylabel(ylabels[i // in_dim])
 	plt.suptitle('Sample dimension = {} points'.format(sample_dim))
@@ -68,19 +69,41 @@ def plot_obs_vs_pred(X_test, Y_true, Y_pred, xlabels, ylabels):
 	out_dim = Y_true.shape[1]
 	fig, axes = plt.subplots(nrows=out_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(16, 16))                   
 	for i, axis in enumerate(axes.flatten()):
-		axis.scatter(X_test[:, i % in_dim], Y_true[:, i // in_dim], c='b')
-		axis.scatter(X_test[:, i % in_dim], Y_pred[:, i // in_dim], c='r')
+		axis.scatter(X_test[:, i % in_dim], Y_true[:, i // in_dim], facecolors='none', edgecolor='steelblue')
+		axis.scatter(X_test[:, i % in_dim], Y_pred[:, i // in_dim], facecolors='none', edgecolor='brown')
 		if i // in_dim == out_dim - 1:
 			axis.set_xlabel(xlabels[i % in_dim])
 		if i % in_dim == 0:
 			axis.set_ylabel(ylabels[i // in_dim])
-	plt.suptitle('Sample dimension = {} points'.format(sample_dim))
+	plt.figlegend(labels=['Observed LV features', 'Enforced LV features'], loc='upper center')
 	plt.show()
 	return
 
-#-----------------------------------
+def plot_pvloop(S, RS):
+	gs = grsp.GridSpec(2, 2)
+	fig = plt.figure(figsize=(14, 8))
+	for i in range(2):
+		ax = fig.add_subplot(gs[i, 0])
+		if i == 0:
+			ax.plot(RS.t, RS.lv_v, color='b', linewidth=1.0)
+			ax.plot(S.t, S.lv_v, color='b', linewidth=2.5)
+			plt.xlim(RS.t[0], S.t[-1])
+			plt.xlabel('Time [ms]')
+			plt.ylabel('LVV [$\mu$L]')
+		else:
+			ax.plot(RS.t, RS.lv_p, color='b', linewidth=1.0)
+			ax.plot(S.t, S.lv_p, color='b', linewidth=2.5)
+			plt.xlim(RS.t[0], S.t[-1])
+			plt.xlabel('Time [ms]')
+			plt.ylabel('LVP [kPa]')
 
-# import matplotlib.gridspec as grsp
+	ax = fig.add_subplot(gs[:, 1])
+	ax.plot(S.lv_v, S.lv_p, color='b', linewidth=2.5)
+	plt.xlabel('Volume [$\mu$L]')
+	plt.ylabel('Pressure [kPa]')
+	plt.show()
+
+#----------------------
 # import seaborn as sns
 # from sklearn import metrics
 
@@ -164,29 +187,3 @@ def plot_obs_vs_pred(X_test, Y_true, Y_pred, xlabels, ylabels):
 # plt.xlabel('Time')
 # plt.ylabel('Left ventricular pressure')
 # plt.savefig('lvp.pdf', format='pdf', dpi=1000)
-
-#----------------------------------------------------
-
-# def plot(self, M):
-# 	gs = grsp.GridSpec(2, 2)
-# 	fig = plt.figure(figsize=(14, 8))
-# 	for i in range(2):
-# 		ax = fig.add_subplot(gs[i, 0])
-# 		if i == 0:
-# 			ax.plot(M.t, M.lv_v, color='b', linewidth=1.0)
-# 			ax.plot(self.t, self.lv_v, color='b', linewidth=2.5)
-# 			plt.xlim(M.t[0], self.t[-1])
-# 			plt.xlabel('Time [ms]')
-# 			plt.ylabel('LVV [$\mu$L]')
-# 		else:
-# 			ax.plot(M.t, M.lv_p, color='b', linewidth=1.0)
-# 			ax.plot(self.t, self.lv_p, color='b', linewidth=2.5)
-# 			plt.xlim(M.t[0], self.t[-1])
-# 			plt.xlabel('Time [ms]')
-# 			plt.ylabel('LVP [kPa]')
-
-# 		ax = fig.add_subplot(gs[:, 1])
-# 		ax.plot(self.lv_v, self.lv_p, color='b', linewidth=2.5)
-# 		plt.xlabel('Volume [$\mu$L]')
-# 		plt.ylabel('Pressure [kPa]')
-# 		plt.show()
