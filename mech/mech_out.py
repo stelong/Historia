@@ -10,34 +10,61 @@ class LeftVentricle:
 		self.lv_p = []
 		self.f = []
 
-	def get_lvfeatures(self, M, nc):
-		if M.conv:
-			cp = ph_counter(M.phase)
+	def get_lvfeatures(self, S, nc):
+		if S.conv:
+			v = []
+			if S.phase[0] != S.phase[1]:
+				v = S.phase[1:]
+			elif S.phase[-2] != S.phase[-1]:
+				v = S.phase[:-1]
+			else:
+				v = S.phase
+			
+			cp = ph_counter(v)
 
 			if cp[3] >= nc + 1:
 				self.conv = 1
 
 			if self.conv:
-				M1 = isl_ranges(np.where(np.asarray(M.phase) == 1)[0], cp[0])
-				v = np.where(np.asarray(M.phase) == 3)[0]
-				if v[-1] != v[-2] + 1:
-					v = v[:-1]
-				M3 = isl_ranges(v, cp[2])
+				M = []
+				for i in range(4):
+					M.append(isl_ranges(np.where(np.asarray(v) == i+1)[0], cp[i]))
 
-				ind = np.sort(np.concatenate((np.reshape(M1, cp[0]*2), np.reshape(M3, cp[2]*2)), axis=0))
-				ind_r = ind[-6:-1]
+				ind = np.sort(np.concatenate([np.reshape(M[i], cp[i]*2) for i in range(4)], axis=0))
+	
+				last = np.argmax([M[i][-1, 1] for i in range(4)])
+				if last == 3:
+					rmv = 7
+				elif last == 2:
+					rmv = 5
+				elif last == 1:
+					rmv = 3
+				else:
+					rmv = 1
+
+				ind = ind[:-rmv]
+				ind_r = ind[-9:]
 				interval = list(range(ind_r[0], ind_r[-1]))
 
-				self.t = [M.t[i] for i in interval]
-				self.phase = [M.phase[i] for i in interval]
-				self.lv_p = [M.lv_p[i] for i in interval]
-				self.lv_v = [M.lv_v[i] for i in interval]
+				print(interval)
 
-				t1 = M.t[ind_r[0]]
-				t2 = M.t[ind_r[1]]
-				t3 = M.t[ind_r[2]]
-				t4 = M.t[ind_r[3]]
-				t5 = M.t[ind_r[4]]
+				self.t = [S.t[i] for i in interval]
+				self.phase = [S.phase[i] for i in interval]
+				self.lv_p = [S.lv_p[i] for i in interval]
+				self.lv_v = [S.lv_v[i] for i in interval]
+
+				print(self.phase)
+
+				t1 = S.t[ind_r[0]]
+				t2 = S.t[ind_r[1]]
+				t3 = S.t[ind_r[2]]
+				t4 = S.t[ind_r[3]]
+				t5 = S.t[ind_r[4]]
+
+				print(len(self.t))
+				print(len(self.lv_v))
+				print(len(self.lv_p))
+				print(len(self.phase))
 
 				dP = mu.der(self.t, self.lv_p)
 				m = max(self.lv_p)
