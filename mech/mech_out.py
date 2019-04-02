@@ -1,6 +1,6 @@
-import numpy as np
-from Historia.shared import math_utils as mu
+from Historia.shared import math_utils as matu
 import matplotlib.pyplot as plt
+import numpy as np
 
 class LeftVentricle:
 	def __init__(self):
@@ -52,26 +52,22 @@ class LeftVentricle:
 				self.lv_p = [S.lv_p[i] for i in interval]
 				self.lv_v = [S.lv_v[i] for i in interval]
 
-				t1 = S.t[ind_r[0]]
-				t2 = S.t[ind_r[1]]
-				t3 = S.t[ind_r[4]]
-				t4 = S.t[ind_r[5]]
-				t5 = S.t[ind_r[7]]
+				time = [S.t[ind_r[i]] for i in range(len(ind_r))]
 
-				dP = mu.der(self.t, self.lv_p)
+				dP = matu.der(self.t, self.lv_p)
 				m = max(self.lv_p)
-				ind_m = list(self.lv_p).index(m)
+				ind_m = self.lv_p.index(m)
 
 				ps1 = list(np.where(np.asarray(self.phase) == 1)[0])
 				lvv1 = [self.lv_v[i] for i in ps1]
 
-				p1 = max(lvv1)         # EDV    (end-diastolic volume)
-				p2 = min(self.lv_v)    # ESV    (end-systolic volume)
-				p3 = 100*(p1 - p2)/p1  # EF     (ejection fraction)
-				p4 = t2 - t1           # IVCT   (isovolumetric contraction time)
-				p5 = t3 - t2           # ET     (ejection time)
-				p6 = t4 - t3           # IVRT   (isovolumetric relaxation time)
-				p7 = t5 - t3           # Tdiast (diastolic time)
+				p1 = max(lvv1)          # EDV    (end-diastolic volume)
+				p2 = min(self.lv_v)     # ESV    (end-systolic volume)
+				p3 = 100*(p1 - p2)/p1   # EF     (ejection fraction)
+				p4 = time[1] - time[0]  # IVCT   (isovolumetric contraction time)
+				p5 = time[3] - time[2]  # ET     (ejection time)
+				p6 = time[5] - time[4]  # IVRT   (isovolumetric relaxation time)
+				p7 = time[7] - time[4]  # Tdiast (diastolic time)
 
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
