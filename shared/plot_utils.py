@@ -1,5 +1,7 @@
 import matplotlib.gridspec as grsp
 import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import metrics
 
 def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 	sample_dim = Xdata.shape[0]
@@ -63,6 +65,31 @@ def plot_pairwise(Xdata, xlabels):
 	plt.show()
 	return
 
+def plot_pairwise_red(X, M, c, xlabels, rat):
+	perc = 0.87
+	c1 = ['lightsteelblue', 'rosybrown']
+	c2 = ['steelblue', 'brown']
+	q = 1
+	if rat == 'sham':
+		q = 0
+	in_dim = X.shape[1]
+	fig, axes = plt.subplots(nrows=in_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(16, 16))
+	for i, ax in enumerate(axes.flatten()):
+		sns.scatterplot(ax=ax, x=X[:, i % in_dim], y=X[:, i // in_dim], color=c1[q], edgecolor=c1[q])
+		sns.scatterplot(ax=ax, x=M[:, i % in_dim], y=M[:, i // in_dim], color=c2[q], edgecolor=c2[q])
+		sns.scatterplot(ax=ax, x=c[:, i % in_dim], y=c[:, i // in_dim], color='k', edgecolor='k')
+		if i // in_dim == in_dim - 1:
+			ax.set_xlabel(xlabels[i % in_dim])
+		if i % in_dim == 0:
+			ax.set_ylabel(xlabels[i // in_dim])
+	for i in range(in_dim):
+		for j in range(in_dim):
+			if j > i:
+				axes[i, j].set_visible(False)
+	plt.figlegend(labels=['initial parameter space', 'after wave 1', 'centroid'], loc='upper center')
+	plt.suptitle('Percentage of space reduction = {} %'.format(100-perc), x=0.1, y=0.95, ha='left', va='top')
+	plt.show()
+
 def plot_obs_vs_pred(X_test, Y_true, Y_pred, xlabels, ylabels):
 	sample_dim = X_test.shape[0]
 	in_dim = X_test.shape[1]
@@ -103,16 +130,13 @@ def plot_pvloop(S, RS):
 	plt.ylabel('Pressure [kPa]')
 	plt.show()
 
-#----------------------
-# import seaborn as sns
-# from sklearn import metrics
 
+#-----------------------------------------------------
 # # SVM
 # def plot_accuracy_demo(self, X_test, y_test):
 # 		score = self.accuracy(X_test, y_test)
 # 		y_pred = self.predict(X_test)
 # 		CM = metrics.confusion_matrix(y_test, y_pred)
-		
 # 		plt.figure(figsize=(8, 8))
 # 		sns.heatmap(CM, annot=True, fmt=".3f", linewidths=.5, square=True, cmap='Blues_r')
 # 		plt.xlabel('Predicted label')
@@ -128,7 +152,7 @@ def plot_pvloop(S, RS):
 # 		plt.xlabel('Time [ms]')
 # 		plt.ylabel('Intracellular calcium [$\mu$M]')
 # 		plt.show()
-
+#
 # def plot_solution(self, index, scene='do_not_show'):
 # 	plt.plot(self.t, self.Y[index, :])
 # 	if scene == 'show':
@@ -151,40 +175,39 @@ def plot_pvloop(S, RS):
 # 		plt.ylabel('Intracellular calcium [$\mu$M]')
 # 		plt.show()
 
-# # MECH_UTILS
-
-#plt.plot(S.t, S.lv_v, c='k', zorder=1)
-				# plt.axvline(x=t2, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.axvline(x=t3, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.axvline(x=t4, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.axvline(x=t5, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.scatter(t2, S.lv_v[ind_r[1]], c='r', zorder=3)
-				# plt.scatter(t3, S.lv_v[ind_r[4]], c='r', zorder=3)
-				# plt.scatter(t4, S.lv_v[ind_r[5]], c='r', zorder=3)
-				# plt.scatter(t5, S.lv_v[ind_r[7]], c='r', zorder=3)
-				# plt.xlim(self.t[0], self.t[-1])
-				# plt.ylim(np.min(self.lv_v)-0.1*np.min(self.lv_v), np.max(self.lv_v)+0.15*np.max(self.lv_v))
-				# plt.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
-				# plt.tick_params(axis='y', which='both', left=False, labelleft=False)
-				# plt.xlabel('Time')
-				# plt.ylabel('Left ventricular volume')
-				# plt.show()
+# # MECH_UTILS - LVV
+# plt.plot(S.t, S.lv_v, c='k', zorder=1)
+# plt.axvline(x=t2, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.axvline(x=t3, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.axvline(x=t4, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.axvline(x=t5, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.scatter(t2, S.lv_v[ind_r[1]], c='r', zorder=3)
+# plt.scatter(t3, S.lv_v[ind_r[4]], c='r', zorder=3)
+# plt.scatter(t4, S.lv_v[ind_r[5]], c='r', zorder=3)
+# plt.scatter(t5, S.lv_v[ind_r[7]], c='r', zorder=3)
+# plt.xlim(self.t[0], self.t[-1])
+# plt.ylim(np.min(self.lv_v)-0.1*np.min(self.lv_v), np.max(self.lv_v)+0.15*np.max(self.lv_v))
+# plt.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
+# plt.tick_params(axis='y', which='both', left=False, labelleft=False)
+# plt.xlabel('Time')
+# plt.ylabel('Left ventricular volume')
+# plt.show()
 # plt.savefig('lvv.pdf', format='pdf', dpi=1000)
 
-#----------------------------------------------------
-
+# # MECH_UTILS - LVP
 # plt.plot(S.t, S.lv_p, c='k', zorder=1)
-				# plt.axvline(x=self.t[ind_m], c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.axhline(y=m, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.plot(self.t, [q4*(self.t[i]-self.t[np.argmin(dP)])+self.lv_p[np.argmin(dP)] for i in range(len(self.t))], c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.plot(self.t, [q3*(self.t[i]-self.t[np.argmax(dP)])+self.lv_p[np.argmax(dP)] for i in range(len(self.t))], c='r', linestyle='dashed', linewidth=0.8, zorder=2)
-				# plt.scatter(self.t[ind_m], m, c='r', zorder=3)
-				# plt.scatter(self.t[np.argmin(dP)], self.lv_p[np.argmin(dP)], c='r', zorder=3)
-				# plt.scatter(self.t[np.argmax(dP)], self.lv_p[np.argmax(dP)], c='r', zorder=3)
-				# plt.xlim(self.t[0], S.t[-400])
-				# plt.ylim(-0.5, m+0.28*m)
-				# plt.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
-				# plt.tick_params(axis='y', which='both', left=False, labelleft=False)
-				# plt.xlabel('Time')
-				# plt.ylabel('Left ventricular pressure')
+# plt.axvline(x=self.t[ind_m], c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.axhline(y=m, c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.plot(self.t, [q4*(self.t[i]-self.t[np.argmin(dP)])+self.lv_p[np.argmin(dP)] for i in range(len(self.t))], c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.plot(self.t, [q3*(self.t[i]-self.t[np.argmax(dP)])+self.lv_p[np.argmax(dP)] for i in range(len(self.t))], c='r', linestyle='dashed', linewidth=0.8, zorder=2)
+# plt.scatter(self.t[ind_m], m, c='r', zorder=3)
+# plt.scatter(self.t[np.argmin(dP)], self.lv_p[np.argmin(dP)], c='r', zorder=3)
+# plt.scatter(self.t[np.argmax(dP)], self.lv_p[np.argmax(dP)], c='r', zorder=3)
+# plt.xlim(self.t[0], S.t[-400])
+# plt.ylim(-0.5, m+0.28*m)
+# plt.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
+# plt.tick_params(axis='y', which='both', left=False, labelleft=False)
+# plt.xlabel('Time')
+# plt.ylabel('Left ventricular pressure')
+# plt.show()
 # plt.savefig('lvp.pdf', format='pdf', dpi=1000)
