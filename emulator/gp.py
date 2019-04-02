@@ -7,17 +7,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures
 
-def mare(Y_true, Y_pred):
-	sample_dim = Y_true.shape[0]
-	out_dim = Y_true.shape[1]
-	if out_dim == 1:
-		return np.linalg.norm((Y_pred - Y_true)/Y_true, ord=1)/sample_dim
-	else:
-		e = np.zeros((sample_dim,), dtype=float)
-		for i in range(sample_dim):
-			e[i] = np.linalg.norm((Y_pred[i, :] - Y_true[i, :])/Y_true[i, :], ord=1)/out_dim
-		return np.sum(e)/sample_dim
-
 class GPEmul:
 	def __init__(self):
 		self.X = []
@@ -56,9 +45,6 @@ class GPEmul:
 		else: 
 			res, std = self.gp.predict(X_new, return_std=True)
 			return self.mean.predict(X_new) + res, std
-
-	def accuracy(self, Y_true, Y_pred):
-		return mare(Y_true, Y_pred)
 
 	def save(self, name):
 		with open(name + '.pkl', 'wb') as f:
