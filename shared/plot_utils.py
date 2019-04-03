@@ -1,7 +1,23 @@
 import matplotlib.gridspec as grsp
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 from sklearn import metrics
+
+def interp_col(color, n):
+	"""Linearly interpolate a color.
+	Inputs:
+		- color: list with two elements:
+			color[0] = lightest color variant (RGB-triplet in [0, 255])
+			color[1] = darkest color variant (RGB-triplet in [0, 255])
+		- n: number of desired output colors (n > 2).
+	Output:
+		- lsc: list of n linearly scaled colors.
+	"""
+	color = [[color[i][j]/255 for j in range(3)] for i in range(2)]
+	c = [np.interp(list(range(1, n+1)), [1, n], [color[0][i], color[1][i]]) for i in range(3)]
+	lsc = [[c[0][i], c[1][i], c[2][i]] for i in range(n)]
+	return lsc
 
 def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 	sample_dim = Xdata.shape[0]
