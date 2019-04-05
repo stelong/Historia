@@ -106,6 +106,26 @@ def plot_pairwise_red(X, M, c, xlabels, rat):
 	plt.suptitle('Percentage of space reduction = {} %'.format(100-perc), x=0.1, y=0.95, ha='left', va='top')
 	plt.show()
 
+def plot_pairwise_waves(XL, colors, xlabels):
+	mat_dim = len(XL)
+	in_dim = XL[0].shape[1]
+	fig, axes = plt.subplots(nrows=in_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(20, 11.3))
+	for i, ax in enumerate(axes.flatten()):
+		for k in range(mat_dim):
+			sns.scatterplot(ax=ax, x=XL[k][:, i % in_dim], y=XL[k][:, i // in_dim], color=colors[k], edgecolor=colors[k])
+
+		if i // in_dim == in_dim - 1:
+			ax.set_xlabel(xlabels[i % in_dim])
+		if i % in_dim == 0:
+			ax.set_ylabel(xlabels[i // in_dim])
+	for i in range(in_dim):
+		for j in range(in_dim):
+			if j > i:
+				axes[i, j].set_visible(False)
+	plt.figlegend(labels=['wave {}'.format(k) for k in range(mat_dim)], loc='upper center')
+	plt.suptitle('Percentages of sequential space reduction = {} %'.format([np.round(100*(1-XL[i].shape[0]/XL[0].shape[0]), decimals=2) for i in range(1, mat_dim)]), x=0.1, y=0.95, ha='left', va='top')
+	plt.show()
+
 def plot_obs_vs_pred(X_test, Y_true, Y_pred, xlabels, ylabels):
 	sample_dim = X_test.shape[0]
 	in_dim = X_test.shape[1]
