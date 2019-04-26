@@ -4,7 +4,7 @@ from Historia.mech import scan_logfile as slf
 import numpy as np
 
 def extract_features(path_in, dim, path_out):
-	nc = 2
+	nc = 4
 	XA = np.zeros(shape=(1, 8), dtype=float)
 	X = np.zeros(shape=(1, 8), dtype=float)
 
