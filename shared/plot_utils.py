@@ -164,6 +164,7 @@ def plot_pvloop(S, RS):
 	ax.plot(S.lv_v, S.lv_p, color='b', linewidth=2.5)
 	plt.xlabel('Volume [$\mu$L]')
 	plt.ylabel('Pressure [kPa]')
+	# plt.savefig('pv_loop_sham.pdf', format='pdf', dpi=1000)
 	plt.show()
 
 
