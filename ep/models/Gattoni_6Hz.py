@@ -1,154 +1,204 @@
 import numpy as np
 
-def compute_algebraics(t, y, c):
-    size_a = 85
-    a = np.zeros(shape=(size_a,), dtype=float)
+def piecewise(condition, case1, case2):
+	if condition:
+		return case1
+	else:
+		return case2
 
-    a[8] = 1.00000/(1.00000+np.exp((y[0]+87.5000)/10.3000))
-    a[1] = 1.00000/(1.00000+np.exp((y[0]+45.0000)/-6.50000))
-    a[11] = 1.36000/((0.320000*(y[0]+47.1300))/(1.00000-np.exp(-0.100000*(y[0]+47.1300)))+0.0800000*np.exp(-y[0]/11.0000))
-    a[2] = 1.00000/(1.00000+np.exp((y[0]+76.1000)/6.07000))
-    
-    if y[0] >= -40.0000:
-        a[12] = 0.453700*(1.00000+np.exp(-(y[0]+10.6600)/11.1000))
-    else:
-        a[12] = 3.49000/(0.135000*np.exp(-(y[0]+80.0000)/6.80000)+3.56000*np.exp(0.0790000*y[0])+310000.*np.exp(0.350000*y[0]))
-    
-    a[3] = 1.00000/(1.00000+np.exp((y[0]+76.1000)/6.07000))
-    
-    if y[0] >= -40.0000:
-        a[13] = (11.6300*(1.00000+np.exp(-0.100000*(y[0]+32.0000))))/np.exp(-2.53500e-07*y[0])
-    else:
-        a[13] = 3.49000/(((y[0]+37.7800)/(1.00000+np.exp(0.311000*(y[0]+79.2300))))*(-127140.*np.exp(0.244400*y[0])-3.47400e-05*np.exp(-0.0439100*y[0]))+(0.121200*np.exp(-0.0105200*y[0]))/(1.00000+np.exp(-0.137800*(y[0]+40.1400))))
+def initConsts(parameters):
+	sizeConsts = 71
+	constants = np.zeros((sizeConsts,), dtype=float)
 
-    a[14] = 100.000/(45.1600*np.exp(0.0357700*(y[0]+50.0000))+98.9000*np.exp(-0.100000*(y[0]+38.0000)))
-    a[4] = 1.00000/(1.00000+np.exp((y[0]+10.6000)/-11.4200))
-    a[15] = 20.0000*np.exp(-(np.power((y[0]+70.0000)/25.0000, 2.00000)))+35.0000
-    a[5] = 1.00000/(1.00000+np.exp((y[0]+45.3000)/6.88410))
-    a[16] = 1300.00*np.exp(-(np.power((y[0]+70.0000)/30.0000, 2.00000)))+35.0000
-    a[6] = 1.00000/(1.00000+np.exp((y[0]+45.3000)/6.88410))
-    a[17] = 10000.0/(45.1600*np.exp(0.0357700*(y[0]+50.0000))+98.9000*np.exp(-0.100000*(y[0]+38.0000)))
-    a[7] = 1.00000/(1.00000+np.exp((y[0]+11.5000)/-11.8200))
-    a[18] = 1000.00/(0.118850*np.exp((y[0]+80.0000)/28.3700)+0.562300*np.exp((y[0]+80.0000)/-14.1900))
-    a[9] = 1.00000/(1.00000+np.exp((y[0]+138.600)/10.4800))
-    a[23] = ((c[0]*c[1])/c[2])*np.log(c[15]/y[5])
-    a[24] = c[12]*y[6]*(c[13]*y[7]+c[14]*y[8])*(y[0]-a[23])
-    a[25] = c[16]*y[9]*y[10]*(y[0]-a[23])
-    a[26] = ((0.0480000/(np.exp((y[0]+37.0000)/25.0000)+np.exp((y[0]+37.0000)/-25.0000))+0.0100000)*0.00100000)/(1.00000+np.exp((y[0]-(a[23]+76.7700))/-17.0000))+(c[17]*(y[0]-(a[23]+1.73000)))/((1.00000+np.exp((1.61300*c[2]*(y[0]-(a[23]+1.73000)))/(c[0]*c[1])))*(1.00000+np.exp((c[15]-0.998800)/-0.124000)))
-    a[31] = c[21]*(y[0]-a[23])
-    a[33] = c[23]*(np.power(1.00000+c[24]/y[1], 2.00000))*(1.00000+(c[25]/y[1])*np.exp(((-c[27]*c[2]*y[0])/c[0])/c[1]))+(np.power(1.00000+c[28]/c[15], 2.00000))*(1.00000+(c[11]/c[26])*np.exp(((-(1.00000-c[27])*c[2]*y[0])/c[0])/c[1]))
-    a[34] = (c[22]*(c[23]+1.00000))/a[33]
-    
-    if t-np.floor(t/c[4])*c[4] >= 0.00000 and t-np.floor(t/c[4])*c[4] <= c[5]:
-        a[20] = c[6]
-    else:
-        a[20] = 0.00000
-    
-    a[28] = c[18]*y[11]*c[68]*(y[0]-a[23])
-    a[0] = (c[2]*y[0])/(c[0]*c[1])
-    a[19] = 2.00000*a[0]
-    
-    if np.fabs(a[19]) > 1.00000e-09:
-        a[44] = (y[12]+((c[32]/c[30])*c[29]*a[19]*np.exp(-a[19]))/(1.00000-np.exp(-a[19])))/(1.00000+((c[32]/c[30])*a[19])/(1.00000-np.exp(-a[19])))
-    else:
-        a[44] = (y[12]+(c[32]/c[30])*c[29])/(1.00000+c[32]/c[30])
-    
-    a[46] = (np.power(a[44], 2.00000)+c[47]*(np.power(c[43], 2.00000)))/(c[40]*(np.power(a[44], 2.00000)+np.power(c[43], 2.00000)))
-    a[40] = (np.power(y[12], 2.00000)+c[47]*(np.power(c[43], 2.00000)))/(c[40]*(np.power(y[12], 2.00000)+np.power(c[43], 2.00000)))
-    a[35] = np.exp((y[0]-c[34])/c[35])
-    a[36] = a[35]/(c[37]*(a[35]+1.00000))
-    a[37] = (np.power(y[12], 2.00000))/(c[39]*(np.power(y[12], 2.00000)+np.power(c[43], 2.00000)))
-    a[45] = (np.power(a[44], 2.00000))/(c[39]*(np.power(a[44], 2.00000)+np.power(c[43], 2.00000)))
-    a[52] = (a[36]+c[69])*((c[69]+c[70]+a[45])*(c[70]+a[37])+a[36]*(c[70]+a[45]))
-    a[53] = (a[36]*c[70]*(a[36]+c[69]+c[70]+a[37]))/a[52]
-    a[56] = (c[69]*c[70]*(c[69]+a[36]+c[70]+a[45]))/a[52]
-    a[57] = a[53]*a[46]+a[56]*a[40]
-    a[47] = (c[42]*c[48]*(np.power(a[44], 2.00000)+c[47]*(np.power(c[43], 2.00000))))/(c[40]*(c[48]*(np.power(a[44], 2.00000))+c[47]*(np.power(c[43], 2.00000))))
-    a[41] = (c[42]*c[48]*(np.power(y[12], 2.00000)+c[47]*(np.power(c[43], 2.00000))))/(c[40]*(c[48]*(np.power(y[12], 2.00000))+c[47]*(np.power(c[43], 2.00000))))
-    a[59] = (a[36]*a[47]+c[69]*a[41])/(a[36]+c[69])
-    a[42] = (y[12]+(c[31]/c[30])*y[13])/(1.00000+c[31]/c[30])
-    a[43] = (a[42]*(a[35]+c[45]))/(c[38]*c[44]*(a[35]+1.00000))
-    a[38] = (y[12]*(a[35]+c[45]))/(c[38]*c[44]*(a[35]+1.00000))
-    a[54] = (c[69]*(a[37]*(c[69]+c[70]+a[45])+a[45]*a[36]))/a[52]
-    a[65] = a[54]*a[43]+a[56]*a[38]
-    a[39] = (c[46]*(a[35]+c[45]))/(c[38]*(c[46]*a[35]+c[45]))
-    a[67] = a[39]
-    a[69] = (c[69]*a[38])/(a[36]+c[69])
-    a[71] = a[39]
-    a[73] = ((1.00000-y[14])-y[15])-y[16]
-    a[61] = (c[70]*a[40])/(c[70]+a[37])
-    a[63] = a[41]
-    a[21] = ((c[0]*c[1])/c[2])*np.log(c[11]/y[1])
-    a[22] = c[10]*(np.power(y[2], 3.00000))*y[3]*y[4]*(y[0]-a[21])
-    a[30] = c[20]*(y[0]-a[21])
-    a[74] = (c[53]*(np.exp(c[51]*a[0])*(np.power(y[1], 3.00000))*c[29]-np.exp((c[51]-1.00000)*a[0])*(np.power(c[11], 3.00000))*y[12]))/((np.power(c[11], 3.00000)+np.power(c[49], 3.00000))*(c[29]+c[50])*(1.00000+c[52]*np.exp((c[51]-1.00000)*a[0])))
-    a[75] = a[74]*c[2]*c[8]
-    a[27] = c[18]*y[11]*c[19]*(y[0]-a[21])
-    a[29] = a[27]+a[28]
-    a[77] = (c[56]*y[12])/(c[57]+y[12])
-    a[78] = a[77]*2.00000*c[2]*c[8]
-    
-    if np.fabs(a[19]) > 1.00000e-05:
-        a[51] = (((c[32]*a[19])/(1.00000-np.exp(-a[19])))*((c[29]*np.exp(-a[19])-y[12])+(c[31]/c[30])*(c[29]*np.exp(-a[19])-y[13])))/(1.00000+c[31]/c[30]+((c[32]/c[30])*a[19])/(1.00000-np.exp(a[19])))
-    else:
-        a[51] = (((c[32]*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))*((c[29]*np.exp(-1.00000e-05)-y[12])+(c[31]/c[30])*(c[29]*np.exp(-1.00000e-05)-y[13])))/(1.00000+c[31]/c[30]+((c[32]/c[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))
-    
-    if np.fabs(a[19]) > 1.00000e-05:
-        a[50] = (((c[32]*a[19])/(1.00000-np.exp(-a[19])))*(c[29]*np.exp(-a[19])-y[12]))/(1.00000+((c[32]/c[30])*a[19])/(1.00000-np.exp(-a[19])))
-    else:
-        a[50] = (((c[32]*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))*(c[29]*np.exp(-1.00000e-05)-y[12]))/(1.00000+((c[32]/c[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))
-    
-    a[55] = (a[36]*(a[45]*(a[36]+c[70]+a[37])+a[37]*c[69]))/a[52]
-    a[66] = a[51]*a[55]+a[50]*a[53]
-    a[68] = (a[50]*a[36])/(a[36]+c[69])
-    a[70] = ((y[14]*a[66]+y[15]*a[68])*c[33])/c[7]
-    a[72] = -a[70]*2.00000*c[2]*c[8]
-    a[79] = ((c[0]*c[1])/(2.00000*c[2]))*np.log(c[29]/y[12])
-    a[80] = c[58]*(a[79]-y[0])
-    a[81] = -a[80]*2.00000*c[2]*c[8]
-    a[48] = (c[31]*(y[13]-y[12]))/(1.00000+c[31]/c[30])
-    
-    if np.fabs(a[19]) > 1.00000e-05:
-        a[49] = (c[31]*((y[13]-y[12])+(((c[32]/c[30])*a[19])/(1.00000-np.exp(-a[19])))*(y[13]-c[29]*np.exp(-a[19]))))/(1.00000+c[31]/c[30]+((c[32]/c[30])*a[19])/(1.00000-np.exp(-a[19])))
-    else:
-        a[49] = (c[31]*((y[13]-y[12])+(((c[32]/c[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))*(y[13]-c[29]*np.exp(-1.00000e-05))))/(1.00000+c[31]/c[30]+((c[32]/c[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))
-    
-    a[58] = a[55]*a[49]+a[48]*a[54]
-    a[60] = (a[48]*a[37])/(c[70]+a[37])
-    a[62] = ((y[14]*a[58]+y[16]*a[60])*c[33])/c[7]
-    a[64] = a[62]
-    a[76] = (c[54]*(np.power(y[12], 2.00000)))/(np.power(c[55], 2.00000)+np.power(y[12], 2.00000))
-    a[82] = c[59]*(y[13]-y[12])
-    a[83] = c[60]*(c[62]-y[17])-c[61]*y[17]*y[12]
-    a[84] = np.power(1.00000+(c[63]*c[64])/(np.power(c[63]+y[12], 2.00000))+(c[65]*c[66])/(np.power(c[66]+y[12], 2.00000)), -1.00000)
-    a[10] = y[12]
-    a[32] = a[30]+a[31]
+	constants[0] = 8314
+	constants[1] = 310
+	constants[2] = 96487
+	constants[3] = 0.0001
+	constants[4] = 170
+	constants[5] = 3
+	constants[6] = -0.0012
+	constants[7] = 25850
+	constants[8] = 2.585e-5
+	constants[9] = 2.098e-6
+	constants[10] = parameters[0]
+	constants[11] = 140
+	constants[12] = parameters[1]
+	constants[13] = 0.883
+	constants[14] = 0.117
+	constants[15] = 5.4
+	constants[16] = parameters[2]
+	constants[17] = parameters[3]
+	constants[18] = parameters[4]
+	constants[19] = 0.2
+	constants[20] = 8.015e-8
+	constants[21] = 1.38e-7
+	constants[22] = parameters[5]
+	constants[23] = 3.6
+	constants[24] = 19
+	constants[25] = 22
+	constants[26] = 880
+	constants[27] = 0.3
+	constants[28] = 1.8
+	constants[29] = 1.8
+	constants[30] = 0.1
+	constants[31] = 0.02
+	constants[32] = parameters[6]
+	constants[33] = parameters[7]
+	constants[34] = parameters[8]
+	constants[35] = 7
+	constants[36] = 11.5
+	constants[37] = 1
+	constants[38] = 1550
+	constants[39] = 1.17
+	constants[40] = 2.4
+	constants[41] = 0.05
+	constants[42] = 0.012
+	constants[43] = 0.065
+	constants[44] = parameters[9]
+	constants[45] = 0.0625
+	constants[46] = 14
+	constants[47] = 0.01
+	constants[48] = 100
+	constants[49] = 87.5
+	constants[50] = 1.38
+	constants[51] = 0.35
+	constants[52] = 0.1
+	constants[53] = parameters[10]
+	constants[54] = parameters[11]
+	constants[55] = parameters[12]
+	constants[56] = parameters[13]
+	constants[57] = 0.00035
+	constants[58] = parameters[14]
+	constants[59] = parameters[15]
+	constants[60] = 0.04
+	constants[61] = 40
+	constants[62] = 0.07
+	constants[63] = 0.002382
+	constants[64] = 0.05
+	constants[65] = 0
+	constants[66] = 0.00015
+	constants[67] = 2100.00
+	constants[68] = 1.00000-constants[19]
+	constants[69] = constants[36]/constants[37]
+	constants[70] = constants[41]/constants[39]
 
-    return a
+	return constants
 
-def f(t, y, c):
-    a = compute_algebraics(t, y, c)
+def computeAlgebraics(voi, states, constants):
+	sizeAlgebraics = 85
+	algebraics = np.zeros((sizeAlgebraics,), dtype=float)
 
-    size_dy = 18
-    dy = np.zeros(shape=(size_dy,), dtype=float)
-    
-    dy[0] = -(a[22]+a[24]+a[25]+a[29]+a[26]+a[30]+a[31]+a[34]+a[81]+a[75]+a[78]+a[72]+a[20])/c[3]
-    dy[1] = (-(a[22]+a[30]+a[75]*3.00000+a[34]*3.00000+a[27])*1.00000)/(c[8]*c[2])
-    dy[2] = (a[1]-y[2])/a[11]
-    dy[3] = (a[2]-y[3])/a[12]
-    dy[4] = (a[3]-y[4])/a[13]
-    dy[5] = (-(a[20]+a[25]+a[31]+a[24]+a[26]+a[28]+-2.00000*a[34])*1.00000)/(c[8]*c[2])
-    dy[6] = (a[4]-y[6])/a[14]
-    dy[7] = (a[5]-y[7])/a[15]
-    dy[8] = (a[6]-y[8])/a[16]
-    dy[9] = (a[7]-y[9])/a[17]
-    dy[10] = (a[8]-y[10])/c[67]
-    dy[11] = (a[9]-y[11])/a[18]
-    dy[12] = a[84]*(((a[64]-a[76])+a[82]+a[83])-(-2.00000*a[75]+a[72]+a[78]+a[81])/(2.00000*c[8]*c[2]))
-    dy[13] = (c[8]/c[9])*((-a[64]+a[76])-a[82])
-    dy[14] = -(a[57]+a[65])*y[14]+a[59]*y[15]+a[67]*y[16]
-    dy[15] = (a[57]*y[14]-(a[59]+a[69])*y[15])+a[71]*a[73]
-    dy[16] = (a[65]*y[14]-(a[67]+a[61])*y[16])+a[63]*a[73]
-    dy[17] = a[83]
+	algebraics[8] = 1.00000/(1.00000+np.exp((states[0]+87.5000)/10.3000))
+	algebraics[1] = 1.00000/(1.00000+np.exp((states[0]+45.0000)/-6.50000))
+	algebraics[11] = 1.36000/((0.320000*(states[0]+47.1300))/(1.00000-np.exp(-0.100000*(states[0]+47.1300)))+0.0800000*np.exp(-states[0]/11.0000))
+	algebraics[2] = 1.00000/(1.00000+np.exp((states[0]+76.1000)/6.07000))
+	algebraics[12] = piecewise(states[0] >= -40.0000, 0.453700*(1.00000+np.exp(-(states[0]+10.6600)/11.1000)), 3.49000/(0.135000*np.exp(-(states[0]+80.0000)/6.80000)+3.56000*np.exp(0.0790000*states[0])+310000.*np.exp(0.350000*states[0])))
+	algebraics[3] = 1.00000/(1.00000+np.exp((states[0]+76.1000)/6.07000))
+	algebraics[13] = piecewise(states[0] >= -40.0000, (11.6300*(1.00000+np.exp(-0.100000*(states[0]+32.0000))))/np.exp(-2.53500e-07*states[0]), 3.49000/(((states[0]+37.7800)/(1.00000+np.exp(0.311000*(states[0]+79.2300))))*(-127140.*np.exp(0.244400*states[0])-3.47400e-05*np.exp(-0.0439100*states[0]))+(0.121200*np.exp(-0.0105200*states[0]))/(1.00000+np.exp(-0.137800*(states[0]+40.1400)))))
+	algebraics[14] = 100.000/(45.1600*np.exp(0.0357700*(states[0]+50.0000))+98.9000*np.exp(-0.100000*(states[0]+38.0000)))
+	algebraics[4] = 1.00000/(1.00000+np.exp((states[0]+10.6000)/-11.4200))
+	algebraics[15] = 20.0000*np.exp(-(np.power((states[0]+70.0000)/25.0000, 2.00000)))+35.0000
+	algebraics[5] = 1.00000/(1.00000+np.exp((states[0]+45.3000)/6.88410))
+	algebraics[16] = 1300.00*np.exp(-(np.power((states[0]+70.0000)/30.0000, 2.00000)))+35.0000
+	algebraics[6] = 1.00000/(1.00000+np.exp((states[0]+45.3000)/6.88410))
+	algebraics[17] = 10000.0/(45.1600*np.exp(0.0357700*(states[0]+50.0000))+98.9000*np.exp(-0.100000*(states[0]+38.0000)))
+	algebraics[7] = 1.00000/(1.00000+np.exp((states[0]+11.5000)/-11.8200))
+	algebraics[18] = 1000.00/(0.118850*np.exp((states[0]+80.0000)/28.3700)+0.562300*np.exp((states[0]+80.0000)/-14.1900))
+	algebraics[9] = 1.00000/(1.00000+np.exp((states[0]+138.600)/10.4800))
+	algebraics[23] = ((constants[0]*constants[1])/constants[2])*np.log(constants[15]/states[5])
+	algebraics[24] = constants[12]*states[6]*(constants[13]*states[7]+constants[14]*states[8])*(states[0]-algebraics[23])
+	algebraics[25] = constants[16]*states[9]*states[10]*(states[0]-algebraics[23])
+	algebraics[26] = ((0.0480000/(np.exp((states[0]+37.0000)/25.0000)+np.exp((states[0]+37.0000)/-25.0000))+0.0100000)*0.00100000)/(1.00000+np.exp((states[0]-(algebraics[23]+76.7700))/-17.0000))+(constants[17]*(states[0]-(algebraics[23]+1.73000)))/((1.00000+np.exp((1.61300*constants[2]*(states[0]-(algebraics[23]+1.73000)))/(constants[0]*constants[1])))*(1.00000+np.exp((constants[15]-0.998800)/-0.124000)))
+	algebraics[31] = constants[21]*(states[0]-algebraics[23])
+	algebraics[33] = constants[23]*(np.power(1.00000+constants[24]/states[1], 2.00000))*(1.00000+(constants[25]/states[1])*np.exp(((-constants[27]*constants[2]*states[0])/constants[0])/constants[1]))+(np.power(1.00000+constants[28]/constants[15], 2.00000))*(1.00000+(constants[11]/constants[26])*np.exp(((-(1.00000-constants[27])*constants[2]*states[0])/constants[0])/constants[1]))
+	algebraics[34] = (constants[22]*(constants[23]+1.00000))/algebraics[33]
+	algebraics[20] = piecewise(voi-np.floor(voi/constants[4])*constants[4] >= 0.00000 and voi-np.floor(voi/constants[4])*constants[4] <= constants[5], constants[6], 0.00000)
+	algebraics[28] = constants[18]*states[11]*constants[68]*(states[0]-algebraics[23])
+	algebraics[0] = (constants[2]*states[0])/(constants[0]*constants[1])
+	algebraics[19] = 2.00000*algebraics[0]
+	algebraics[44] = piecewise(np.fabs(algebraics[19]) >= 1.00000e-09, (states[12]+((constants[32]/constants[30])*constants[29]*algebraics[19]*np.exp(-algebraics[19]))/(1.00000-np.exp(-algebraics[19])))/(1.00000+((constants[32]/constants[30])*algebraics[19])/(1.00000-np.exp(-algebraics[19]))), (states[12]+(constants[32]/constants[30])*constants[29])/(1.00000+constants[32]/constants[30]))
+	algebraics[46] = (np.power(algebraics[44], 2.00000)+constants[47]*(np.power(constants[43], 2.00000)))/(constants[40]*(np.power(algebraics[44], 2.00000)+np.power(constants[43], 2.00000)))
+	algebraics[40] = (np.power(states[12], 2.00000)+constants[47]*(np.power(constants[43], 2.00000)))/(constants[40]*(np.power(states[12], 2.00000)+np.power(constants[43], 2.00000)))
+	algebraics[35] = np.exp((states[0]-constants[34])/constants[35])
+	algebraics[36] = algebraics[35]/(constants[37]*(algebraics[35]+1.00000))
+	algebraics[37] = (np.power(states[12], 2.00000))/(constants[39]*(np.power(states[12], 2.00000)+np.power(constants[43], 2.00000)))
+	algebraics[45] = (np.power(algebraics[44], 2.00000))/(constants[39]*(np.power(algebraics[44], 2.00000)+np.power(constants[43], 2.00000)))
+	algebraics[52] = (algebraics[36]+constants[69])*((constants[69]+constants[70]+algebraics[45])*(constants[70]+algebraics[37])+algebraics[36]*(constants[70]+algebraics[45]))
+	algebraics[53] = (algebraics[36]*constants[70]*(algebraics[36]+constants[69]+constants[70]+algebraics[37]))/algebraics[52]
+	algebraics[56] = (constants[69]*constants[70]*(constants[69]+algebraics[36]+constants[70]+algebraics[45]))/algebraics[52]
+	algebraics[57] = algebraics[53]*algebraics[46]+algebraics[56]*algebraics[40]
+	algebraics[47] = (constants[42]*constants[48]*(np.power(algebraics[44], 2.00000)+constants[47]*(np.power(constants[43], 2.00000))))/(constants[40]*(constants[48]*(np.power(algebraics[44], 2.00000))+constants[47]*(np.power(constants[43], 2.00000))))
+	algebraics[41] = (constants[42]*constants[48]*(np.power(states[12], 2.00000)+constants[47]*(np.power(constants[43], 2.00000))))/(constants[40]*(constants[48]*(np.power(states[12], 2.00000))+constants[47]*(np.power(constants[43], 2.00000))))
+	algebraics[59] = (algebraics[36]*algebraics[47]+constants[69]*algebraics[41])/(algebraics[36]+constants[69])
+	algebraics[42] = (states[12]+(constants[31]/constants[30])*states[13])/(1.00000+constants[31]/constants[30])
+	algebraics[43] = (algebraics[42]*(algebraics[35]+constants[45]))/(constants[38]*constants[44]*(algebraics[35]+1.00000))
+	algebraics[38] = (states[12]*(algebraics[35]+constants[45]))/(constants[38]*constants[44]*(algebraics[35]+1.00000))
+	algebraics[54] = (constants[69]*(algebraics[37]*(constants[69]+constants[70]+algebraics[45])+algebraics[45]*algebraics[36]))/algebraics[52]
+	algebraics[65] = algebraics[54]*algebraics[43]+algebraics[56]*algebraics[38]
+	algebraics[39] = (constants[46]*(algebraics[35]+constants[45]))/(constants[38]*(constants[46]*algebraics[35]+constants[45]))
+	algebraics[67] = algebraics[39]
+	algebraics[69] = (constants[69]*algebraics[38])/(algebraics[36]+constants[69])
+	algebraics[71] = algebraics[39]
+	algebraics[73] = ((1.00000-states[14])-states[15])-states[16]
+	algebraics[61] = (constants[70]*algebraics[40])/(constants[70]+algebraics[37])
+	algebraics[63] = algebraics[41]
+	algebraics[21] = ((constants[0]*constants[1])/constants[2])*np.log(constants[11]/states[1])
+	algebraics[22] = constants[10]*(np.power(states[2], 3.00000))*states[3]*states[4]*(states[0]-algebraics[21])
+	algebraics[30] = constants[20]*(states[0]-algebraics[21])
+	algebraics[74] = (constants[53]*(np.exp(constants[51]*algebraics[0])*(np.power(states[1], 3.00000))*constants[29]-np.exp((constants[51]-1.00000)*algebraics[0])*(np.power(constants[11], 3.00000))*states[12]))/((np.power(constants[11], 3.00000)+np.power(constants[49], 3.00000))*(constants[29]+constants[50])*(1.00000+constants[52]*np.exp((constants[51]-1.00000)*algebraics[0])))
+	algebraics[75] = algebraics[74]*constants[2]*constants[8]
+	algebraics[27] = constants[18]*states[11]*constants[19]*(states[0]-algebraics[21])
+	algebraics[29] = algebraics[27]+algebraics[28]
+	algebraics[77] = (constants[56]*states[12])/(constants[57]+states[12])
+	algebraics[78] = algebraics[77]*2.00000*constants[2]*constants[8]
+	algebraics[51] = piecewise(np.fabs(algebraics[19]) > 1.00000e-05, (((constants[32]*algebraics[19])/(1.00000-np.exp(-algebraics[19])))*((constants[29]*np.exp(-algebraics[19])-states[12])+(constants[31]/constants[30])*(constants[29]*np.exp(-algebraics[19])-states[13])))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*algebraics[19])/(1.00000-np.exp(algebraics[19]))), (((constants[32]*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))*((constants[29]*np.exp(-1.00000e-05)-states[12])+(constants[31]/constants[30])*(constants[29]*np.exp(-1.00000e-05)-states[13])))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05))))
+	algebraics[50] = piecewise(np.fabs(algebraics[19]) > 1.00000e-05, (((constants[32]*algebraics[19])/(1.00000-np.exp(-algebraics[19])))*(constants[29]*np.exp(-algebraics[19])-states[12]))/(1.00000+((constants[32]/constants[30])*algebraics[19])/(1.00000-np.exp(-algebraics[19]))), (((constants[32]*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))*(constants[29]*np.exp(-1.00000e-05)-states[12]))/(1.00000+((constants[32]/constants[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05))))
+	algebraics[55] = (algebraics[36]*(algebraics[45]*(algebraics[36]+constants[70]+algebraics[37])+algebraics[37]*constants[69]))/algebraics[52]
+	algebraics[66] = algebraics[51]*algebraics[55]+algebraics[50]*algebraics[53]
+	algebraics[68] = (algebraics[50]*algebraics[36])/(algebraics[36]+constants[69])
+	algebraics[70] = ((states[14]*algebraics[66]+states[15]*algebraics[68])*constants[33])/constants[7]
+	algebraics[72] = -algebraics[70]*2.00000*constants[2]*constants[8]
+	algebraics[79] = ((constants[0]*constants[1])/(2.00000*constants[2]))*np.log(constants[29]/states[12])
+	algebraics[80] = constants[58]*(algebraics[79]-states[0])
+	algebraics[81] = -algebraics[80]*2.00000*constants[2]*constants[8]
+	algebraics[48] = (constants[31]*(states[13]-states[12]))/(1.00000+constants[31]/constants[30])
+	algebraics[49] = piecewise(np.fabs(algebraics[19]) > 1.00000e-05, (constants[31]*((states[13]-states[12])+(((constants[32]/constants[30])*algebraics[19])/(1.00000-np.exp(-algebraics[19])))*(states[13]-constants[29]*np.exp(-algebraics[19]))))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*algebraics[19])/(1.00000-np.exp(-algebraics[19]))), (constants[31]*((states[13]-states[12])+(((constants[32]/constants[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05)))*(states[13]-constants[29]*np.exp(-1.00000e-05))))/(1.00000+constants[31]/constants[30]+((constants[32]/constants[30])*1.00000e-05)/(1.00000-np.exp(-1.00000e-05))))
+	algebraics[58] = algebraics[55]*algebraics[49]+algebraics[48]*algebraics[54]
+	algebraics[60] = (algebraics[48]*algebraics[37])/(constants[70]+algebraics[37])
+	algebraics[62] = ((states[14]*algebraics[58]+states[16]*algebraics[60])*constants[33])/constants[7]
+	algebraics[64] = algebraics[62]
+	algebraics[76] = (constants[54]*(np.power(states[12], 2.00000)))/(np.power(constants[55], 2.00000)+np.power(states[12], 2.00000))
+	algebraics[82] = constants[59]*(states[13]-states[12])
+	algebraics[83] = constants[60]*(constants[62]-states[17])-constants[61]*states[17]*states[12]
+	algebraics[84] = np.power(1.00000+(constants[63]*constants[64])/(np.power(constants[63]+states[12], 2.00000))+(constants[65]*constants[66])/(np.power(constants[66]+states[12], 2.00000)), -1.00000)
+	algebraics[10] = states[12]
+	algebraics[32] = algebraics[30]+algebraics[31]
 
-    return dy
+	return algebraics
+
+def computeRates(voi, states, constants):
+	algebraics = computeAlgebraics(voi, states, constants)
+
+	sizeRates = 18
+	rates = np.zeros((sizeRates,), dtype=float)
+
+	rates[0] = -(algebraics[22]+algebraics[24]+algebraics[25]+algebraics[29]+algebraics[26]+algebraics[30]+algebraics[31]+algebraics[34]+algebraics[81]+algebraics[75]+algebraics[78]+algebraics[72]+algebraics[20])/constants[3]
+	rates[1] = (-(algebraics[22]+algebraics[30]+algebraics[75]*3.00000+algebraics[34]*3.00000+algebraics[27])*1.00000)/(constants[8]*constants[2])
+	rates[2] = (algebraics[1]-states[2])/algebraics[11]
+	rates[3] = (algebraics[2]-states[3])/algebraics[12]
+	rates[4] = (algebraics[3]-states[4])/algebraics[13]
+	rates[5] = (-(algebraics[20]+algebraics[25]+algebraics[31]+algebraics[24]+algebraics[26]+algebraics[28]+-2.00000*algebraics[34])*1.00000)/(constants[8]*constants[2])
+	rates[6] = (algebraics[4]-states[6])/algebraics[14]
+	rates[7] = (algebraics[5]-states[7])/algebraics[15]
+	rates[8] = (algebraics[6]-states[8])/algebraics[16]
+	rates[9] = (algebraics[7]-states[9])/algebraics[17]
+	rates[10] = (algebraics[8]-states[10])/constants[67]
+	rates[11] = (algebraics[9]-states[11])/algebraics[18]
+	rates[12] = algebraics[84]*(((algebraics[64]-algebraics[76])+algebraics[82]+algebraics[83])-(-2.00000*algebraics[75]+algebraics[72]+algebraics[78]+algebraics[81])/(2.00000*constants[8]*constants[2]))
+	rates[13] = (constants[8]/constants[9])*((-algebraics[64]+algebraics[76])-algebraics[82])
+	rates[14] = -(algebraics[57]+algebraics[65])*states[14]+algebraics[59]*states[15]+algebraics[67]*states[16]
+	rates[15] = (algebraics[57]*states[14]-(algebraics[59]+algebraics[69])*states[15])+algebraics[71]*algebraics[73]
+	rates[16] = (algebraics[65]*states[14]-(algebraics[67]+algebraics[61])*states[16])+algebraics[63]*algebraics[73]	
+	rates[17] = algebraics[83]
+	
+	return rates
