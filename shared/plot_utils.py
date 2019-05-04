@@ -147,8 +147,9 @@ def plot_pairwise_waves(XL, colors, xlabels):
 			if j > i:
 				axes[i, j].set_visible(False)
 	plt.figlegend(labels=['wave {}'.format(k) for k in range(mat_dim)], loc='upper center')
-	plt.suptitle('Percentages of sequential space reduction = {} %'.format([np.round(100*(1-XL[i].shape[0]/XL[0].shape[0]), decimals=2) for i in range(1, mat_dim)]), x=0.1, y=0.95, ha='left', va='top')
-	plt.show()
+	# plt.suptitle('Percentages of sequential space reduction = {} %'.format([np.round(100*(1-XL[i].shape[0]/XL[0].shape[0]), decimals=2) for i in range(1, mat_dim)]), x=0.1, y=0.95, ha='left', va='top')
+	# plt.show()
+	plt.savefig('history_sham.png', format='png')
 
 def plot_obs_vs_pred(X_test, Y_true, Y_pred, xlabels, ylabels):
 	sample_dim = X_test.shape[0]
