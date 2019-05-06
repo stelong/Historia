@@ -3,13 +3,12 @@ from Historia.mech import mech_out as glv
 from Historia.mech import scan_logfile as slf
 import numpy as np
 
-def extract_features(path_in, dim, path_out):
-	nc = 4
+def extract_features(path_in, dim, path_out, nc, ib):
 	XA = np.zeros(shape=(1, 8), dtype=float)
 	X = np.zeros(shape=(1, 8), dtype=float)
 
 	YA = []
-	Y = np.zeros(shape=(1, 11), dtype=float)
+	Y = np.zeros(shape=(1, 13), dtype=float)
 
 	for i in range(dim):
 		tag = path_in + str(i+1) + '/output_log.txt'
@@ -23,7 +22,7 @@ def extract_features(path_in, dim, path_out):
 		XA = np.vstack((XA, np.asarray(S.p)))
 
 		RS = glv.LeftVentricle()
-		RS.get_lvfeatures(S, nc)
+		RS.get_lvfeatures(S, nc, ib)
 		YA.append(RS.conv)
 
 		if RS.conv:
@@ -36,10 +35,9 @@ def extract_features(path_in, dim, path_out):
 	desu.write_txt(Y[1:], '%f', path_out + '_conly_outputs')
 	return
 
-def extract_features_xhm(path_in, dim, path_out):
-	nc = 2
+def extract_features_xhm(path_in, dim, path_out, nc, ib):
 	X = np.zeros(shape=(1, 8), dtype=float)
-	Y = np.zeros(shape=(1, 11), dtype=float)
+	Y = np.zeros(shape=(1, 13), dtype=float)
 
 	for i in range(dim):
 		tag = path_in + str(i+1) + '/output_log.txt'
@@ -50,7 +48,7 @@ def extract_features_xhm(path_in, dim, path_out):
 			continue
 
 		RS = glv.LeftVentricle()
-		RS.get_lvfeatures(S, nc)
+		RS.get_lvfeatures(S, nc, ib)
 
 		if RS.conv:
 			X = np.vstack((X, np.asarray(S.p)))
