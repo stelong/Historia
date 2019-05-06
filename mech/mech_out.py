@@ -11,7 +11,7 @@ class LeftVentricle:
 		self.lv_p = []
 		self.f = []
 
-	def get_lvfeatures(self, S, nc):
+	def get_lvfeatures(self, S, nc, ib):
 		if S.conv:
 			v = []
 			if S.phase[0] != S.phase[1]:
@@ -35,24 +35,24 @@ class LeftVentricle:
 	
 				last = np.argmax([M[i][-1, 1] for i in range(4)])
 				if last == 3:
-					rmv = 7
+					rmv = 8
 				elif last == 2:
-					rmv = 5
+					rmv = 6
 				elif last == 1:
-					rmv = 3
+					rmv = 4
 				else:
-					rmv = 1
+					rmv = 2
 
 				ind = ind[:-rmv]
-				ind_r = ind[-9:]
-				interval = list(range(ind_r[0], ind_r[-1]))
+				ind_r = ind[-8:]
+				interval = range(ind_r[0], ind_r[-1]+1)
 
 				self.t = [S.t[i] for i in interval]
 				self.phase = [S.phase[i] for i in interval]
 				self.lv_p = [S.lv_p[i] for i in interval]
 				self.lv_v = [S.lv_v[i] for i in interval]
 
-				time = [S.t[ind_r[i]] for i in range(len(ind_r))]
+				time = [S.t[i] for i in ind_r]
 
 				dP = matu.der(self.t, self.lv_p)
 				m = max(self.lv_p)
@@ -61,20 +61,26 @@ class LeftVentricle:
 				ps1 = list(np.where(np.asarray(self.phase) == 1)[0])
 				lvv1 = [self.lv_v[i] for i in ps1]
 
-				p1 = max(lvv1)          # EDV    (end-diastolic volume)
-				p2 = min(self.lv_v)     # ESV    (end-systolic volume)
-				p3 = 100*(p1 - p2)/p1   # EF     (ejection fraction)
-				p4 = time[1] - time[0]  # IVCT   (isovolumetric contraction time)
-				p5 = time[3] - time[2]  # ET     (ejection time)
-				p6 = time[5] - time[4]  # IVRT   (isovolumetric relaxation time)
-				p7 = time[7] - time[4]  # Tdiast (diastolic time)
+				lvv2 = [S.lv_v[i] for i in range(ind_r[4], ind_r[7]+1)]
+				t2 = [S.t[i] for i in range(ind_r[4], ind_r[7]+1)]
+				ind_b = np.where(np.asarray(lvv2) >= ib)[0][0]
+
+				p1 = max(lvv1)            # EDV    (end-diastolic volume)
+				p2 = S.lv_v[ind_r[3]]     # ESV    (end-systolic volume)
+				p3 = 100*(p1 - p2)/p1     # EF     (ejection fraction)
+				p4 = time[1] - time[0]    # IVCT   (isovolumetric contraction time)
+				p5 = time[3] - time[2]    # ET     (ejection time)
+				p6 = time[5] - time[4]    # IVRT   (isovolumetric relaxation time)
+				p7 = time[7] - time[4]    # Tdiast (diastolic time)
+				p8 = t2[ind_b] - time[3]  # Tedv   (diastolic time for LVV >= ib)
 
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
-				q3 = max(dP)                    # maxdP (maximum pressure rise rate) 
-				q4 = min(dP)                    # mindP (maximum pressure decay rate)
+				q3 = S.lv_p[ind_r[3]]			# ESP   (end-systolic pressure)
+				q4 = max(dP)                    # maxdP (maximum pressure rise rate) 
+				q5 = min(dP)                    # mindP (maximum pressure decay rate)
 
-				self.f = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4]
+				self.f = [p1, p2, p3, p4, p5, p6, p7, p8, q1, q2, q3, q4, q5]
 
 def ph_counter(phase):
 	n = len(phase)
