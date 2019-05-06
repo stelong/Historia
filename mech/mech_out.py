@@ -61,18 +61,23 @@ class LeftVentricle:
 				ps1 = list(np.where(np.asarray(self.phase) == 1)[0])
 				lvv1 = [self.lv_v[i] for i in ps1]
 
-				lvv2 = [S.lv_v[i] for i in range(ind_r[4], ind_r[7]+1)]
-				t2 = [S.t[i] for i in range(ind_r[4], ind_r[7]+1)]
-				ind_b = np.where(np.asarray(lvv2) >= ib)[0][0]
+				p1 = max(lvv1)          # EDV    (end-diastolic volume)
+				p2 = S.lv_v[ind_r[3]]   # ESV    (end-systolic volume)
+				p3 = 100*(p1 - p2)/p1   # EF     (ejection fraction)
+				p4 = time[1] - time[0]  # IVCT   (isovolumetric contraction time)
+				p5 = time[3] - time[2]  # ET     (ejection time)
+				p6 = time[5] - time[4]  # IVRT   (isovolumetric relaxation time)
+				p7 = time[7] - time[4]  # Tdiast (diastolic time)
 
-				p1 = max(lvv1)            # EDV    (end-diastolic volume)
-				p2 = S.lv_v[ind_r[3]]     # ESV    (end-systolic volume)
-				p3 = 100*(p1 - p2)/p1     # EF     (ejection fraction)
-				p4 = time[1] - time[0]    # IVCT   (isovolumetric contraction time)
-				p5 = time[3] - time[2]    # ET     (ejection time)
-				p6 = time[5] - time[4]    # IVRT   (isovolumetric relaxation time)
-				p7 = time[7] - time[4]    # Tdiast (diastolic time)
-				p8 = t2[ind_b] - time[3]  # Tedv   (diastolic time for LVV >= ib)
+				if p2 < ib and ib < p1:
+					lvv2 = [S.lv_v[i] for i in range(ind_r[4], ind_r[7]+1)]
+					t2 = [S.t[i] for i in range(ind_r[4], ind_r[7]+1)]
+					ind_b = np.where(np.asarray(lvv2) >= ib)[0][0]
+					
+					p8 = t2[ind_b] - time[3]  # Tedv (diastolic time for LVV >= ib)
+				
+				else:
+					p8 = 0.0 # we will see if this needs to be discarded
 
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
