@@ -81,7 +81,7 @@ class LeftVentricle:
 
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
-				q3 = S.lv_p[ind_r[3]]			# ESP   (end-systolic pressure)
+				q3 = S.lv_p[ind_r[3]]		# ESP   (end-systolic pressure)
 				q4 = max(dP)                    # maxdP (maximum pressure rise rate) 
 				q5 = min(dP)                    # mindP (maximum pressure decay rate)
 
