@@ -6,7 +6,6 @@ import numpy as np
 def extract_features(path_in, dim, path_out, nc, ib):
 	XA = np.zeros(shape=(1, 8), dtype=float)
 	X = np.zeros(shape=(1, 8), dtype=float)
-
 	YA = []
 	Y = np.zeros(shape=(1, 13), dtype=float)
 
@@ -23,8 +22,8 @@ def extract_features(path_in, dim, path_out, nc, ib):
 
 		RS = glv.LeftVentricle()
 		RS.get_lvfeatures(S, nc, ib)
-		YA.append(RS.conv)
 
+		YA.append(RS.conv)
 		if RS.conv:
 			X = np.vstack((X, np.asarray(S.p)))
 			Y = np.vstack((Y, np.asarray(RS.f)))
@@ -36,7 +35,9 @@ def extract_features(path_in, dim, path_out, nc, ib):
 	return
 
 def extract_features_xhm(path_in, dim, path_out, nc, ib):
+	XA = np.zeros(shape=(1, 8), dtype=float)
 	X = np.zeros(shape=(1, 8), dtype=float)
+	YA = []
 	Y = np.zeros(shape=(1, 13), dtype=float)
 
 	for i in range(dim):
@@ -47,13 +48,18 @@ def extract_features_xhm(path_in, dim, path_out, nc, ib):
 		except FileNotFoundError:
 			continue
 
+		XA = np.vstack((XA, np.asarray(S.p)))
+
 		RS = glv.LeftVentricle()
 		RS.get_lvfeatures(S, nc, ib)
 
+		YA.append(RS.conv)
 		if RS.conv:
 			X = np.vstack((X, np.asarray(S.p)))
 			Y = np.vstack((Y, np.asarray(RS.f)))
 
+	desu.write_txt(XA[1:], '%f', path_out + '_allin')
 	desu.write_txt(X[1:], '%f', path_out + '_in')
+	desu.write_txt(YA, '%d', path_out + '_allout')
 	desu.write_txt(Y[1:], '%f', path_out + '_out')
 	return
