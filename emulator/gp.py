@@ -25,7 +25,7 @@ class GPEmul:
         	('lr', LinearRegression(n_jobs=-1))
 		])
 
-		param_grid1 = {'poly__degree': [1, 2, 3, 4, 5]}
+		param_grid1 = {'poly__degree': [1, 2, 3]}
 		gs1 = GridSearchCV(pipe, param_grid1,
 			n_jobs=-1, iid=False, cv=5, return_train_score=False)
 		gs1.fit(self.X, self.Y)
