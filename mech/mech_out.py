@@ -71,10 +71,13 @@ class LeftVentricle:
 
 				lvv2 = [S.lv_v[i] for i in range(ind_r[4], ind_r[7]+1)]
 				t2 = [S.t[i] for i in range(ind_r[4], ind_r[7]+1)]
-				ind_b = np.where((np.asarray(lvv2)-p2)/(p1-p2) >= ibc)[0][0]
-					
-				p8 = t2[ind_b] - time[3]  # Tedv (diastolic time for (LVV-ESV)/(EDV-ESV) >= ibc)
 				
+				try:
+					ind_b = np.where((np.asarray(lvv2)-p2)/(p1-p2) >= ibc)[0][0]
+					p8 = t2[ind_b] - time[3]  # Tedv (diastolic time for (LVV-ESV)/(EDV-ESV) >= ibc)
+				except:
+					p8 = p7
+
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
 				q3 = S.lv_p[ind_r[3]]		    # ESP   (end-systolic pressure)
