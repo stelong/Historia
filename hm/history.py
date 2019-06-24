@@ -6,7 +6,7 @@ class Wave:
 	def __init__(self, emulator):
 		self.emulator = emulator
 
-	def compImp(self, X, maxno, mean, var):
+	def compute_impl(self, X, maxno, mean, var):
 		samp_dim = X.shape[0]
 		I = np.zeros((samp_dim,), dtype=float)
 		for i in range(samp_dim):
@@ -19,10 +19,10 @@ class Wave:
 			I[i] = In[-maxno]
 		return I
 
-	def findNROY(self, X_test, maxno, cutoff, mean, var):
-		I = self.compImp(X_test, maxno, mean, var)
+	def find_regions(self, X_test, maxno, cutoff, mean, var):
+		I = self.compute_impl(X_test, maxno, mean, var)
 		l = np.where(I < cutoff)[0]
 		nl = desu.diff(range(X_test.shape[0]), l)
 		X_nimp = X_test[l]
 		X_imp = X_test[nl]
-		return X_nimp, X_imp
+		return I, X_nimp, X_imp
