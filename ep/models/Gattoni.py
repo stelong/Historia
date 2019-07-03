@@ -1,3 +1,6 @@
+"""Fast running version of Gattoni's model for 1-6Hz paced SHAM-AB rat heart electrophysiology.
+The original model is available at: https://models.cellml.org/e/289/Sham_AB_models
+"""
 import numpy as np
 
 def piecewise(condition, case1, case2):
