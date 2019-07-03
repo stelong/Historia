@@ -1,3 +1,6 @@
+"""Initial state variables and parameters initialization for Gattoni's model of 1-6Hz paced SHAM-AB rat heart electrophysiology.
+The original model is available at: https://models.cellml.org/e/289/Sham_AB_models
+"""
 import numpy as np
 
 def states(rat, hz):
