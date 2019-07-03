@@ -3,12 +3,19 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 class EPSolution:
+	"""This class implements the solution of Gattoni's model ODEs system.
+	"""
 	def __init__(self, model, rat, hz):
 		self.model = model
 		self.rat = rat
 		self.hz = hz
 
 	def run2sc(self, parameters, nbeats):
+		"""Run the ODE solver and store the solution at 1ms spaced time points.
+		Args:
+			- parameters: (n,)-shaped vector to be initialized through the dedicated module 'initialize.py'
+			- nbeats: strictly positive integer, representing the number of beats we want to simulate.
+		"""
 		self.conv = 1
 		self.nbeats = nbeats
 
