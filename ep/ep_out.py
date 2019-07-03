@@ -4,8 +4,8 @@ from scipy.optimize import brentq, curve_fit
 class PhenCalcium:
 	def __init__(self, t, ca):
 		self.conv = 1
-		self.t = t[4:-1] - 4
-		self.ca = ca[4:-1]
+		self.t = t[4:] - 4
+		self.ca = ca[4:]
 		self.a1 = []
 		self.a = []
 		self.bio = []
@@ -45,13 +45,13 @@ class PhenCalcium:
 		pi = self.ca[0]
 		pm = f(self.bio[2]+self.bio[3], *self.a)
 		dh = (pm - pi)/2
-		if self.bio[2] == -1 or self.bio[0] >= self.bio[1] or self.ca[-1] > pi+dh:
+		if self.bio[2] == -1 or self.bio[0] >= self.bio[1] or self.ca[-1] > pi+0.1*dh:
 			self.conv = 0
 		else:
 			self.conv = 1
 
 	def print_ca(self, f, stim):
-		f.write('ca{} 166 1 '.format(stim))
+		f.write('ca{} 167 1 '.format(stim))
 		np.savetxt(f, self.ca.reshape(1, -1), fmt='%f')
 
 def A_output(ca):
