@@ -1,7 +1,14 @@
 import re
 
 class MECHSolution:
+	"""This class implements the solution of Land's 3D rat heart mechanics model*.
+	*https://physoc.onlinelibrary.wiley.com/doi/full/10.1113/jphysiol.2012.231928
+	"""
 	def __init__(self, tag):
+		"""Plug-in the logfile.
+		Arg:
+			tag: string representing the absolute path to the logfile.
+		"""
 		self.tag = tag
 		self.conv = 0
 		self.t = []
@@ -11,6 +18,8 @@ class MECHSolution:
 		self.p = []
 
 	def extract_loginfo(self):
+		"""Scan the logfile searching for: parameters, time, LV volume, LV pressure, cardiac cycle phases vectors.
+		"""
 		p0 = re.compile('LV\sCavity\svolume\s=\s(\d+\.\d+)')
 		p1 = re.compile('(?<=\*\sT\s->\s)\d+\.\d+')
 		p2 = re.compile('Phase\s=\s([1-4]).*?Volume\s=\s([-]?\d+\.\d+).*?LVP\s=\s(\d+\.\d+)')
