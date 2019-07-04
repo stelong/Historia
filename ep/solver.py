@@ -3,7 +3,8 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 class EPSolution:
-	"""This class implements the solution of Gattoni's model ODEs system.
+	"""This class implements the solution of Gattoni's model* ODEs system.
+	*https://physoc.onlinelibrary.wiley.com/doi/10.1113/JP273879
 	"""
 	def __init__(self, model, rat, hz):
 		self.model = model
