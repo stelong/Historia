@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class LeftVentricle:
+	"""This class implements the left ventricle (LV) features under study.
+	"""
 	def __init__(self):
 		self.conv = 0
 		self.t = []
@@ -12,6 +14,12 @@ class LeftVentricle:
 		self.f = []
 
 	def get_lvfeatures(self, S, nc, ibc):
+		"""Compute the LV features from the last heart beat.
+		Args:
+			S: mechanics solution class object obtained through the dedicated module 'scan_logfile.py'
+			nc: number of cycles we run the mechanics for
+			ibc: scalar in [0, 1], representing the inferior bound constraint for Tedv output feature calculation.
+		"""
 		if S.conv:
 			v = []
 			if S.phase[0] != S.phase[1]:
@@ -86,6 +94,7 @@ class LeftVentricle:
 
 				self.f = [p1, p2, p3, p4, p5, p6, p7, p8, q1, q2, q3, q4, q5]
 
+# Useful function 1
 def ph_counter(phase):
 	n = len(phase)
 
@@ -103,6 +112,7 @@ def ph_counter(phase):
 
 	return cp
 
+# Useful function 2
 def isl_ranges(l, n_isl):
 	len_l = len(l)
 	islands = 0
