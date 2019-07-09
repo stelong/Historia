@@ -41,7 +41,19 @@ def exnode(file):
 
 	return A
 
-def exdata(file):
+def exelem(file):
+	B = []
+	with open(file, 'r') as f:
+		for _ in range(588):
+			next(f)
+		for i, line in enumerate(f):
+			if i % 2 == 1:
+				B.append( [int(line.split()[1:][j]) for j in range(64)] )
+	B = np.array(B)
+
+	return B
+
+def exdata_xi(file):
 	C = []
 	Mt = []
 	JX = []
@@ -62,17 +74,21 @@ def exdata(file):
 
 	return C, M, JX
 
-def exelem(file):
-	B = []
+def exdata_ta_lambda(file):
+	Ta = []
+	lambd = []
 	with open(file, 'r') as f:
-		for _ in range(588):
+		for _ in range(22):
 			next(f)
 		for i, line in enumerate(f):
-			if i % 2 == 1:
-				B.append( [int(line.split()[1:][j]) for j in range(64)] )
-	B = np.array(B)
+			if (i-4) % 3 == 0:
+				v = [float(line.split()[j]) for j in range(2, 4)]
+				Ta.append( v[0] )
+				lambd.append( v[1] )
+	Ta = np.array(Ta)
+	lambd = np.array(lambd)
 
-	return B
+	return Ta, lambd
 
 def connect(B, n_nodes, n_elements):
 	L = []
