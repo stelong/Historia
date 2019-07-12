@@ -119,43 +119,56 @@ def exelem(file):
 	return B
 
 def exdata_xi(file):
-	C = []
+	Ct = []
 	Ft = []
-	JX = []
+	JXt = []
 	with open(file, 'r') as f:
 		for _ in range(17):
 			next(f)
 		for i, line in enumerate(f):
 			if (i-5) % 4 == 0:
-				C.append( [float(line.split()[j]) for j in range(3, 6)] )
+				Ct.append( [float(line.split()[j]) for j in range(3, 6)] )
 			elif (i-6) % 4 == 0:
 				Ft.append( [float(line.split()[j]) for j in range(3)] )
 			elif (i-7) % 4 == 0:
-				JX.append( float(line) )
-	C = np.array(C)
+				JXt.append( float(line) )
+	Ct = np.array(Ct)
 	Ft = np.array(Ft)
+	JXt = np.array(JXt).reshape(-1, 1)
+
+	C = [c for c in np.vsplit(Ct, 108)]
 	F = [f for f in np.vsplit(Ft, 108)]
-	JX = np.array(JX)
+	JX = [j for j in np.vsplit(JXt, 108)]
 
 	return C, F, JX
 
-def exdata_ta_lambda(file):
+def exdata(file):
+	ept = []
 	Tat = []
 	lambdt = []
+	dlambdt = []
 	with open(file, 'r') as f:
 		for _ in range(22):
 			next(f)
 		for i, line in enumerate(f):
 			if (i-4) % 3 == 0:
-				v = [float(line.split()[j]) for j in range(2, 4)]
-				Tat.append( v[0] )
-				lambdt.append( v[1] )
+				v = [float(line.split()[j]) for j in range(1, 5)]
+				ept.append( v[0] )
+				Tat.append( v[1] )
+				lambdt.append( v[2] )
+				dlambdt.append( v[3] )
+
+	ept = np.array(ept).reshape(-1, 1)
 	Tat = np.array(Tat).reshape(-1, 1)
 	lambdt = np.array(lambdt).reshape(-1, 1)
+	dlambdt = np.array(dlambdt).reshape(-1, 1)
+
+	ep = [e for e in np.vsplit(ept, 108)]
 	Ta = [t for t in np.vsplit(Tat, 108)]
 	lambd = [l for l in np.vsplit(lambdt, 108)]
+	dlambd = [dl for dl in np.vsplit(dlambdt, 108)]
 
-	return Ta, lambd
+	return ep, Ta, lambd, dlambd
 
 def connect(B, n_nodes, n_elements):
 	L = []
