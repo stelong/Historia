@@ -1,5 +1,5 @@
-import design_utils as desu
-import mesh_utils as mesu
+from Historia.shared import design_utils as desu
+from Historia.shared import mesh_utils as mesu
 import numpy as np
 from scipy.integrate import solve_ivp, simps
 
@@ -130,10 +130,10 @@ def cell_contraction(path_to_in, elem, node):
 	Y0 = [0.01, 0.1, 0.0, 0.0, 0.01]
 
 	# hard-coded (change them according to your specific simulation setup)
-	ca50ref	= 1.45837
+	ca50ref	= 0.572458 # 1.45837
 	perm50	= 0.35
-	kxb		= 0.019156
-	ktrpn	= 0.052712
+	kxb		= 0.01125 # 0.019156
+	ktrpn	= 0.106601 # 0.052712
 	nperm	= 5.0
 	ntrpn	= 2.0
 	beta0	= 1.65
@@ -143,7 +143,7 @@ def cell_contraction(path_to_in, elem, node):
 	a 		= 0.35
 	A1 		= -29.0
 	A2 		= 116.0
-	Tref	= 136.242
+	Tref	= 126.12 # 136.242
 
 	c = [ca50ref, perm50, kxb, ktrpn, nperm, ntrpn, beta0, beta1, alpha1, alpha2, a, A1, A2, Tref]
 
@@ -161,18 +161,18 @@ def cell_contraction(path_to_in, elem, node):
 	return t, Y.y, Ta, Ta_sim
 
 def save_XB(path_to_in, path_to_out):
-	for elem in range(64):
+	for elem in range(64, 108):
 		XB = np.zeros((1, 664), dtype=float)
 		for node in range(64):
 			_, Y, _, _ = cell_contraction(path_to_in, elem, node)
-			XB = np.vstack((XB, Y.y[0, :].reshape(1, -1)))
+			XB = np.vstack((XB, Y[0, :].reshape(1, -1)))
 
 		desu.write_txt(XB[1:, :], '%f', path_to_out + 'XB_elem_{}'.format(elem+1))
 
 	return
 
 def compute_ATP(path_to_in):
-	kxb = 0.019156
+	kxb = 0.01125 # 0.019156
 	t = np.arange(664)
 
 	xifile = path_to_in + 'xi.exdata'
@@ -196,4 +196,4 @@ def compute_ATP(path_to_in):
 		ATP.append( simps(It[:ti+1], t[:ti+1]) )
 	ATP = np.array(ATP).ravel()
 
-	return ATP
+	return It, ATP
