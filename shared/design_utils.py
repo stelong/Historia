@@ -50,9 +50,9 @@ def lhd_int(I, n_samp):
 
 	return H
 
-def split_dataset(X, name_out):
-	T = [M for M in np.vsplit(X, 4)]
-	for i in range(4):
+def split_dataset(X, parts, name_out):
+	T = [M for M in np.vsplit(X, parts)]
+	for i in range(parts):
 		write_txt(T[i], name_out + '_' + str(i+1))
 	return
 
@@ -70,3 +70,9 @@ def putlab(X, name_out):
 def get_minmax(X):
 	feat_dim = X.shape[1]
 	return np.hstack((np.asarray([np.min(X[:, i]) for i in range(feat_dim)]).reshape(-1, 1), np.asarray([np.max(X[:, i]) for i in range(feat_dim)]).reshape(-1, 1)))
+
+def repl_onechange(v, n_samp, mperc, pperc, component):
+	A = np.tile(v, (n_samp, 1))
+	comp_v = np.linspace(v[component]-mperc*v[component], v[component]+pperc*v[component], n_samp)
+	A[:, component] = comp_v
+	return A
