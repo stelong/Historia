@@ -3,42 +3,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-def get_col(color_name=None, with_compl=False):
+def get_col(color_name=None):
 	"""Material Design color palettes (only '100' and '900' variants).
 	Help: call with no arguments to see the list of available colors.
 	Kwarg:
 		- color_name: string representing the color's name
-		- with_compl: boolean. If True, returns color_name complementary color.
 	Output:
-		if not with_compl:
-			- color: list of two elements
-				[0] = lightest color '100'-variant (RGB-triplet in [0, 255])
-				[1] = darkest color '900'-variant (RGB-triplet in [0, 255])
-		else:
-			- color_annihilation: list of two elements:
-				[0] = color (darkest variant as RGB-triplet in [0, 255])
-				[1] = anticolor ([0] complementary color as RGB-triplet in [0, 255])
+		- color: list of two elements
+			[0] = lightest color '100'-variant (RGB-triplet in [0, 1])
+			[1] = darkest color '900'-variant (RGB-triplet in [0, 1])
 	"""
 	colors = {
-		'red' : [[255, 205, 210], [183, 28, 28], [28, 183, 183]],
-		'pink' : [[248, 187, 208], [136, 14, 79], [14, 136, 71]],
-		'purple' : [[225, 190, 231], [74, 20, 140], [86, 140, 20]],
-		'deep_purple' : [[209, 196, 233], [49, 27, 146], [124, 146, 27]],
-		'indigo' : [[197, 202, 233], [26, 35, 126], [126, 118, 26]],
-		'blue' : [[187, 222, 251], [13, 71, 161], [161, 102, 13]],
-		'light_blue' : [[179, 229, 252], [1, 87, 155], [155, 68, 1]],
-		'cyan' : [[178, 235, 242], [0, 96, 100], [100, 3, 0]],
-		'teal' : [[178, 223, 219], [0, 77, 64], [77, 0, 13]],
-		'green' : [[200, 230, 201], [27, 94, 32], [94, 27, 90]],
-		'light_green' : [[220, 237, 200], [51, 105, 30], [84, 30, 105]],
-		'lime' : [[240, 244, 195], [130, 119, 23], [23, 34, 130]],
-		'yellow' : [[255, 249, 196], [245, 127, 23], [23, 141, 245]],
-		'amber' : [[255, 236, 179], [255, 111, 0], [0, 145, 255]],
-		'orange' : [[255, 224, 178], [230, 81, 0], [0, 149, 230]],
-		'deep_orange' : [[255, 204, 188], [191, 54, 12], [12, 149, 191]],
-		'brown' : [[215, 204, 200], [62, 39, 35], [35, 58, 62]],
-		'gray' : [[245, 245, 245], [33, 33, 33], [33, 33, 33]],
-		'blue_gray' : [[207, 216, 220], [38, 50, 56], [56, 44, 38]]
+		'red' : [[255, 205, 210], [183, 28, 28]],
+		'pink' : [[248, 187, 208], [136, 14, 79]],
+		'purple' : [[225, 190, 231], [74, 20, 140]],
+		'deep_purple' : [[209, 196, 233], [49, 27, 146]],
+		'indigo' : [[197, 202, 233], [26, 35, 126]],
+		'blue' : [[187, 222, 251], [13, 71, 161]],
+		'light_blue' : [[179, 229, 252], [1, 87, 155]],
+		'cyan' : [[178, 235, 242], [0, 96, 100]],
+		'teal' : [[178, 223, 219], [0, 77, 64]],
+		'green' : [[200, 230, 201], [27, 94, 32]],
+		'light_green' : [[220, 237, 200], [51, 105, 30]],
+		'lime' : [[240, 244, 195], [130, 119, 23]],
+		'yellow' : [[255, 249, 196], [245, 127, 23]],
+		'amber' : [[255, 236, 179], [255, 111, 0]],
+		'orange' : [[255, 224, 178], [230, 81, 0]],
+		'deep_orange' : [[255, 204, 188], [191, 54, 12]],
+		'brown' : [[215, 204, 200], [62, 39, 35]],
+		'gray' : [[245, 245, 245], [33, 33, 33]],
+		'blue_gray' : [[207, 216, 220], [38, 50, 56]]
 	}
 	if not color_name:
 		print('\n=== Colors available are:')
@@ -46,24 +40,19 @@ def get_col(color_name=None, with_compl=False):
 			print('- ' + key)
 		return
 	else:
-		if not with_compl:
-			color = colors[color_name][:-1]
-			return color
-		else:
-			color_annihilation = colors[color_name][1:]
-			return color_annihilation
+		color = [[colors[color_name][i][j]/255 for j in range(3)] for i in range(2)]
+		return color
 
 def interp_col(color, n):
 	"""Linearly interpolate a color.
 	Args:
 		- color: list with two elements:
-			color[0] = lightest color variant (RGB-triplet in [0, 255])
-			color[1] = darkest color variant (RGB-triplet in [0, 255]).
+			color[0] = lightest color variant (get_col('color_name')[0])
+			color[1] = darkest color variant (get_col('color_name')[1]).
 		- n: number of desired output colors (n >= 2).
 	Output:
 		- lsc: list of n linearly scaled colors.
 	"""
-	color = [[color[i][j]/255 for j in range(3)] for i in range(2)]
 	c = [np.interp(list(range(1, n+1)), [1, n], [color[0][i], color[1][i]]) for i in range(3)]
 	lsc = [[c[0][i], c[1][i], c[2][i]] for i in range(n)]
 	return lsc
@@ -173,3 +162,9 @@ def plot_pvloop(S, RS):
 	plt.ylabel('Pressure [kPa]')
 	plt.show()
 	return
+
+def cline_extend(val, n):
+	return np.array(n*[val])
+
+def cline_join(val1, val2, n):
+	return np.linspace(val1, val2, n)
