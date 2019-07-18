@@ -196,4 +196,4 @@ def compute_ATP(path_to_in):
 		ATP.append( simps(It[:ti+1], t[:ti+1]) )
 	ATP = np.array(ATP).ravel()
 
-	return It, ATP
+	return t, It, ATP
