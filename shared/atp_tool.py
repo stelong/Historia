@@ -161,7 +161,7 @@ def cell_contraction(path_to_in, elem, node):
 	return t, Y.y, Ta, Ta_sim
 
 def save_XB(path_to_in, path_to_out):
-	for elem in range(64, 108):
+	for elem in range(108):
 		XB = np.zeros((1, 664), dtype=float)
 		for node in range(64):
 			_, Y, _, _ = cell_contraction(path_to_in, elem, node)
