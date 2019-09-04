@@ -72,7 +72,7 @@ class SVMCla:
 			D: (n, m)-shaped matrix, containing points sampled from a Latin hypercube that were mapped into '1' by the classifier.
 		"""
 		in_dim = self.X.shape[1]
-		I = np.hstack((np.asarray([np.min(self.X[:, i]) for i in range(in_dim)]).reshape(-1, 1), np.asarray([np.max(self.X[:, i]) for i in range(in_dim)]).reshape(-1, 1)))
+		I = desu.get_minmax(self.X)
 		D = np.zeros((1, in_dim), dtype=float)
 		while D[1:, :].shape[0] < n:
 			H = desu.lhd_int(I, n)
