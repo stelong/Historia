@@ -1,15 +1,12 @@
 import abstracthm as ahm
-from Historia.classifier import svm
 from Historia.emulator import gp
 from Historia.shared import design_utils as desu
-from Historia.shared import math_utils as matu
-from Historia.shared import mech_utils as mecu
 from Historia.shared import train_utils as trut
 import numpy as np
 import sys
 
 def main():
-	rat = 'sham'
+	rat = sys.argv[1]
 	cutoff = 5.5
 	maxno = 1
 	waveno = 1
