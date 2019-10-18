@@ -10,7 +10,7 @@ def main():
 	cutoff = 5.5
 	maxno = 1
 	waveno = 1
-	active_out_feat = [0, 1, 2, 4, 5, 7, 8, 11, 12]
+	active_out_feat = [0, 1, 4, 5, 7, 8, 11, 12]
 
 	s1 = 'match/' + rat + '/'
 	zs = desu.read_txt(s1 + 'zs', 'float64')[active_out_feat]
@@ -39,7 +39,7 @@ def main():
 
 	I = desu.get_minmax(emulator[0].X)
 
-	N = 200000
+	N = 400000
 	q = 10000
 	n = int(N/q)
 
