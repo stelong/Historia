@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import Matern, RBF
+from sklearn.gaussian_process.kernels import ConstantKernel as C, Matern, RBF
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
@@ -42,7 +42,7 @@ class GPEmul:
 
 		residuals = self.Y - self.mean.predict(self.X)
 
-		param_grid2 = {'kernel': [Matern(length_scale=in_dim*[1.0], nu=i) for i in [1.5, 2.5]] + [RBF(length_scale=in_dim*[1.0])]}
+		param_grid2 = {'kernel': [C()*Matern(length_scale=in_dim*[1.0], nu=i) for i in [1.5, 2.5]] + [C()*RBF(length_scale=in_dim*[1.0])]}
 		gs2 = GridSearchCV(GaussianProcessRegressor(n_restarts_optimizer=10), param_grid2,
 			n_jobs=-1, iid=False, cv=5, return_train_score=False)
 		gs2.fit(self.X, residuals)
@@ -73,14 +73,12 @@ class GPEmul:
 		with open(name + '.pkl', 'wb') as f:
 			pickle.dump(self, f)
 
-	def load(self, name):
+	@classmethod
+	def load(cls, name):
 		"""Load the emulator from a binary file.
 		Arg:
 			name: string representing the input file name.
 		"""
 		with open(name + '.pkl', 'rb') as f:
-			vars = pickle.load(f)
-		self.X = vars.X
-		self.Y = vars.Y
-		self.mean = vars.mean
-		self.gp = vars.gp
+			emul_obj = pickle.load(f)
+		return emul_obj
