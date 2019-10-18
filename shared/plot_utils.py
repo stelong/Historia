@@ -1,7 +1,10 @@
 import matplotlib.gridspec as grsp
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 
 def get_col(color_name=None):
 	"""Material Design color palettes (only '100' and '900' variants).
@@ -108,7 +111,7 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 	plt.show()
 	return
 
-def plot_pairwise_waves(XL, colors, xlabels):
+def plot_pairwise_waves(XL, colors, xlabels, rat, wave):
 	"""Plot a vector XL of overlapping high-dimensional datasets by means of pairwise components plotting.
 	Args:
 		- XL: list of L matrices with dimensions n*m_i, for i=1,...,L
@@ -131,6 +134,7 @@ def plot_pairwise_waves(XL, colors, xlabels):
 				axes[i, j].set_visible(False)
 	plt.figlegend(labels=['Initial space']+['wave {}'.format(k+1) for k in range(L-1)], loc='upper center')
 	plt.show()
+	#plt.savefig(rat + '_history_matching_' + str(wave) + '.png', bbox_inches='tight', dpi=300)
 	return
 
 def plot_pvloop(S, RS):
@@ -168,3 +172,30 @@ def cline_extend(val, n):
 
 def cline_join(val1, val2, n):
 	return np.linspace(val1, val2, n)
+
+def plot_linreg_surf(Xdata, Ydata, vis_dim_x, vis_dim_y, deg, n_points):
+	X = Xdata[:, vis_dim_x] 
+	y = Ydata[:, vis_dim_y] 
+
+	poly = PolynomialFeatures(degree=deg)
+	X_ = poly.fit_transform(X)
+
+	lr = LinearRegression(n_jobs=-1)
+	lr.fit(X_, y)
+
+	mn = np.min(X, axis=0)
+	mx = np.max(X, axis=0)
+	x1grid, x2grid = np.meshgrid(np.linspace(mn[0], mx[0], n_points), np.linspace(mn[1], mx[1], n_points))
+
+	points = np.transpose(np.vstack([x1grid.ravel(), x2grid.ravel()]))
+	points_ = poly.fit_transform(points)
+	yp = lr.predict(points_)
+	ygrid = yp.reshape(n_points, n_points)
+
+	fig = plt.figure(figsize=(14, 8))
+	ax = fig.add_subplot(111, projection='3d')
+	ax.scatter3D(X[:, 0], X[:, 1], y, c=y, cmap='Reds')
+	ax.plot_surface(x1grid, x2grid, ygrid, rstride=1, cstride=1, color='b', alpha=0.5)
+	plt.title('Linear regression with ' + str(deg) + '-degree polynomial')
+	plt.show()
+	return
