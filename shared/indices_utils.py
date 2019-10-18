@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.stats import zscore
 
 def diff(l1, l2):
 	return list(set(l1) - set(l2))
@@ -20,7 +19,7 @@ def restrict_kth_comp(data, k, ib, ub):
 			l.append(i)
 	return l
 
-def find_start_seq(index, feat_dim):
+def find_start_seq(index, feat_dim): # utility function for "whereq_whernot"
 	i = 0
 	while i < len(index):
 		if index[i:feat_dim+i] == list(range(feat_dim)):
@@ -42,14 +41,13 @@ def whereq_whernot(X, SX):
 	nl.sort()
 	return l, nl
 
-def filter_zscore(X):
+def filter_zscore(X, thre):
 	samp_dim = X.shape[0]
 	feat_dim = X.shape[1]
 	L = []
-	thre = 3.0
 	for j in range(feat_dim):
-		z = np.abs(zscore(X[:, j]))
-		L.append(list(np.where(z > 3)[0]))
-	l = union_many(L)
-	_, nl = whereq_whernot(X, X[l])
+		z = np.abs((X[:, j]-np.mean(X[:, j]))/np.std(X[:, j]))
+		L.append(list(np.where(z > thre)[0]))
+	nl = union_many(L)
+	_, l = whereq_whernot(X, X[nl])
 	return l, nl
