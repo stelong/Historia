@@ -10,7 +10,7 @@ def main():
 	cutoff = 5.5
 	maxno = 1
 	waveno = int(sys.argv[2])
-	active_out_feat = [0, 1, 2, 4, 5, 7, 8, 11, 12]
+	active_out_feat = [0, 1, 4, 5, 7, 8, 11, 12]
 
 	print('\n=== Extracting points to be simulated from NROY...')
 
