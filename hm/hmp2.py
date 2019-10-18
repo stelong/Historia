@@ -57,7 +57,7 @@ def main():
 	cutoff = 5.0
 	maxno = 1
 	waveno = int(sys.argv[2])
-	active_out_feat = [0, 1, 2, 4, 5, 7, 8, 11, 12]
+	active_out_feat = [0, 1, 4, 5, 7, 8, 11, 12]
 
 	s1 = 'match/' + rat + '/'
 	zs = desu.read_txt(s1 + 'zs', 'float64')[active_out_feat]
