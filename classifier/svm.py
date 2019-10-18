@@ -91,14 +91,12 @@ class SVMCla:
 		with open(name + '.pkl', 'wb') as f:
 			pickle.dump(self, f)
 
-	def load(self, name):
+	@classmethod
+	def load(cls, name):
 		"""Load the classifier from a binary file.
 		Arg:
 			name: string representing the input file name.
 		"""
 		with open(name + '.pkl', 'rb') as f:
-			vars = pickle.load(f)
-		self.X = vars.X
-		self.y = vars.y
-		self.scaler = vars.scaler
-		self.cla = vars.cla
+			clf_obj = pickle.load(f)
+		return clf_obj
