@@ -93,7 +93,7 @@ class GPEmulUtils:
 		Args:
 			- X: (n, m1)-shaped matrix
 			- Y: (n, m2)-shaped matrix
-			- active_out_feats = list of indices representing the output features to fit
+			- active_out_feats: list of indices representing the output features to fit
 			- name: string representing the prefix of the output file's/s' name/s.
 		"""
 		if active_out_feats is not None:
@@ -108,12 +108,12 @@ class GPEmulUtils:
 		return
 
 	@classmethod
-	"""Load GP emulator/s into a list.
-		Args:
-			- name: string representing the prefix of the output file's/s' name/s.
-			- active_out_feats = list of indices representing the output features to fit
-	"""
 	def load_emulators(cls, name, active_out_feats):
+		"""Load GP emulator/s into a list.
+		Args:
+			- name: string representing the prefix of the input file's/s' name/s.
+			- active_out_feats: list of indices representing the specific emulators to load.
+		"""
 		emulator = []
 		for i in active_out_feats:
 			emul = GPEmul.load(name + '_' + str(i))
