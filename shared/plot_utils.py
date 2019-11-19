@@ -118,23 +118,29 @@ def plot_pairwise_waves(XL, colors, xlabels, rat, wave):
 		- colors: list of L colors
 		- xlabels: list of n strings representing the name of X_is datasets' common features.
 	"""
+	handles, labels = (0, 0)
 	L = len(XL)
 	in_dim = XL[0].shape[1]
-	fig, axes = plt.subplots(nrows=in_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(20, 11.3))
-	for i, ax in enumerate(axes.flatten()):
-		for k in range(L):
-			sns.scatterplot(ax=ax, x=XL[k][:, i % in_dim], y=XL[k][:, i // in_dim], color=colors[k], edgecolor=colors[k])
-		if i // in_dim == in_dim - 1:
-			ax.set_xlabel(xlabels[i % in_dim])
-		if i % in_dim == 0:
-			ax.set_ylabel(xlabels[i // in_dim])
-	for i in range(in_dim):
-		for j in range(in_dim):
-			if j > i:
-				axes[i, j].set_visible(False)
-	plt.figlegend(labels=['Initial space']+['wave {}'.format(k+1) for k in range(L-1)], loc='upper center')
-	plt.show()
-	#plt.savefig(rat + '_history_matching_' + str(wave) + '.png', bbox_inches='tight', dpi=300)
+	fig, axes = plt.subplots(nrows=in_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(1.5*8.27, 1.5*11.69/2))
+	for t, ax in enumerate(axes.flatten()):
+		i = t % in_dim
+		j = t // in_dim
+		if j >= i:
+			sns.scatterplot(ax=ax, x=XL[0][:, i], y=XL[0][:, j], color=colors[0], edgecolor=colors[0], label='Initial space')
+			for k in range(1, L):
+				sns.scatterplot(ax=ax, x=XL[k][:, i], y=XL[k][:, j], color=colors[k], edgecolor=colors[k], label='wave {}'.format(k))
+				handles, labels = ax.get_legend_handles_labels()
+				ax.get_legend().remove()
+		else:
+			ax.set_axis_off()
+		if i == 0:
+			ax.set_ylabel(xlabels[j])
+		if j == in_dim - 1:
+			ax.set_xlabel(xlabels[i])
+		if i == in_dim-1 and j == 0:
+			ax.legend(handles, labels, loc='center')
+	# plt.show()
+	plt.savefig(rat + '_history_matching_' + str(wave) + '.png', dpi=300)
 	return
 
 def plot_pvloop(S, RS):
