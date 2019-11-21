@@ -17,7 +17,7 @@ This library contains the tools needed for building a multi-scale model of bi-ve
 To get a copy of the project on your local machine, type the following in you shell:
 
 ```
-user:~$ git clone https://github.com/stelong/Historia.git
+git clone https://github.com/stelong/Historia.git
 ```
 
 ### Prerequisites
