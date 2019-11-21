@@ -1,7 +1,6 @@
 # Historia
 
-This project provides a minimal and meaningful template for README files.
-Feel free to use it in your repositories. (Project description.)
+This library contains the tools needed for building a multi-scale model of bi-ventricular rat heart electromechanics. It also provides routines for constructing a Bayesian surrogate of the model.
 
 ---
 ## Information
@@ -23,7 +22,7 @@ username:~$ git clone https://github.com/stelong/Historia.git
 
 ### Prerequisites
 
-- diveripy
+- diversipy
 - matplotlib
 - numpy
 - Python 3
