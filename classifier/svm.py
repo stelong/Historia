@@ -89,7 +89,7 @@ class SVMCla:
 			name: string representing the output file name.
 		"""
 		with open(name + '.pkl', 'wb') as f:
-			pickle.dump(self, f)
+			pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 	@classmethod
 	def load(cls, name):
