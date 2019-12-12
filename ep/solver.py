@@ -1,4 +1,4 @@
-from Historia.ep.models import initialize as init
+from Historia.ep.model import initialize as init
 import numpy as np
 from scipy.integrate import solve_ivp
 
