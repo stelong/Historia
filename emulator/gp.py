@@ -69,7 +69,7 @@ class GPEmul:
 			name: string representing the output file name.
 		"""
 		with open(name + '.pickle', 'wb') as f:
-			pickle.dump(self, f)
+			pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
 		return
 
 	@classmethod
