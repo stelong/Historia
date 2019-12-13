@@ -5,12 +5,13 @@ from Historia.ep.model import initialize as init
 from Historia.shared import plot_utils as plut
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 def switch(case):
 	return {
-		'EXAMPLE 1': example1,
-		'EXAMPLE 2': example2,
-		'EXAMPLE 3': example3
+		'example1': example1,
+		'example2': example2,
+		'example3': example3
 	}.get(case, default)
 
 def default():
@@ -18,7 +19,7 @@ def default():
 	return
 
 def example1():
-	## case 'EXAMPLE 1': sham and ab comparison
+	## case 'example1': sham and ab comparison
 	
 	# initialise rat phenotypes vector
 	rat = ['sham', 'ab']
@@ -43,7 +44,7 @@ def example1():
 	axis.set_xlabel('Time (ms)')
 	axis.set_ylabel('V (mV)')
 	plt.legend()
-	plt.title('EXAMPLE 1 - Voltage')
+	plt.title('Example 1 - Voltage')
 	plt.show()
 
 	fig, axis = plt.subplots(1, 1)
@@ -60,7 +61,7 @@ def example1():
 	axis.set_xlabel('Time (ms)')
 	axis.set_ylabel('[Ca$^{2+}$]$_i$ ($\mu$M)')
 	plt.legend()
-	plt.title('EXAMPLE 1 - Calcium transient')
+	plt.title('Example 1 - Calcium transient')
 	plt.show()
 
 	fig, axis = plt.subplots(1, 1)
@@ -76,12 +77,12 @@ def example1():
 		axis.plot(S.t, S.Y[8, :], c=color[i], label=r)
 	axis.set_xlabel('Time (ms)')
 	plt.legend()
-	plt.title('EXAMPLE 1 - $Y_8$')
+	plt.title('Example 1 - $Y_8$')
 	plt.show()
 	return
 
 def example2():
-	## case 'EXAMPLE 2': single EP parameter perturbation
+	## case 'example2': single EP parameter perturbation
 
 	# initialise rat phenotype (choose either 'sham' or 'ab'), pacing frequency (choose either 1 or 6) and number of heart beats to simulate
 	rat = 'sham'
@@ -106,12 +107,12 @@ def example2():
 		# plot the solution
 		plt.plot(S.t, S.ca, c=lsc[i], label='param. +{}%'.format(int(100*(i+1)*0.05)))
 	plt.legend()
-	plt.title('EXAMPLE 2')
+	plt.title('Example 2 - Perturbing one specific EP parameter')
 	plt.show()
 	return
 
 def example3():
-	## case 'EXAMPLE 3': building new Calcium transients from a phenomenological equation
+	## case 'example3': building new Calcium transients from a phenomenological equation
 
 	# initialise rat phenotype (choose either 'sham' or 'ab'), pacing frequency (choose either 1 or 6) and number of heart beats to simulate
 	rat = 'sham'
@@ -135,7 +136,7 @@ def example3():
 	axis.plot(S.t, S.ca, c=blue)
 	axis.set_xlabel('Time (ms)')
 	axis.set_ylabel('[Ca$^{2+}$]$_i$ ($\mu$M)')
-	plt.title('EXAMPLE 3 - Calcium transient')
+	plt.title('Example 3 - Calcium transient')
 	plt.show()
 
 	# fit a phenomenological curve to the simulated Calcium transient
@@ -147,8 +148,8 @@ def example3():
 	bio_fit = C.bio
 
 	# biomarkers are close each other (the fit is good)
-	print(bio)
-	print(bio_fit)
+	print('\n=== Simulated Ca biomarkers: {}'.format(bio))
+	print('=== Fitted Ca biomarkers: {}\n'.format(bio_fit))
 
 	# plot the Calcium transient and the fitted phenomenological curve
 	fig, axis = plt.subplots(1, 1)
@@ -156,7 +157,7 @@ def example3():
 	axis.plot(C.t, C.ca, c=red, linewidth=2, label='fitted curve')
 	axis.set_xlabel('Time (ms)')
 	axis.set_ylabel('[Ca$^{2+}$]$_i$ ($\mu$M)')
-	plt.title('EXAMPLE 3 - Simulated Ca transient Vs Fitted Ca transient')
+	plt.title('Example 3 - Simulated Ca transient Vs Fitted Ca transient')
 	plt.legend()
 	plt.show()
 
@@ -184,14 +185,14 @@ def example3():
 				axis.plot(C.t, C.ca, c=lsc[i], linewidth=2, label=labels[i])
 	axis.set_xlabel('Time (ms)')
 	axis.set_ylabel('[Ca$^{2+}$]$_i$ ($\mu$M)')
-	plt.title('EXAMPLE 3 - Perturbing one specific Ca feature')
+	plt.title('Example 3 - Perturbing one specific Ca feature')
 	plt.legend()
 	plt.show()
 	return
 
 def main():
-	## Available examples are 'EXAMPLE 1', 'EXAMPLE 2', 'EXAMPLE 3'
-	case = 'EXAMPLE 3'
+	## Available examples are 'example1', 'example2', 'example3'
+	case = sys.argv[1]
 	switch(case)()
 
 if __name__ == "__main__":
