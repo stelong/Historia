@@ -104,14 +104,13 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 		if i // in_dim == out_dim - 1:
 			axis.set_xlabel(xlabels[i % in_dim])
 			axis.set_xlim(left=inf-0.3*delta, right=sup+0.3*delta)
-			# axis.ticklabel_format(axis='x', style='sci', scilimits=(0, 0))
 		if i % in_dim == 0:
 			axis.set_ylabel(ylabels[i // in_dim])
 	plt.suptitle('Sample dimension = {} points'.format(sample_dim))
 	plt.show()
 	return
 
-def plot_pairwise_waves(XL, colors, xlabels, rat, wave):
+def plot_pairwise_waves(XL, colors, xlabels):
 	"""Plot a vector XL of overlapping high-dimensional datasets by means of pairwise components plotting.
 	Args:
 		- XL: list of L matrices with dimensions n*m_i, for i=1,...,L
@@ -139,8 +138,7 @@ def plot_pairwise_waves(XL, colors, xlabels, rat, wave):
 			ax.set_xlabel(xlabels[i])
 		if i == in_dim-1 and j == 0:
 			ax.legend(handles, labels, loc='center')
-	# plt.show()
-	plt.savefig(rat + '_history_matching_' + str(wave) + '.png', dpi=300)
+	plt.show()
 	return
 
 def plot_pvloop(S, RS):
@@ -149,25 +147,26 @@ def plot_pvloop(S, RS):
 		- S: mechanics simulation solution class
 		- RS: last heart beat solution class
 	"""
+	c = get_col('blue')[1]
 	gs = grsp.GridSpec(2, 2)
 	fig = plt.figure(figsize=(14, 8))
 	for i in range(2):
 		ax = fig.add_subplot(gs[i, 0])
 		if i == 0:
-			ax.plot(RS.t, RS.lv_v, color='b', linewidth=1.0)
-			ax.plot(S.t, S.lv_v, color='b', linewidth=2.5)
+			ax.plot(RS.t, RS.lv_v, color=c, linewidth=1.0)
+			ax.plot(S.t, S.lv_v, color=c, linewidth=2.5)
 			plt.xlim(RS.t[0], S.t[-1])
 			plt.xlabel('Time [ms]')
 			plt.ylabel('LVV [$\mu$L]')
 		else:
-			ax.plot(RS.t, RS.lv_p, color='b', linewidth=1.0)
-			ax.plot(S.t, S.lv_p, color='b', linewidth=2.5)
+			ax.plot(RS.t, RS.lv_p, color=c, linewidth=1.0)
+			ax.plot(S.t, S.lv_p, color=c, linewidth=2.5)
 			plt.xlim(RS.t[0], S.t[-1])
 			plt.xlabel('Time [ms]')
 			plt.ylabel('LVP [kPa]')
 
 	ax = fig.add_subplot(gs[:, 1])
-	ax.plot(S.lv_v, S.lv_p, color='b', linewidth=2.5)
+	ax.plot(S.lv_v, S.lv_p, color=c, linewidth=2.5)
 	plt.xlabel('Volume [$\mu$L]')
 	plt.ylabel('Pressure [kPa]')
 	plt.show()
