@@ -9,8 +9,9 @@ from sklearn.preprocessing import PolynomialFeatures
 
 class GPEmul:
 	"""This class wraps the scikit-learn Gaussian Process (GP) regressor to build a GP-based emulator.
-	Firstly, a linear regression model (counting up to 3rd order interactions) is used to predict the mean of the data m(X). Then, a zero-mean GP is trained on the residuals Y - m(X).
-	The emulator's mean function and GP's 'kernel' component are automatically chosen to be the best scoring in a five-fold cross-validation test among all the possible kernel choices from a given grid.
+	Firstly, a linear regression model (counting up to 3rd order interactions) is used to predict the mean of the data m(X).
+	Then, a zero-mean GP is trained on the residuals Y - m(X).
+	The emulator's mean function and GP's 'kernel' component are automatically chosen to be the best scoring in a 5-fold cross-validation among all the possible kernel choices from a given grid.
 	"""
 	def __init__(self):
 		self.X = []
@@ -82,11 +83,9 @@ class GPEmul:
 			emul_obj = pickle.load(f)
 		return emul_obj
 
-
 class GPEmulUtils:
 	"""Utility class to extend GPEmul class functionality.
 	"""
-
 	@classmethod
 	def train(cls, X, Y, name, active_out_feats=None):
 		"""Train GP emulator/s.
