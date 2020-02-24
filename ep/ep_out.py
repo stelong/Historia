@@ -21,10 +21,10 @@ class PhenCalcium:
 		ca = ca[4:]
 
 		a0 = A_output(ca)
-		a0[2] = np.log(2)/a0[2]
+		a0[2] = a0[0]
 
-		self.a = curve_fit(f, self.t[1:], ca[1:], p0=a0)[0]
-		self.ca = np.insert(f(self.t[1:], *self.a), 0, self.a[0])
+		self.a = curve_fit(f, self.t, ca, p0=a0)[0]
+		self.ca = f(self.t, *self.a)
 
 	def get_bio(self):
 		"""Compute the 4 calcium biomarkers under study. This is analytically done when possible (DCa, PCa), otherwise numerically done (TP, RT50).
@@ -33,7 +33,7 @@ class PhenCalcium:
 		TP = PCa = RT50 = -1
 
 		try:
-			TP = brentq(df, self.t[1], self.t[-1], args=self.a)
+			TP = brentq(df, self.t[0], self.t[-1], args=self.a)
 		except:
 			pass
 
@@ -56,16 +56,7 @@ class PhenCalcium:
 		"""
 		self.a = a
 		self.t = t[4:] - 4
-		self.ca = np.insert(f(self.t[1:], *self.a), 0, self.a[0])
-
-	def check_ca(self):
-		"""Check whether the calcium repolarizes or not.
-		"""
-		pi = self.ca[0]
-		pm = f(self.bio[2]+self.bio[3], *self.a)
-		dh = (pm - pi)/2
-		if self.ca[-1] > pi+dh:
-			self.valid = 0
+		self.ca = f(self.t, *self.a)
 
 	def print_ca(self, f, stim):
 		"""Print to an opened file the entire calcium transiet with a precise syntax for 3D mechanics simulations.
@@ -73,10 +64,9 @@ class PhenCalcium:
 			- f: opened file object, usually a *.txt file
 			- stim: strictly positive integer, a tag for the specific calcium curve we are saving.
 		"""
-		f.write('ca{} 165 1 '.format(stim))
+		f.write('ca{} 166 1 '.format(stim))
 		np.savetxt(f, self.ca.reshape(1, -1), fmt='%f')
 
-# useful function 1
 def A_output(ca):
 	N = len(ca)
 	t = np.linspace(0, N-1, N)
@@ -96,14 +86,19 @@ def A_output(ca):
 		
 	return [DCa, PCa, RT50, TP]
 
-# phenomenological equation
+def f1(t, a):
+	return t/a[3]
+
+def f2(t, a):
+	T = 165
+	return (1 + a[2])*np.power(a[2]/(1 + a[2]), (t - a[3])/(T - a[3])) - a[2]
+
 def f(t, *a):
-	return (a[1] - a[0]) * np.power(a[3]/t + np.exp(a[2]*(t - a[3])), -1.0) + a[0]
+	return (a[1] - a[0])*np.power(np.power(f1(t, a), -1) + np.power(f2(t, a), -1), -1) + a[0]
 
-# useful function 2
 def df(t, a):
-	return a[2]*np.exp(a[2]*(t - a[3])) - a[3]/np.power(t, 2) 
+	T = 165
+	return 1/(1 + a[2])*(1/(T - a[3]))*np.log((1 + a[2])/a[2])*np.power((1 + a[2])/a[2], (t - a[3])/(T - a[3])) - a[3]/np.power(t, 2)
 
-# useful function 3
 def fm(t, a, pmin, pmax):
 	return f(t, *a) - 0.5*(pmin + pmax)
