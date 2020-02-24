@@ -21,8 +21,8 @@ class EPSolution:
 		self.nbeats = nbeats
 
 		stim_period = parameters[16]
-		self.t = np.arange(nbeats*stim_period)
-		tspan = [0.0, nbeats*stim_period-1.0]
+		self.t = np.arange(nbeats*stim_period+1)
+		tspan = [0.0, nbeats*stim_period]
 
 		Y0 = init.states(self.rat, self.hz)
 		c = self.model.initConsts(parameters)
