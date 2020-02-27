@@ -1,65 +1,37 @@
-from Historia.shared import design_utils as desu
 from Historia.mech import mech_out as glv
 from Historia.mech import scan_logfile as slf
+from Historia.shared import design_utils as desu
 import numpy as np
 
-def extract_features(path_in, dim, path_out, nc, ib):
-	XA = np.zeros(shape=(1, 8), dtype=float)
-	X = np.zeros(shape=(1, 8), dtype=float)
+def extract_features(path_in, dim, path_out, nc, ibc):
+	XA = np.zeros((0, 8), dtype=float)
+	X = np.zeros((0, 8), dtype=float)
 	YA = []
-	Y = np.zeros(shape=(1, 13), dtype=float)
-
+	Y = np.zeros((0, 13), dtype=float)
+	l = []
 	for i in range(dim):
 		tag = path_in + str(i+1) + '/output_log.txt'
 		S = slf.MECHSolution(tag)
 		try:
 			S.extract_loginfo()
 		except FileNotFoundError:
-			print('\n=== [Index: {}] Logfile not found! Don\'t worry about it, I will fix everything for you.'.format(i))
+			print('\n=== [Index: {}] Logfile not found!'.format(i+1))
 			continue
 
-		XA = np.vstack((XA, np.asarray(S.p)))
+		XA = np.vstack((XA, np.array(S.p)))
 
 		RS = glv.LeftVentricle()
-		RS.get_lvfeatures(S, nc, ib)
+		RS.get_lvfeatures(S, nc, ibc)
 
 		YA.append(RS.conv)
 		if RS.conv:
-			X = np.vstack((X, np.asarray(S.p)))
-			Y = np.vstack((Y, np.asarray(RS.f)))
+			l.append(i+1)
+			X = np.vstack((X, np.array(S.p)))
+			Y = np.vstack((Y, np.array(RS.f)))
 
-	desu.write_txt(XA[1:], '%f', path_out + '_inputs')
-	desu.write_txt(X[1:], '%f', path_out + '_conly_inputs')
+	desu.write_txt(XA, '%f', path_out + '_inputs')
+	desu.write_txt(X, '%f', path_out + '_conly_inputs')
 	desu.write_txt(YA, '%d', path_out + '_outputs')
-	desu.write_txt(Y[1:], '%f', path_out + '_conly_outputs')
-	return
-
-def extract_features_xhm(path_in, dim, path_out, nc, ib):
-	XA = np.zeros(shape=(1, 8), dtype=float)
-	X = np.zeros(shape=(1, 8), dtype=float)
-	YA = []
-	Y = np.zeros(shape=(1, 13), dtype=float)
-
-	for i in range(dim):
-		tag = path_in + str(i+1) + '/output_log.txt'
-		S = slf.MECHSolution(tag)
-		try:
-			S.extract_loginfo()
-		except FileNotFoundError:
-			continue
-
-		XA = np.vstack((XA, np.asarray(S.p)))
-
-		RS = glv.LeftVentricle()
-		RS.get_lvfeatures(S, nc, ib)
-
-		YA.append(RS.conv)
-		if RS.conv:
-			X = np.vstack((X, np.asarray(S.p)))
-			Y = np.vstack((Y, np.asarray(RS.f)))
-
-	desu.write_txt(XA[1:], '%f', path_out + '_allin')
-	desu.write_txt(X[1:], '%f', path_out + '_in')
-	desu.write_txt(YA, '%d', path_out + '_allout')
-	desu.write_txt(Y[1:], '%f', path_out + '_out')
+	desu.write_txt(Y, '%f', path_out + '_conly_outputs')
+	desu.write_txt(l, '%d', path_out + '_lconv')
 	return
