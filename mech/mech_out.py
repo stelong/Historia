@@ -1,9 +1,8 @@
 from Historia.shared import math_utils as matu
-import matplotlib.pyplot as plt
 import numpy as np
 
 class LeftVentricle:
-	"""This class implements the left ventricle (LV) features under study.
+	"""This class implements the left ventricular (LV) pump function.
 	"""
 	def __init__(self):
 		self.conv = 0
@@ -14,10 +13,10 @@ class LeftVentricle:
 		self.f = []
 
 	def get_lvfeatures(self, S, nc, ibc):
-		"""Compute the LV features from the last heart beat.
+		"""Extract the LV features from the last heart beat.
 		Args:
-			S: mechanics solution class object obtained through the dedicated module 'scan_logfile.py'
-			nc: number of cycles we run the mechanics for
+			S: mechanics solution object obtained through the dedicated module 'scan_logfile.py'
+			nc: number of simulated heart beats
 			ibc: scalar in [0, 1], representing the inferior bound constraint for Tedv output feature calculation.
 		"""
 		if S.conv:
@@ -37,7 +36,7 @@ class LeftVentricle:
 			if self.conv:
 				M = []
 				for i in range(4):
-					M.append(isl_ranges(np.where(np.asarray(v) == i+1)[0], cp[i]))
+					M.append(isl_ranges(np.where(np.array(v) == i+1)[0], cp[i]))
 
 				ind = np.sort(np.concatenate([np.reshape(M[i], cp[i]*2) for i in range(4)], axis=0))
 	
@@ -66,7 +65,7 @@ class LeftVentricle:
 				m = max(self.lv_p)
 				ind_m = self.lv_p.index(m)
 
-				ps1 = list(np.where(np.asarray(self.phase) == 1)[0])
+				ps1 = list(np.where(np.array(self.phase) == 1)[0])
 				lvv1 = [self.lv_v[i] for i in ps1]
 
 				p1 = max(lvv1)          # EDV    (end-diastolic volume)
@@ -81,7 +80,7 @@ class LeftVentricle:
 				t2 = [S.t[i] for i in range(ind_r[4], ind_r[7]+1)]
 				
 				try:
-					ind_b = np.where((np.asarray(lvv2)-p2)/(p1-p2) >= ibc)[0][0]
+					ind_b = np.where((np.array(lvv2)-p2)/(p1-p2) >= ibc)[0][0]
 					p8 = t2[ind_b] - time[3]  # Tedv (diastolic time for (LVV-ESV)/(EDV-ESV) >= ibc)
 				except:
 					p8 = p7
@@ -94,7 +93,6 @@ class LeftVentricle:
 
 				self.f = [p1, p2, p3, p4, p5, p6, p7, p8, q1, q2, q3, q4, q5]
 
-# Useful function 1
 def ph_counter(phase):
 	n = len(phase)
 
@@ -112,13 +110,12 @@ def ph_counter(phase):
 
 	return cp
 
-# Useful function 2
 def isl_ranges(l, n_isl):
 	len_l = len(l)
 	islands = 0
 	i = 1
 
-	M = np.zeros(shape=(n_isl, 2), dtype=int)
+	M = np.zeros((n_isl, 2), dtype=int)
 	M[0, 0] = l[0]
 	M[-1, -1] = l[-1]
 
