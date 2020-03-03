@@ -87,7 +87,7 @@ class GPEmulUtils:
 	"""Utility class to extend GPEmul class functionality.
 	"""
 	@classmethod
-	def train(cls, X, Y, name, active_out_feats=None):
+	def build_emulator(cls, X, Y, name, active_out_feats=None):
 		"""Train GP emulator/s.
 		Args:
 			- X: (n, m1)-shaped matrix
@@ -107,14 +107,17 @@ class GPEmulUtils:
 		return
 
 	@classmethod
-	def load_emulators(cls, name, active_out_feats):
-		"""Load GP emulator/s into a list.
+	def load_emulator(cls, name, active_out_feats=None):
+		"""Load GP emulator/s.
 		Args:
 			- name: string representing the prefix of the input file's/s' name/s.
 			- active_out_feats: list of indices representing the specific emulators to load.
 		"""
-		emulator = []
-		for i in active_out_feats:
-			emul = GPEmul.load(name + '_' + str(i))
-			emulator.append(emul)
+		if active_out_feats is not None:
+			emulator = []
+			for i in active_out_feats:
+				emul = GPEmul.load(name + '_' + str(i))
+				emulator.append(emul)
+		else:
+			emulator = GPEmul.load(name)
 		return emulator
