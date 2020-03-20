@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+from scipy.stats import multivariate_normal
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import ConstantKernel as C, Matern, RBF
 from sklearn.linear_model import LinearRegression
@@ -8,10 +9,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PolynomialFeatures
 
 class GPEmul:
-	"""This class wraps the scikit-learn Gaussian Process (GP) regressor to build a GP-based emulator.
+	"""This class wraps the scikit-learn Gaussian process (GP) regressor to build a GP-based emulator (GPE).
 	Firstly, a linear regression model (counting up to 3rd order interactions) is used to predict the mean of the data m(X).
 	Then, a zero-mean GP is trained on the residuals Y - m(X).
-	The emulator's mean function and GP's 'kernel' component are automatically chosen to be the best scoring in a 5-fold cross-validation among all the possible kernel choices from a given grid.
+	The emulator's mean function and GP kernel components are automatically chosen to be the best scoring in a 5-fold cross-validation with an exhaustive search over a predefined grid.
 	"""
 	def __init__(self):
 		self.X = []
@@ -20,7 +21,7 @@ class GPEmul:
 		self.gp = []
 
 	def fit(self, X, Y):
-		"""Fit a GP regressor on the training set (X, Y).
+		"""Fit a GPE on the training dataset (X, Y).
 		Args:
 			- X: (n, m1)-shaped matrix
 			- Y: (n, m2)-shaped matrix.
@@ -51,21 +52,31 @@ class GPEmul:
 		return
 
 	def predict(self, X_new):
-		"""Predict the output of the mapping F:X->Y for each input point in a new set.
+		"""Point-wise predictions with uncertainty from the GPE posterior distribution at new input points X_new.
 		Arg:
-			X_new: (n, m1)-shaped matrix.
-		Kwarg:
-			with_std: boolean, defining whether to output also the std or not.
-		Output:
-			- (n, m2)-shaped matrix of GP mean values, if with_std=False
-			- (n,)-, (n,)-shaped vectors of respectively GP mean and GP std values, if with_std=True.
-			NOTE: for the 'with_std=True' case, the GP must be trained on a single-component output, e.g. (X, Y[:, i]).
+			X_new: (n*, m1)-shaped matrix.
+		Outputs:
+			- (n*, m2)-shaped matrix of GPE posterior predicted mean values
+			- (n*,)-shaped vector of GPE posterior predicted standard deviations.
 		"""
 		res, std = self.gp.predict(X_new, return_std=True)
 		return self.mean.predict(X_new) + res, std
 
+	def sample(self, X_new, n_samples, seed):
+		"""Sample predictions from the GPE posterior distribution at new input points X_new.
+		Args:
+			- X_new: (n*, m1)-shaped matrix
+			- n_samples: number of points to sample
+			- seed: seed for the random generator (reproducibility).
+		Output:
+			(n*, n_samples)-shaped matrix of GPE posterior predicted values. 
+		"""
+		res, cov = self.gp.predict(X_new, return_cov=True)
+		mean = self.mean.predict(X_new)
+		return multivariate_normal.rvs(res+mean, cov, size=n_samples, random_state=seed).T
+
 	def save(self, name):
-		"""Save the emulator into a binary file.
+		"""Save the GP emulator into a binary file.
 		Arg:
 			name: string representing the output file name.
 		"""
@@ -75,7 +86,7 @@ class GPEmul:
 
 	@classmethod
 	def load(cls, name):
-		"""Load the emulator from a binary file.
+		"""Load the GP emulator from a binary file.
 		Arg:
 			name: string representing the input file name.
 		"""
