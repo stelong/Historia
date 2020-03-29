@@ -57,18 +57,9 @@ class PhenCalcium:
 			- t: (n,)-shaped vector, representing the time points at which we want to observe the calcium concentration.
 			- a: list of 4 elements, representing the parameters to be plugged-into the phenomenological equation.
 		"""
+		self.t = t
 		self.a = a
-		self.t = t[4:] - 4
 		self.ca = f(self.t, *self.a)
-
-	def print_ca(self, f, stim):
-		"""Print to an opened file the entire calcium transiet with a precise syntax for 3D mechanics simulations.
-		Args:
-			- f: opened file object, usually a *.txt file
-			- stim: strictly positive integer, a tag for the specific calcium curve we are saving.
-		"""
-		f.write('ca{} 166 1 '.format(stim))
-		np.savetxt(f, self.ca.reshape(1, -1), fmt='%.5f')
 
 def A_output(ca):
 	N = len(ca)
