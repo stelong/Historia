@@ -32,9 +32,10 @@ class MECHSolution:
 		par5 = re.compile('[-]ca50\s+=\s+(\S+)$')
 		par6 = re.compile('[-]kxb\s+=\s+(\S+)$')
 		par7 = re.compile('[-]koff\s+=\s+(\S+)$')
-		par8 = re.compile('[-]Tref\s+=\s+(\S+)$')
+		par8 = re.compile('[-]beta1\s+=\s+(\S+)$')
+		par9 = re.compile('[-]Tref\s+=\s+(\S+)$')
 
-		c1 = p = ap = z = ca50 = kxb = koff = Tref = lv_v0 = conv = 0
+		c1 = p = ap = z = ca50 = kxb = koff = beta1 = Tref = lv_v0 = conv = 0
 
 		f = open(self.tag, 'r')
 		line = f.readlines()
@@ -104,7 +105,15 @@ class MECHSolution:
 			if mp8 == None:
 				i = i + 1
 			else:
-				Tref = float(mp8.groups()[0])
+				beta1 = float(mp8.groups()[0])
+				break
+
+		while i < n:
+			mp9 = re.search(par9, line[i])
+			if mp9 == None:
+				i = i + 1
+			else:
+				Tref = float(mp9.groups()[0])
 				break
 
 		while i < n:
@@ -130,7 +139,7 @@ class MECHSolution:
 
 			i = i + 1
 
-		self.p = [p, ap, z, c1, ca50, kxb, koff, Tref]
+		self.p = [p, ap, z, c1, ca50, kxb, koff, beta1, Tref]
 		self.lv_v = [x + lv_v0 for x in lv_dv]
 
 		f.close()
