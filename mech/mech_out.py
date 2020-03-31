@@ -12,7 +12,7 @@ class LeftVentricle:
 		self.lv_p = []
 		self.f = []
 
-	def get_lvfeatures(self, S, nc, ibc):
+	def get_lvfeatures(self, S, nc):
 		"""Extract the LV features from the last heart beat.
 		Args:
 			S: mechanics solution object obtained through the dedicated module 'scan_logfile.py'
@@ -76,22 +76,13 @@ class LeftVentricle:
 				p6 = time[5] - time[4]  # IVRT   (isovolumetric relaxation time)
 				p7 = time[7] - time[4]  # Tdiast (diastolic time)
 
-				lvv2 = [S.lv_v[i] for i in range(ind_r[4], ind_r[7]+1)]
-				t2 = [S.t[i] for i in range(ind_r[4], ind_r[7]+1)]
-				
-				try:
-					ind_b = np.where((np.array(lvv2)-p2)/(p1-p2) >= ibc)[0][0]
-					p8 = t2[ind_b] - time[3]  # Tedv (diastolic time for (LVV-ESV)/(EDV-ESV) >= ibc)
-				except:
-					p8 = p7
-
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
 				q3 = S.lv_p[ind_r[3]]		    # ESP   (end-systolic pressure)
 				q4 = max(dP)                    # maxdP (maximum pressure rise rate) 
 				q5 = min(dP)                    # mindP (maximum pressure decay rate)
 
-				self.f = [p1, p2, p3, p4, p5, p6, p7, p8, q1, q2, q3, q4, q5]
+				self.f = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4, q5]
 
 def ph_counter(phase):
 	n = len(phase)
