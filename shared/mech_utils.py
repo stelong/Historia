@@ -3,11 +3,11 @@ from Historia.mech import scan_logfile as slf
 from Historia.shared import design_utils as desu
 import numpy as np
 
-def extract_features(path_in, dim, path_out, nc, ibc):
-	XA = np.zeros((0, 8), dtype=float)
-	X = np.zeros((0, 8), dtype=float)
+def extract_features(path_in, dim, path_out, nc):
+	XA = np.zeros((0, 9), dtype=float)
+	X = np.zeros((0, 9), dtype=float)
 	YA = []
-	Y = np.zeros((0, 13), dtype=float)
+	Y = np.zeros((0, 12), dtype=float)
 	l = []
 	for i in range(dim):
 		tag = path_in + str(i+1) + '/output_log.txt'
@@ -21,7 +21,7 @@ def extract_features(path_in, dim, path_out, nc, ibc):
 		XA = np.vstack((XA, np.array(S.p)))
 
 		RS = glv.LeftVentricle()
-		RS.get_lvfeatures(S, nc, ibc)
+		RS.get_lvfeatures(S, nc)
 
 		YA.append(RS.conv)
 		if RS.conv:
