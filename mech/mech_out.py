@@ -16,8 +16,7 @@ class LeftVentricle:
 		"""Extract the LV features from the last heart beat.
 		Args:
 			S: mechanics solution object obtained through the dedicated module 'scan_logfile.py'
-			nc: number of simulated heart beats
-			ibc: scalar in [0, 1], representing the inferior bound constraint for Tedv output feature calculation.
+			nc: number of simulated heart beats.
 		"""
 		if S.conv:
 			v = []
