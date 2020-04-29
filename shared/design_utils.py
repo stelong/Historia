@@ -1,13 +1,39 @@
 import numpy as np
-from scipy.stats import uniform
 
-def write_txt(X, fmtstr, name_out):
-	with open(name_out + '.txt', 'w') as f:
-		np.savetxt(f, X, fmt=fmtstr)
+def get_minmax(X):
+	n_features = X.shape[1]
+	return np.hstack((
+		np.array([np.min(X[:, j]) for j in range(n_features)]).reshape(-1, 1),
+		np.array([np.max(X[:, j]) for j in range(n_features)]).reshape(-1, 1)
+	))
+
+def lhd(I, n_samples):
+	n_params = I.shape[0]
+	H = np.zeros((n_samples, n_params))
+	for j in range(n_params):
+		u = np.random.random_sample(n_samples)
+		b = np.arange(n_samples)
+		np.random.shuffle(b)
+		d = (b + u)/n_samples
+		H[:, j] = I[j, 0] + (I[j, 1] - I[j, 0])*d
+	return H
+
+def split_dataset(X, n_splits, name_out):
+	T = [M for M in np.vsplit(X, n_splits)]
+	for i in range(parts):
+		write_txt(T[i], name_out + '_' + str(i+1))
 	return
 
-def read_txt(name_in, dtypestr):
-	return np.loadtxt(name_in + '.txt', dtype=np.dtype(dtypestr))
+def put_labels(X, name_out):
+	n_samples = X.shape[0]
+	n_params = X.shape[1]
+	labels = ['-p', '-ap', '-z', '-c1', '-ca50', '-kxb', '-koff', '-Tref']
+	with open(name_out + '.txt', 'w') as f:
+		for i in range(n_samples):
+			for j in range(n_params):
+				f.write('{} {:g} '.format(labels[j], X[i, j]))
+			f.write('\n')
+	return
 
 def read_labels(name_in):
 	labels = []
@@ -15,61 +41,6 @@ def read_labels(name_in):
 		for line in f:
 			labels.append(line.replace('\n', ''))
 	return labels
-
-def lhd(p0, E, n_samp):
-	pmin = pmax = p0
-	n_par = len(p0)
-	pmin = [pmin[i] - 0.01*E[i, 0]*pmin[i] for i in range(n_par)]
-	pmax = [pmax[i] + 0.01*E[i, 1]*pmax[i] for i in range(n_par)]
-
-	D = np.zeros(shape=(n_samp, n_par))
-	H = np.zeros(shape=(n_samp, n_par))
-	dp = 1./n_samp
-	for j in range(n_par):
-		for i in range(n_samp):
-			a = i*dp
-			D[i, j] = uniform.rvs(loc=a, scale=dp, size=1)
-
-		D[:, j] = np.random.permutation(D[:, j])
-		H[:, j] = pmin[j] + (pmax[j] - pmin[j])*D[:, j]
-
-	return H
-
-def lhd_int(I, n_samp):
-	n_par = I.shape[0]
-	D = np.zeros(shape=(n_samp, n_par))
-	H = np.zeros(shape=(n_samp, n_par))
-	dp = 1./n_samp
-	for j in range(n_par):
-		for i in range(n_samp):
-			a = i*dp
-			D[i, j] = uniform.rvs(loc=a, scale=dp, size=1)
-
-		D[:, j] = np.random.permutation(D[:, j])
-		H[:, j] = I[j, 0] + (I[j, 1] - I[j, 0])*D[:, j]
-
-	return H
-
-def split_dataset(X, parts, name_out):
-	T = [M for M in np.vsplit(X, parts)]
-	for i in range(parts):
-		write_txt(T[i], name_out + '_' + str(i+1))
-	return
-
-def putlab(X, name_out):
-	n_samp = X.shape[0]
-	n_par = X.shape[1]
-	labels = ['-p', '-ap', '-z', '-c1', '-ca50', '-kxb', '-koff', '-Tref']
-	with open(name_out + '.txt', 'w') as f:
-		for i in range(n_samp):
-			for j in range(n_par):
-				f.write('{} {:g} '.format(labels[j], X[i, j]))
-			f.write('\n')
-	return
-
-def get_minmax(X):
-	feat_dim = X.shape[1]
-	return np.hstack((np.asarray([np.min(X[:, i]) for i in range(feat_dim)]).reshape(-1, 1), np.asarray([np.max(X[:, i]) for i in range(feat_dim)]).reshape(-1, 1)))
 
 def repl_onechange(v, n_samp, mperc, pperc, component):
 	A = np.tile(v, (n_samp, 1))
