@@ -1,12 +1,13 @@
 import numpy as np
+import pandas as pd
 import pickle
 from scipy.stats import multivariate_normal
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import ConstantKernel as C, Matern, RBF
+from sklearn.gaussian_process.kernels import ConstantKernel as C, Matern, RBF, WhiteKernel
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 class GPEmul:
 	"""This class wraps the scikit-learn Gaussian process (GP) regressor to build a GP-based emulator (GPE).
@@ -31,23 +32,41 @@ class GPEmul:
 
 		in_dim = self.X.shape[1]
 
-		pipe = Pipeline([
-    		('poly', PolynomialFeatures()),
-        	('lr', LinearRegression(n_jobs=-1))
+		pipe1 = Pipeline([
+			('scaler', StandardScaler()),
+    		('poly', PolynomialFeatures(include_bias=False)),
+        	('lr', LinearRegression(fit_intercept=True, n_jobs=-1))
 		])
-
 		param_grid1 = {'poly__degree': [1, 2, 3]}
-		gs1 = GridSearchCV(pipe, param_grid1,
-			n_jobs=-1, iid=False, cv=5, return_train_score=False)
+		
+		gs1 = GridSearchCV(pipe1, param_grid1, n_jobs=-1, cv=5, return_train_score=False)
 		gs1.fit(self.X, self.Y)
 		self.mean = gs1.best_estimator_
 
+		df1 = pd.DataFrame(gs1.cv_results_)
+		print(df1.loc[df1['rank_test_score']==1][['params', 'mean_test_score']])
+
 		residuals = self.Y - self.mean.predict(self.X)
 
-		param_grid2 = {'kernel': [C()*Matern(length_scale=in_dim*[1.0], nu=i) for i in [1.5, 2.5]] + [C()*RBF(length_scale=in_dim*[1.0])]}
-		gs2 = GridSearchCV(GaussianProcessRegressor(n_restarts_optimizer=10), param_grid2, n_jobs=-1, cv=5)
+		pipe2 = Pipeline([
+			('scaler', self.mean[0]),
+			('gp', GaussianProcessRegressor(n_restarts_optimizer=10))
+		])
+		lsc_inf = 1e-05
+		lsc_sup = 10.0
+		initial_lsc = (lsc_sup - lsc_inf)*np.random.rand(in_dim) + lsc_inf
+		param_grid2 = {'gp__kernel':
+			[C()*RBF(length_scale=initial_lsc, length_scale_bounds=(lsc_inf, lsc_sup)) + WhiteKernel()] +
+			[C()*Matern(length_scale=initial_lsc, length_scale_bounds=(lsc_inf, lsc_sup), nu=i) + WhiteKernel() for i in [1.5, 2.5]]
+		}
+		
+		gs2 = GridSearchCV(pipe2, param_grid2, n_jobs=-1, cv=5)
 		gs2.fit(self.X, residuals)
 		self.gp = gs2.best_estimator_
+
+		df2 = pd.DataFrame(gs2.cv_results_)
+		print(df2.loc[df1['rank_test_score']==1][['params', 'mean_test_score']])
+
 		return
 
 	def predict(self, X_new):
