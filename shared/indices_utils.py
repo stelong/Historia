@@ -42,12 +42,11 @@ def whereq_whernot(X, SX):
 	return l, nl
 
 def filter_zscore(X, thre):
-	samp_dim = X.shape[0]
 	feat_dim = X.shape[1]
 	L = []
 	for j in range(feat_dim):
 		z = np.abs((X[:, j]-np.mean(X[:, j]))/np.std(X[:, j]))
-		L.append(list(np.where(z > thre)[0]))
+		L.append(np.where(z > thre)[0])
 	nl = union_many(L)
-	_, l = whereq_whernot(X, X[nl])
+	l = diff(range(X.shape[0]), nl)
 	return l, nl
