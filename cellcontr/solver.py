@@ -3,7 +3,8 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 class CONTRSolution:
-	"""This class implements the solution of Land et al. (2012) cellular contraction model*.
+	"""
+	This class implements the solution of Land et al. (2012) cellular contraction model*.
 	*https://physoc.onlinelibrary.wiley.com/doi/full/10.1113/jphysiol.2012.231928
 	"""
 	def __init__(self, Cai, c_dict):
@@ -15,7 +16,8 @@ class CONTRSolution:
 			for key in p_dict.keys():
 				self.constant[key] = p_dict[key]
 		
-		self.t = np.arange(2*len(self.Cai))
+		# self.t = np.arange(2*len(self.Cai))
+		self.t = np.arange(len(self.Cai))
 		tspan = [0, self.t[-1]]
 		Y0 = Land2012.initStates()
 		Y = solve_ivp(fun=lambda t, y: Land2012.computeRates(t, y, self.Cai, self.constant), t_span=tspan, y0=Y0, method='BDF', t_eval=self.t, max_step=1.0)
