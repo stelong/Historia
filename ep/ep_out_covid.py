@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import brentq, curve_fit
 
 class PhenCalcium:
-	"""This class implements the calcium transient phenomenological, 4-parameter non-linear equation.
+	"""This class implements the calcium transient phenomenological, 6-parameter non-linear equation.
 	"""
 	def __init__(self):
 		self.valid = 1
@@ -38,8 +38,7 @@ class PhenCalcium:
 		except:
 			RT50 = -1
 
-		self.bio = [DCa, AMPL, RT50, Tpeak]
-
+		self.bio = [DCa, AMPL, Tpeak, RT50]
 		if self.bio[2] == -1:
 			self.valid = 0
 
@@ -55,11 +54,12 @@ class PhenCalcium:
 		"""Build a calcium curve evaluating the phenomenological equation into (t, a).
 		Args:
 			- t: (n,)-shaped vector, representing the time points at which we want to observe the calcium concentration.
-			- a: list of 4 elements, representing the parameters to be plugged-into the phenomenological equation.
+			- a: list of 6 elements, representing the parameters to be plugged-into the phenomenological equation.
 		"""
 		self.t = t
 		self.a = a
 		self.ca = f(self.t, *self.a)
+
 
 def A_output(ca):
 	N = len(ca)
@@ -77,10 +77,12 @@ def A_output(ca):
 			RT50 = t[j] - TP
 			break
 		j += 1
+
 	AMPL = PCA - DCA
 	Tpeak = TP - t[4]
 
 	return [DCA, AMPL, RT50, Tpeak]
+	
 
 def f1(t, Delta_t1, tp, Delta_t2, T, DCA, AMPL, beta, d, gamma):
 	return (d*np.power(-Delta_t1, 2) + AMPL)*(1 - np.power(1 - t/(tp - Delta_t1), 1/3)) + DCA
