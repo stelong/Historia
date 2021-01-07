@@ -14,8 +14,6 @@ A set of more or less powerful tools I developed during my PhD for more or less 
 ---
 ## Getting Started
 
-To get a copy of the project on your local machine, type the following in you shell:
-
 ```
 git clone https://github.com/stelong/Historia.git
 ```
