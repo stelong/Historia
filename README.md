@@ -22,13 +22,13 @@ git clone https://github.com/stelong/Historia.git
 
 ## Prerequisites
 
-** diversipy
-** matplotlib
-** numpy
-** Python3
-** scikit-learn
-** scipy
-** seaborn
+* diversipy
+* matplotlib
+* numpy
+* Python3
+* scikit-learn
+* scipy
+* seaborn
 
 ---
 ## Contributing
