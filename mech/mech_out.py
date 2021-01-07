@@ -1,5 +1,5 @@
-from Historia.shared import math_utils as matu
 import numpy as np
+
 
 class LeftVentricle:
 	"""This class implements the left ventricular (LV) pump function.
@@ -79,11 +79,12 @@ class LeftVentricle:
 
 				q1 = m                          # PeakP (peak pressure)
 				q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
-				q3 = S.lv_p[ind_r[3]]		    # ESP   (end-systolic pressure)
+				q3 = S.lv_p[ind_r[3]]           # ESP   (end-systolic pressure)
 				q4 = max(dP)                    # maxdP (maximum pressure rise rate) 
 				q5 = min(dP)                    # mindP (maximum pressure decay rate)
 
 				self.f = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4, q5]
+
 
 def ph_counter(phase):
 	n = len(phase)
@@ -102,6 +103,7 @@ def ph_counter(phase):
 
 	return cp
 
+
 def isl_ranges(l, n_isl):
 	len_l = len(l)
 	islands = 0
@@ -119,6 +121,7 @@ def isl_ranges(l, n_isl):
 		i = i + 1
 
 	return M
+
 
 def check_der(y):
 	n = len(y)
