@@ -37,7 +37,7 @@ def put_labels(X, name_out):
 
 def read_labels(name_in):
 	labels = []
-	with open(name_in + '.txt', 'r') as f:
+	with open(name_in, 'r') as f:
 		for line in f:
 			labels.append(line.replace('\n', ''))
 	return labels
