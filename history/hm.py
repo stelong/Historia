@@ -1,7 +1,7 @@
 import diversipy as dp
 from Historia.shared.design_utils import get_minmax 
 from Historia.shared.indices_utils import diff, whereq_whernot
-from Historia.shared.jsonfiles import save_json, load_json
+from Historia.shared.jsonfiles_utils import save_json, load_json
 import matplotlib.gridspec as grsp
 import matplotlib.pyplot as plt
 import numpy as np
