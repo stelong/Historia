@@ -60,7 +60,9 @@ class LeftVentricle:
 
 				time = [S.t[i] for i in ind_r]
 
-				dP = matu.der(self.t, self.lv_p)
+				dP = np.gradient(self.lv_p, self.t)
+				dP = check_der(dP)
+
 				m = max(self.lv_p)
 				ind_m = self.lv_p.index(m)
 
@@ -117,3 +119,16 @@ def isl_ranges(l, n_isl):
 		i = i + 1
 
 	return M
+
+def check_der(y):
+	n = len(y)
+	delta = y[:-1] - y[1:]
+	mean, std = np.mean(delta), np.std(delta)
+	l = list(np.where(np.abs(delta) > mean+3*std)[0])
+	if l:
+		for idx in l:
+			if delta[idx] > 0:
+				y[idx+1] = y[idx]
+			elif delta[idx] < 0:
+				y[idx] = y[idx+1]
+	return y
