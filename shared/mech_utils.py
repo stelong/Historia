@@ -2,6 +2,7 @@ from Historia.mech import mech_out as glv
 from Historia.mech import scan_logfile as slf
 import numpy as np
 
+
 def extract_features(path_in, dim, path_out, nc):
 	XA = np.zeros((0, 9), dtype=float)
 	X = np.zeros((0, 9), dtype=float)
@@ -33,4 +34,5 @@ def extract_features(path_in, dim, path_out, nc):
 	np.savetxt(path_out + '_outputs.txt', YA, fmt='%d')
 	np.savetxt(path_out + '_conly_outputs.txt', Y, fmt='%.6f')
 	np.savetxt(path_out + '_lconv.txt', l, fmt='%d')
-	return
+	
+	return None
