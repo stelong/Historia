@@ -60,7 +60,7 @@ def interp_col(color, n):
 	lsc = [[c[0][i], c[1][i], c[2][i]] for i in range(n)]
 	return lsc
 
-def plot_pairwise(Xdata, xlabels):
+def plot_pairwise(Xdata, xlabels, color='C0'):
 	"""Plot X high-dimensional dataset by pairwise plotting its features against each other.
 	Args:
 		- Xdata: n*m matrix
@@ -70,7 +70,7 @@ def plot_pairwise(Xdata, xlabels):
 	in_dim = Xdata.shape[1]
 	fig, axes = plt.subplots(nrows=in_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(20, 11.3))
 	for i, axis in enumerate(axes.flatten()):
-		axis.scatter(Xdata[:, i % in_dim], Xdata[:, i // in_dim])
+		axis.scatter(Xdata[:, i % in_dim], Xdata[:, i // in_dim], fc=color, ec=color)
 		if i // in_dim == in_dim - 1:
 			axis.set_xlabel(xlabels[i % in_dim])
 		if i % in_dim == 0:
@@ -83,7 +83,7 @@ def plot_pairwise(Xdata, xlabels):
 	plt.show()
 	return
 
-def plot_dataset(Xdata, Ydata, xlabels, ylabels):
+def plot_dataset(Xdata, Ydata, xlabels, ylabels, color='C0'):
 	"""Plot Y high-dimensional dataset by pairwise plotting its features against each X dataset's feature.
 	Args:
 		- Xdata: n*m1 matrix
@@ -91,12 +91,14 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 		- xlabels: list of m1 strings representing the name of X dataset's features
 		- ylabels: list of m2 strings representing the name of Y dataset's features.
 	"""
+	height = 9.36111
+	width = 5.91667
 	sample_dim = Xdata.shape[0]
 	in_dim = Xdata.shape[1]
 	out_dim = Ydata.shape[1]
-	fig, axes = plt.subplots(nrows=out_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(20, 11.3))                   
+	fig, axes = plt.subplots(nrows=out_dim, ncols=in_dim, sharex='col', sharey='row', figsize=(2*width, 2*2*height/3))                   
 	for i, axis in enumerate(axes.flatten()):
-		axis.scatter(Xdata[:, i % in_dim], Ydata[:, i // in_dim])
+		axis.scatter(Xdata[:, i % in_dim], Ydata[:, i // in_dim], fc=color, ec=color)
 		inf = min(Xdata[:, i % in_dim])
 		sup = max(Xdata[:, i % in_dim])
 		mean = 0.5*(inf+sup)
@@ -108,7 +110,9 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels):
 			axis.set_ylabel(ylabels[i // in_dim])
 	plt.suptitle('Sample dimension = {} points'.format(sample_dim))
 	plt.show()
-	return
+	#fig.tight_layout()
+	#plt.savefig('X_vs_Y.png', bbox_inches='tight', dpi=300)
+	#return
 
 def plot_pairwise_waves(XL, colors, xlabels):
 	"""Plot a vector XL of overlapping high-dimensional datasets by means of pairwise components plotting.
