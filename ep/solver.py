@@ -1,39 +1,38 @@
-from Historia.ep.model import initialize as init
+from Historia.ep.model import Gattoni2016
+import json
 import numpy as np
 from scipy.integrate import solve_ivp
 
+
 class EPSolution:
-	"""This class implements the solution of Gattoni et al. (2016) electrophysiology model*.
+	"""
+	This class implements the solution of the Gattoni et al. (2016) electrophysiology model*.
 	*https://physoc.onlinelibrary.wiley.com/doi/full/10.1113/JP273879
 	"""
-	def __init__(self, model, rat, hz):
-		self.model = model
+	def __init__(self, rat, hz, paramspath):
 		self.rat = rat
 		self.hz = hz
+		self.paramspath = paramspath
+		
+		with open(self.paramspath, 'r') as f:
+			dct = json.load(f)
 
-	def run2sc(self, parameters, nbeats):
-		"""Run the ODE solver and store the solution at 1ms spaced time points.
-		Args:
-			- parameters: (n,)-shaped vector to be initialized through the dedicated module 'initialize.py'
-			- nbeats: strictly positive integer, representing the number of beats to simulate.
-		"""
-		self.conv = 1
+		self.constant = dct[self.rat][str(self.hz)]
+
+
+	def solver_sol(self, nbeats, p_dict=None):
 		self.nbeats = nbeats
 
-		stim_period = parameters[16]
-		self.t = np.arange(nbeats*stim_period + 1)
-		tspan = [0, nbeats*stim_period]
+		if p_dict is not None:
+			for key in p_dict.keys():
+				self.constant[key] = p_dict[key]
 
-		Y0 = init.states(self.rat, self.hz)
-		c = self.model.initConsts(parameters)
-		try:
-			Y = solve_ivp(fun=lambda t, y: self.model.computeRates(t, y, c), t_span=tspan, y0=Y0, method='BDF', t_eval=self.t, max_step=1.0)
-			self.Y = Y.y
-			self.v = Y.y[0, :]
-			self.ca = 1e3*Y.y[12, :]
-		except:
-			print('=== ODE solver failed!')
-			self.conv = 0
-			self.Y = []
-			self.v = []
-			self.ca = []
+		self.t = np.arange(int(self.nbeats*self.constant["stim_period"]) + 1)
+		tspan = [0, self.t[-1]]
+
+		Y0 = Gattoni2016.initStates(self.rat, self.hz)
+		Y = solve_ivp(lambda t, y: Gattoni2016.computeRates(t, y, self.constant), t_span=tspan, y0=Y0, method='BDF', t_eval=self.t, max_step=1.0)
+		
+		self.Y = Y.y
+		self.v = Y.y[0, :]
+		self.ca = 1e3*Y.y[12, :]
