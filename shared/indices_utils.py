@@ -9,6 +9,14 @@ def inters(l1, l2):
 def inters_many(L):
 	return list(set.intersection(*map(lambda x: set(x), L)))
 
+def intinters(I1, I2):
+	l = list(I1) + list(I2)
+	if I1[1] > I2[0] or I2[1] > I1[0]:
+		l.sort()
+		return [l[1], l[2]]
+	else:
+		return []
+
 def union_many(L):
 	return list(set.union(*map(lambda x: set(x), L)))
 
