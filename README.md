@@ -5,9 +5,11 @@ A set of more or less powerful tools I developed during my PhD for more or less 
 ---
 ## Information
 
-**Status**: `Occasionally maintained`
+**Status**: `Occasionally developed`
 
 **Type**: `Personal project`
+
+**Development years**: `2018-2021`
 
 **Author**: [stelong](https://github.com/stelong)
 
@@ -18,15 +20,34 @@ A set of more or less powerful tools I developed during my PhD for more or less 
 git clone https://github.com/stelong/Historia.git
 ```
 
+---
 ## Prerequisites
 
-* diversipy
-* matplotlib
-* numpy
-* Python3
-* scikit-learn
-* scipy
-* seaborn
+* [Python3](https://www.python.org/) (>=3.6)
+* [virtualenv](https://pypi.org/project/virtualenv/) (optional)
+
+---
+## Installing
+
+```
+cd Historia/
+```
+```
+# (this block is optional)
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip setuptools wheel
+```
+```
+pip install .
+```
+
+---
+## Usage
+
+```
+cd example-scripts/
+```
 
 ---
 ## Contributing
