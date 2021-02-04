@@ -3,7 +3,7 @@ from scipy import interpolate
 
 
 def init_header(rat, n_stims, filename):
-    with open("Historia/shared/headers/" + rat + "/MeshFlatBase.in", "r") as f:
+    with open("headers/" + rat + "/MeshFlatBase.in", "r") as f:
         with open(filename + ".in", "w") as fh:
             for line in f:
                 fh.write(line)
