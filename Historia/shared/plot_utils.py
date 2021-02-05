@@ -201,8 +201,11 @@ def plot_pvloop(S, RS):
             - RS: last heart beat solution class
     """
     c = get_col("blue")[1]
-    gs = grsp.GridSpec(2, 2)
-    fig = plt.figure(figsize=(14, 8))
+    gs = grsp.GridSpec(2, 2, width_ratios=[1, 1.2])
+    width = 5.91667
+    height = 9.36111
+    figsize = (2 * width, 2 * height / 3)
+    fig = plt.figure(figsize=figsize)
     for i in range(2):
         ax = fig.add_subplot(gs[i, 0])
         if i == 0:
@@ -210,18 +213,19 @@ def plot_pvloop(S, RS):
             ax.plot(S.t, S.lv_v, color=c, linewidth=2.5)
             plt.xlim(RS.t[0], S.t[-1])
             plt.xlabel("Time (ms)")
-            plt.ylabel("LVV (μL)")
+            plt.ylabel("Left ventricular volume (μL)")
         else:
             ax.plot(RS.t, RS.lv_p, color=c, linewidth=1.0)
             ax.plot(S.t, S.lv_p, color=c, linewidth=2.5)
             plt.xlim(RS.t[0], S.t[-1])
             plt.xlabel("Time (ms)")
-            plt.ylabel("LVP (kPa)")
+            plt.ylabel("Left ventricular pressure (kPa)")
 
     ax = fig.add_subplot(gs[:, 1])
     ax.plot(S.lv_v, S.lv_p, color=c, linewidth=2.5)
-    plt.xlabel("Volume (μL)")
-    plt.ylabel("Pressure (kPa)")
+    plt.xlabel("LVV (μL)")
+    plt.ylabel("LVP (kPa)")
+    fig.tight_layout()
     plt.show()
     return
 
