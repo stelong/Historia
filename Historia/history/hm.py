@@ -23,7 +23,7 @@ class Wave:
     ):
         self.emulator = emulator
         self.Itrain = Itrain
-        self.output_dim = len(self.emulator)
+        self.output_dim = len(emulator) if emulator is not None else 0
         self.cutoff = cutoff
         self.maxno = maxno
         self.mean = mean
