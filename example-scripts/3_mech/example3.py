@@ -9,7 +9,7 @@ def main():
     path = "data/"
 
     S = scan_logfile.MECHSolution(
-        path + "/output_log.txt"
+        path + "output_log.txt"
     )  # MECH model solution class, instantiate by providing the path to the log file of the simulation
     S.extract_loginfo()  # extract parameters used for the simulation, full solution curves and convergence info
 
