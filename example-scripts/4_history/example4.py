@@ -35,7 +35,7 @@ def main():
     features_idx_dict = {key: idx for idx, key in enumerate(ylabels)}
 
     # ----------------------------------------------------------------
-    # Define the list of features to match (these would normally correspond to the (sub)set of output features for which we have experimental values)
+    # Define the list of features to match (these would normally correspond to the (sub)set of output features for which you have experimental values)
     active_features = ["EDV", "ESV", "ET", "IVRT", "PeakP", "maxdP", "mindP"]
     active_idx = [features_idx_dict[key] for key in active_features]
 
@@ -78,7 +78,7 @@ def main():
     n_samples = 100000
     X = lhd(
         I, n_samples
-    )  # initial wave is performed on a giant Latin hypercube design using same parameter ranges of the training dataset
+    )  # initial wave is performed on a big Latin hypercube design using same parameter ranges of the training dataset
 
     W.find_regions(
         X
@@ -113,8 +113,8 @@ def main():
 
     # ----------------------------------------------------------------
     # Appendix - Wave object loading
-    # You can load the wave object by providing the same data used to instantiate the wave (emulator, Itrain, cutoff, maxno, mean, var), this is normally when you need to re-run the wave differently
-    # Or you can load the wave object by providing no data at all, just to better examine its internal structure
+    # You can load a wave object by providing the same data used to instantiate the wave: (emulator, Itrain, cutoff, maxno, mean, var). This is normally done when you need to re-run the wave differently.
+    # Alternatively, you can load the wave object by providing no data at all, just to better examine its internal structure:
     W = hm.Wave()
     W.load(f"./wave_{waveno}")
     W.print_stats()
@@ -129,9 +129,9 @@ def main():
     # W.IMP = implausible region
     # W.imp_idx = indices of the initial test set which resulted to be implausible
     # W.simul_idx = indices of W.NIMP that were selected to be simulated for the next wave
-    # W.nsimul_idx = indices of W.NIMP which were not selected for simulations (they will appear in the test set of the next wave instead)
+    # W.nsimul_idx = indices of W.NIMP which were not selected for simulations (the respective points will appear in the test set of the next wave instead)
 
-    # The original test set is not stored as an attribute to save space. However, that information can still be retrieved from stored attributes as:
+    # The original test set is not stored as an attribute to save space. However, this information can still be retrieved from stored attributes as:
     # X_test = W.reconstruct_tests()
 
 
