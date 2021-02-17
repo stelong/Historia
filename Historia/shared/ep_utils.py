@@ -14,7 +14,7 @@ def init_header(rat, n_stims, filename):
 
 
 def append_to_header(f, stim, ca):
-    f.write("ca{} 166 1 ".format(stim))
+    f.write(f"ca{stim} {len(ca)-1} 1 ")
     np.savetxt(f, ca.reshape(1, -1), fmt="%.6f")
     return
 
