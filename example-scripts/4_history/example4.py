@@ -113,7 +113,7 @@ def main():
 
     # ----------------------------------------------------------------
     # Appendix - Wave object loading
-    # You can load a wave object by providing the same data used to instantiate the wave: (emulator, Itrain, cutoff, maxno, mean, var). This is normally done when you need to re-run the wave differently.
+    # You can load a wave object by providing the same data used to instantiate the wave: emulator, Itrain, cutoff, maxno, mean, var. This is normally done when you need to re-run the wave differently.
     # Alternatively, you can load the wave object by providing no data at all, just to better examine its internal structure:
     W = hm.Wave()
     W.load(f"./wave_{waveno}")
