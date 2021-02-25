@@ -1,0 +1,13 @@
+DCA
+AMPL
+TP
+RT50
+p
+pao
+Z
+C1
+Ca50
+kXB
+koff
+beta1
+Tref
