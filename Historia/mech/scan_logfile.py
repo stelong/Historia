@@ -33,12 +33,23 @@ class MECHSolution:
         par3 = re.compile(r"[-]ap\s+=\s+(\S+)$")
         par4 = re.compile(r"[-]z\s+=\s+(\S+)$")
         par5 = re.compile(r"[-]ca50\s+=\s+(\S+)$")
-        par6 = re.compile(r"[-]kxb\s+=\s+(\S+)$")
-        par7 = re.compile(r"[-]koff\s+=\s+(\S+)$")
-        par8 = re.compile(r"[-]beta1\s+=\s+(\S+)$")
-        par9 = re.compile(r"[-]Tref\s+=\s+(\S+)$")
+        par6 = re.compile(r"[-]perm50\s+=\s+(\S+)$")
+        par7 = re.compile(r"[-]kxb\s+=\s+(\S+)$")
+        par8 = re.compile(r"[-]koff\s+=\s+(\S+)$")
+        par9 = re.compile(r"[-]nperm\s+=\s+(\S+)$")
+        par10 = re.compile(r"[-]ntrpn\s+=\s+(\S+)$")
+        par11 = re.compile(r"[-]beta1\s+=\s+(\S+)$")
+        par12 = re.compile(r"[-]Tref\s+=\s+(\S+)$")
 
-        c1 = p = ap = z = ca50 = kxb = koff = beta1 = Tref = lv_v0 = 0
+        c1 = (
+            p
+        ) = (
+            ap
+        ) = (
+            z
+        ) = (
+            ca50
+        ) = perm50 = kxb = koff = nperm = ntrpn = beta1 = Tref = lv_v0 = 0
 
         f = open(self.tag, "r")
         line = f.readlines()
@@ -92,7 +103,7 @@ class MECHSolution:
             if mp6 is None:
                 i = i + 1
             else:
-                kxb = float(mp6.groups()[0])
+                perm50 = float(mp6.groups()[0])
                 break
 
         while i < n:
@@ -100,7 +111,7 @@ class MECHSolution:
             if mp7 is None:
                 i = i + 1
             else:
-                koff = float(mp7.groups()[0])
+                kxb = float(mp7.groups()[0])
                 break
 
         while i < n:
@@ -108,7 +119,7 @@ class MECHSolution:
             if mp8 is None:
                 i = i + 1
             else:
-                beta1 = float(mp8.groups()[0])
+                koff = float(mp8.groups()[0])
                 break
 
         while i < n:
@@ -116,7 +127,31 @@ class MECHSolution:
             if mp9 is None:
                 i = i + 1
             else:
-                Tref = float(mp9.groups()[0])
+                nperm = float(mp9.groups()[0])
+                break
+
+        while i < n:
+            mp10 = re.search(par10, line[i])
+            if mp10 is None:
+                i = i + 1
+            else:
+                ntrpn = float(mp10.groups()[0])
+                break
+
+        while i < n:
+            mp11 = re.search(par11, line[i])
+            if mp11 is None:
+                i = i + 1
+            else:
+                beta1 = float(mp11.groups()[0])
+                break
+
+        while i < n:
+            mp12 = re.search(par12, line[i])
+            if mp12 is None:
+                i = i + 1
+            else:
+                Tref = float(mp12.groups()[0])
                 break
 
         while i < n:
@@ -142,7 +177,20 @@ class MECHSolution:
 
             i = i + 1
 
-        self.p = [p, ap, z, c1, ca50, kxb, koff, beta1, Tref]
+        self.p = [
+            p,
+            ap,
+            z,
+            c1,
+            ca50,
+            beta1,
+            koff,
+            ntrpn,
+            kxb,
+            nperm,
+            perm50,
+            Tref,
+        ]
         self.lv_v = [x + lv_v0 for x in lv_dv]
 
         f.close()
