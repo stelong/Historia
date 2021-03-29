@@ -20,6 +20,7 @@ class Wave:
         maxno=None,
         mean=None,
         var=None,
+        y0=None
     ):
         self.emulator = emulator
         self.Itrain = Itrain
@@ -28,6 +29,7 @@ class Wave:
         self.maxno = maxno
         self.mean = mean
         self.var = var
+        self.y0 = y0
         self.I = None
         self.NIMP = None
         self.nimp_idx = None
@@ -39,6 +41,9 @@ class Wave:
         V = np.zeros((self.n_samples, self.output_dim), dtype=float)
         for j, emul in enumerate(self.emulator):
             mean, std = emul.predict(X)
+            if self.y0 is not None:
+                mean = 100*mean/self.y0[j]
+                std = 100*std/self.y0[j]
             var = np.power(std, 2)
             M[:, j] = mean
             V[:, j] = var
@@ -184,6 +189,11 @@ class Wave:
                     axis.set_ylabel(xlabels[i], fontsize=12)
                 else:
                     axis.set_yticklabels([])
+
+                for tick in axis.xaxis.get_major_ticks():
+                    tick.label.set_fontsize("x-small")
+                for tick in axis.yaxis.get_major_ticks():
+                    tick.label.set_fontsize("x-small")
 
         cbar_axis = fig.add_subplot(gs[:, self.input_dim - 1])
         cbar = fig.colorbar(im, cax=cbar_axis)
