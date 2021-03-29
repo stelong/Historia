@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import curve_fit
 
 
 class LeftVentricle:
@@ -75,25 +76,47 @@ class LeftVentricle:
                 ps1 = list(np.where(np.array(self.phase) == 1)[0])
                 lvv1 = [self.lv_v[i] for i in ps1]
 
-                p1 = max(lvv1)  # EDV    (end-diastolic volume)
-                p2 = S.lv_v[ind_r[3]]  # ESV    (end-systolic volume)
-                p3 = 100 * (p1 - p2) / p1  # EF     (ejection fraction)
-                p4 = (
-                    time[1] - time[0]
-                )  # IVCT   (isovolumetric contraction time)
-                p5 = time[3] - time[2]  # ET     (ejection time)
-                p6 = (
-                    time[5] - time[4]
-                )  # IVRT   (isovolumetric relaxation time)
-                p7 = time[7] - time[4]  # Tdiast (diastolic time)
+                p1 = max(lvv1)  # EDV (end-diastolic volume)
+                p2 = S.lv_v[ind_r[3]]  # ESV (end-systolic volume)
+                p3 = p1 - p2  # SV (stroke volume)
+                p4 = 100 * p3 / p1  # EF (ejection fraction)
+                p5 = time[1] - time[0]  # IVCT (isovolumetric contraction time)
+                p6 = time[3] - time[2]  # ET (ejection time)
+                p7 = time[5] - time[4]  # IVRT (isovolumetric relaxation time)
+                p8 = time[7] - time[4]  # Tdiast (diastolic time)
+
+                y_tmp = np.array(S.lv_p[ind_r[4] : ind_r[5] + 1])
+                t_tmp = np.array(S.t[ind_r[4] : ind_r[5] + 1])
+                t_tmp = t_tmp - t_tmp[0]
+                xy1 = t_tmp[0], y_tmp[0]
+                xy2 = t_tmp[-1], y_tmp[-1]
+                tau = curve_fit(
+                    lambda t, tau: exponential(t, tau, xy1, xy2), t_tmp, y_tmp
+                )[0][0]
 
                 q1 = m  # PeakP (peak pressure)
                 q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
-                q3 = S.lv_p[ind_r[3]]  # ESP   (end-systolic pressure)
+                q3 = S.lv_p[ind_r[3]]  # ESP (end-systolic pressure)
                 q4 = max(dP)  # maxdP (maximum pressure rise rate)
                 q5 = min(dP)  # mindP (maximum pressure decay rate)
+                q6 = tau  # tau (isovolumetric pressure relaxation constant)
 
-                self.f = [p1, p2, p3, p4, p5, p6, p7, q1, q2, q3, q4, q5]
+                self.f = [
+                    p1,
+                    p2,
+                    p3,
+                    p4,
+                    p5,
+                    p6,
+                    p7,
+                    p8,
+                    q1,
+                    q2,
+                    q3,
+                    q4,
+                    q5,
+                    q6,
+                ]
 
 
 def ph_counter(phase):
@@ -144,3 +167,13 @@ def check_der(y):
             elif delta[idx] < 0:
                 y[idx] = y[idx + 1]
     return y
+
+
+def exponential(t, tau, p1, p2):
+    t_max, y_max = p1
+    t_f, y_f = p2
+
+    C1 = (1 - np.exp(-t / tau)) / (1 - np.exp(-t_f / tau))
+    C2 = (np.exp(-t / tau) - np.exp(-t_f / tau)) / (1 - np.exp(-t_f / tau))
+
+    return C1 * y_f + C2 * y_max
