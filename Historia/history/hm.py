@@ -20,7 +20,7 @@ class Wave:
         maxno=None,
         mean=None,
         var=None,
-        y0=None
+        y0=None,
     ):
         self.emulator = emulator
         self.Itrain = Itrain
@@ -42,8 +42,8 @@ class Wave:
         for j, emul in enumerate(self.emulator):
             mean, std = emul.predict(X)
             if self.y0 is not None:
-                mean = 100*mean/self.y0[j]
-                std = 100*std/self.y0[j]
+                mean = 100 * mean / self.y0[j]
+                std = 100 * std / self.y0[j]
             var = np.power(std, 2)
             M[:, j] = mean
             V[:, j] = var
