@@ -59,10 +59,21 @@ def csigmadp(x, p1, p2, MAXMINDP):
     return A + B * np.power(1 + np.exp(-K * (x - z)), -1)
 
 
+def exponential(t, p1, p2, tau):
+    t_max, y_max = p1
+    t_f, y_f = p2
+
+    C1 = (1 - np.exp(-t / tau)) / (1 - np.exp(-t_f / tau))
+    C2 = (np.exp(-t / tau) - np.exp(-t_f / tau)) / (1 - np.exp(-t_f / tau))
+
+    return C1 * y_f + C2 * y_max
+
+
 def upvl(edp, y_mean):
     ylab = [
         "EDV",
         "ESV",
+        "SV",
         "EF",
         "IVCT",
         "ET",
@@ -73,6 +84,7 @@ def upvl(edp, y_mean):
         "ESP",
         "maxdP",
         "mindP",
+        "Tau",
     ]
     lvfd = {key: i for i, key in enumerate(ylab)}
 
@@ -142,8 +154,8 @@ def upvl(edp, y_mean):
     p6 = t_et[-1], y_mean[lvfd["ESP"]]
     xp56 = np.linspace(p5[0], p6[0])
 
-    p7 = t_et[-1], y_mean[lvfd["ESP"]]
-    p8 = t_ivrt[-1], edp
+    p7 = 0, y_mean[lvfd["ESP"]]
+    p8 = t_ivrt[-1] - t_et[-1], edp
     xp78 = np.linspace(p7[0], p8[0])
 
     p9 = t_ivrt[-1], edp
@@ -153,7 +165,7 @@ def upvl(edp, y_mean):
     t1, lvp1 = xp12, csigmadp(xp12, p1, p2, y_mean[lvfd["maxdP"]])
     t2, lvp2 = xp34, np.linspace(p3[1], p4[1])
     t3, lvp3 = xp56, poli2(xp56, p5, p6)
-    t4, lvp4 = xp78, csigmadp(xp78, p7, p8, y_mean[lvfd["mindP"]])
+    t4, lvp4 = xp78 + t_et[-1], exponential(xp78, p7, p8, y_mean[lvfd["Tau"]])
     t5, lvp5 = xp910, np.linspace(p9[1], p10[1])
 
     tc = np.concatenate((t1[:-1], t2[:-1], t3[:-1], t4[:-1], t5))
