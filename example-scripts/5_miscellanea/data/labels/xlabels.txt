@@ -7,7 +7,10 @@ pao
 Z
 C1
 Ca50
-kXB
-koff
 beta1
+koff
+nTRPN
+kXB
+nXB
+TRPN50
 Tref

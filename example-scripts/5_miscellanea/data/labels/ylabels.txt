@@ -1,5 +1,6 @@
 EDV
 ESV
+SV
 EF
 IVCT
 ET
@@ -10,3 +11,4 @@ Tpeak
 ESP
 maxdP
 mindP
+Tau

@@ -70,3 +70,19 @@ def filter_zscore(X, thre):
     nl = union_many(L)
     l = diff(range(X.shape[0]), nl)
     return l, nl
+
+
+def filter_quantile(y):
+    Q1 = np.percentile(y, 25)
+    Q3 = np.percentile(y, 75)
+
+    lowf = Q1 - 1.5 * (Q3 - Q1)
+    upf = Q3 + 1.5 * (Q3 - Q1)
+
+    lb = lowf if len(np.where(y < lowf)[0]) >= 1 else y.min()
+    ub = upf if len(np.where(y > lowf)[0]) >= 1 else y.max()
+
+    l1 = list(np.where(lb < y)[0])
+    l2 = list(np.where(y < ub)[0])
+
+    return inters(l1, l2)
