@@ -9,16 +9,20 @@ from Historia.shared.predict_utils import upvl
 
 
 def f_emul(emulator, x):
-    return np.array(
-        [emul.predict(x.reshape(1, -1))[0] for emul in emulator]
-    ).ravel()
+    return np.array([emul.predict(x.reshape(1, -1))[0] for emul in emulator]).ravel(), np.array([emul.predict(x.reshape(1, -1))[1] for emul in emulator]).ravel()
 
 
-def pvloop(axes, t, lvv, lvp, color, linestyle, linewidth, label):
+def pvloop(axes, t, lvv, lvp, color, linestyle, linewidth, label, uc=[]):
     ax1, ax2, ax3 = axes
 
     ax1.plot(t, lvv, c=color, ls=linestyle, lw=linewidth, label=label)
     ax2.plot(t, lvp, c=color, ls=linestyle, lw=linewidth, label=label)
+
+    if uc:
+        ax3.fill_between([uc[1][0]+uc[1][1], uc[0][0]-uc[0][1]], uc[2][0]-uc[2][1], uc[2][0]+uc[2][1], color=color, alpha=0.2)
+        ax3.fill_between([uc[1][0]-uc[1][1], uc[1][0]+uc[1][1]], np.min(lvp), uc[2][0]-uc[2][1], color=color, alpha=0.2)
+        ax3.fill_between([uc[0][0]-uc[0][1], uc[0][0]+uc[0][1]], np.min(lvp), uc[2][0]-uc[2][1], color=color, alpha=0.2)
+
     ax3.plot(lvv, lvp, c=color, ls=linestyle, lw=linewidth, label=label)
 
     return ax1, ax2, ax3
@@ -34,6 +38,7 @@ def main():
     xlabels = read_labels(path_lab + "xlabels.txt")
     ylabels = read_labels(path_lab + "ylabels.txt")
     param_idx_dict = {key: idx for idx, key in enumerate(xlabels)}
+    feat_idx_dict = {key: idx for idx, key in enumerate(ylabels)}
 
     # ----------------------------------------------------------------
     # Load a pre-trained univariate Gaussian process emulator (GPE) for each output feature
@@ -67,7 +72,7 @@ def main():
     x = np.ones(
         (len(xlabels),), dtype=float
     )  # a vector of ones gives back the reference, unperturbed PV-loop
-    y = f_emul(
+    y,_ = f_emul(
         emulator, x
     )  # the provided emulators in this example have fractions of the unit as input parameter values
     t, lvv, lvp = upvl(
@@ -83,7 +88,7 @@ def main():
 
     for i, p in enumerate(perturbation_list):
         x[idx] = p
-        y = f_emul(emulator, x)
+        y, s = f_emul(emulator, x)
         t, lvv, lvp = upvl(edp, y)
         ax1, ax2, ax3 = pvloop(
             (ax1, ax2, ax3),
@@ -94,6 +99,7 @@ def main():
             "-",
             1.5,
             r"{:g}$\times${}".format(p, param),
+            uc=[(y[feat_idx_dict[key]], s[feat_idx_dict[key]]) for key in ["EDV", "ESV", "PeakP"]],  # comment this line to plot without uncertainty
         )
 
     ax1.set_xlabel("Time (ms)", fontsize=12)
