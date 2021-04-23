@@ -142,7 +142,7 @@ def plot_dataset(Xdata, Ydata, xlabels, ylabels, color="C0"):
     return
 
 
-def plot_pairwise_waves(XL, colors, xlabels):
+def plot_pairwise_waves(XL, colors, xlabels, wnames):
     """Plot a vector XL of overlapping high-dimensional datasets by means of pairwise components plotting.
     Args:
             - XL: list of L matrices with dimensions n*m_i, for i=1,...,L
@@ -152,12 +152,14 @@ def plot_pairwise_waves(XL, colors, xlabels):
     handles, labels = (0, 0)
     L = len(XL)
     in_dim = XL[0].shape[1]
+    height = 9.36111
+    width = 5.91667
     fig, axes = plt.subplots(
         nrows=in_dim,
         ncols=in_dim,
         sharex="col",
         sharey="row",
-        figsize=(1.5 * 8.27, 1.5 * 11.69 / 2),
+        figsize=(2 * width, 2 * height/2),
     )
     for t, ax in enumerate(axes.flatten()):
         i = t % in_dim
@@ -169,7 +171,7 @@ def plot_pairwise_waves(XL, colors, xlabels):
                 y=XL[0][:, j],
                 color=colors[0],
                 edgecolor=colors[0],
-                label="Initial space",
+                label=wnames[0],
             )
             for k in range(1, L):
                 sns.scatterplot(
@@ -178,7 +180,7 @@ def plot_pairwise_waves(XL, colors, xlabels):
                     y=XL[k][:, j],
                     color=colors[k],
                     edgecolor=colors[k],
-                    label="wave {}".format(k),
+                    label=wnames[k],
                 )
                 handles, labels = ax.get_legend_handles_labels()
                 ax.get_legend().remove()
