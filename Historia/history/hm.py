@@ -3,6 +3,7 @@ import matplotlib.gridspec as grsp
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy.stats import iqr
 
 from Historia.shared.design_utils import get_minmax
 from Historia.shared.indices_utils import diff, whereq_whernot
@@ -20,7 +21,6 @@ class Wave:
         maxno=None,
         mean=None,
         var=None,
-        y0=None,
     ):
         self.emulator = emulator
         self.Itrain = Itrain
@@ -29,8 +29,8 @@ class Wave:
         self.maxno = maxno
         self.mean = mean
         self.var = var
-        self.y0 = y0
         self.I = None
+        self.PV = None
         self.NIMP = None
         self.nimp_idx = None
         self.IMP = None
@@ -41,31 +41,33 @@ class Wave:
         V = np.zeros((self.n_samples, self.output_dim), dtype=float)
         for j, emul in enumerate(self.emulator):
             mean, std = emul.predict(X)
-            if self.y0 is not None:
-                mean = 100 * mean / self.y0[j]
-                std = 100 * std / self.y0[j]
             var = np.power(std, 2)
             M[:, j] = mean
             V[:, j] = var
 
         I = np.zeros((self.n_samples,), dtype=float)
+        PV = np.zeros((self.n_samples,), dtype=float)
         for i in range(self.n_samples):
             In = np.sqrt(
                 (np.power(M[i, :] - self.mean, 2)) / (V[i, :] + self.var)
             )
-            I[i] = np.sort(In)[-self.maxno]
+            PVn = V[i, :] / self.var
 
-        return I
+            I[i] = np.sort(In)[-self.maxno]
+            PV[i] = np.sort(PVn)[-self.maxno]
+
+        return I, PV
 
     def find_regions(self, X):
         self.n_samples = X.shape[0]
         self.input_dim = X.shape[1]
 
-        I = self.compute_impl(X)
+        I, PV = self.compute_impl(X)
         l = np.where(I < self.cutoff)[0]
         nl = diff(range(self.n_samples), l)
 
         self.I = I
+        self.PV = PV
         self.nimp_idx = l
         self.NIMP = X[l]
         self.imp_idx = nl
@@ -106,13 +108,20 @@ class Wave:
 
     def get_points(self, n_simuls):
         NROY = np.copy(self.NIMP)
-        SIMULS = dp.subset.psa_select(NROY, n_simuls)
+        if n_simuls >= NROY.shape[0] - 1:
+            raise ValueError(
+                "Not enough points for simulations! n_simuls must be strictly less than W.NIMP.shape[0] - 1."
+            )
+        else:
+            SIMULS = dp.subset.psa_select(NROY, n_simuls)
+
         self.simul_idx, self.nsimul_idx = whereq_whernot(NROY, SIMULS)
+
         return SIMULS
 
     def add_points(
         self, n_tests
-    ):  # this formulation sacrifies the original W object: SAVE IT BEFOREHAND!
+    ):  # NOTE: the Wave object instance internal structure will be compromised after calling this method: we recommend calling self.save() beforehand!
         NROY = np.copy(self.NIMP[self.nsimul_idx])
         lbounds = self.Itrain[:, 0]
         ubounds = self.Itrain[:, 1]
@@ -145,8 +154,40 @@ class Wave:
         TESTS = dp.subset.psa_select(NROY, n_tests)
         return TESTS
 
-    def plot_impl(self, xlabels, filename):
+    def plot_wave(self, xlabels=None, display="impl", filename="./wave_impl"):
         X = self.reconstruct_tests()
+
+        if xlabels is None:
+            xlabels = [f"p{i+1}" for i in range(X.shape[1])]
+
+        if display == "impl":
+            C = self.I
+            cmap = "jet"
+            vmin = 1.0
+            vmax = self.cutoff
+            cbar_label = "Implausibility measure"
+
+        elif display == "var":
+            C = self.PV
+            cmap = "bone_r"
+            vmin = np.max(
+                [
+                    np.percentile(self.PV, 25) - 1.5 * iqr(self.PV),
+                    self.PV.min(),
+                ]
+            )
+            vmax = np.min(
+                [
+                    np.percentile(self.PV, 75) + 1.5 * iqr(self.PV),
+                    self.PV.max(),
+                ]
+            )
+            cbar_label = "GPE variance / EXP. variance"
+
+        else:
+            raise ValueError(
+                "Not a valid display option! Can only display implausibilty maps ('impl') or proportion-of-exp.variance maps ('var')."
+            )
 
         height = 9.36111
         width = 5.91667
@@ -163,23 +204,21 @@ class Wave:
 
             if i > j:
                 axis = fig.add_subplot(gs[i - 1, j])
-                xm = 0.5 * (np.min(X[:, j]) + np.max(X[:, j]))
-                dx = np.max(X[:, j]) - xm
-                ym = 0.5 * (np.min(X[:, i]) + np.max(X[:, i]))
-                dy = np.max(X[:, i]) - ym
+                axis.set_facecolor("xkcd:light grey")
 
                 im = axis.hexbin(
                     X[:, j],
                     X[:, i],
-                    C=self.I,
+                    C=C,
                     reduce_C_function=np.min,
                     gridsize=20,
-                    cmap="jet",
-                    vmin=1.0,
-                    vmax=self.cutoff,
+                    cmap=cmap,
+                    vmin=vmin,
+                    vmax=vmax,
                 )
-                axis.set_xlim([xm - 0.9 * dx, xm + 0.9 * dx])
-                axis.set_ylim([ym - 0.9 * dy, ym + 0.9 * dy])
+
+                axis.set_xlim([self.Itrain[j, 0], self.Itrain[j, 1]])
+                axis.set_ylim([self.Itrain[i, 0], self.Itrain[i, 1]])
 
                 if i == self.input_dim - 1:
                     axis.set_xlabel(xlabels[j], fontsize=12)
@@ -190,13 +229,8 @@ class Wave:
                 else:
                     axis.set_yticklabels([])
 
-                for tick in axis.xaxis.get_major_ticks():
-                    tick.label.set_fontsize("x-small")
-                for tick in axis.yaxis.get_major_ticks():
-                    tick.label.set_fontsize("x-small")
-
         cbar_axis = fig.add_subplot(gs[:, self.input_dim - 1])
         cbar = fig.colorbar(im, cax=cbar_axis)
-        cbar.set_label("Implausibility measure", size=12)
+        cbar.set_label(cbar_label, size=12)
         fig.tight_layout()
         plt.savefig(filename + ".png", bbox_inches="tight", dpi=300)
