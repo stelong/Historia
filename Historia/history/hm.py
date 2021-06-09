@@ -9,8 +9,6 @@ from Historia.shared.design_utils import get_minmax
 from Historia.shared.indices_utils import diff, whereq_whernot
 from Historia.shared.jsonfiles_utils import load_json, save_json
 
-SCALE = 0.1
-
 
 class Wave:
     def __init__(
@@ -120,19 +118,37 @@ class Wave:
         return SIMULS
 
     def add_points(
-        self, n_tests
+        self,
+        n_tests,
+        scale=0.1,
     ):  # NOTE: the Wave object instance internal structure will be compromised after calling this method: we recommend calling self.save() beforehand!
-        NROY = np.copy(self.NIMP[self.nsimul_idx])
+        nsidx = self.nsimul_idx
+        NROY = np.copy(self.NIMP[nsidx])
         lbounds = self.Itrain[:, 0]
         ubounds = self.Itrain[:, 1]
 
+        print(
+            f"\nRequested points: {n_tests}\nAvailable points: {NROY.shape[0]}\nStart searching..."
+        )
+
+        count = 0
+        a, b = (
+            NROY.shape[0] if NROY.shape[0] < n_tests else n_tests,
+            n_tests - NROY.shape[0] if n_tests - NROY.shape[0] > 0 else 0,
+        )
+        print(
+            f"\n[Iteration: {count:<2}] Found: {a:<{len(str(n_tests))}} ({'{:.2f}'.format(100*a/n_tests):>6}%) | Missing: {b:<{len(str(n_tests))}}"
+        )
+
         while NROY.shape[0] < n_tests:
+            count += 1
+
             I = get_minmax(NROY)
-            scale = SCALE * np.array(
+            SCALE = scale * np.array(
                 [I[i, 1] - I[i, 0] for i in range(NROY.shape[1])]
             )
 
-            temp = np.random.normal(loc=NROY, scale=scale)
+            temp = np.random.normal(loc=NROY, scale=SCALE)
             while True:
                 l = []
                 for i in range(temp.shape[0]):
@@ -144,14 +160,28 @@ class Wave:
                     ):
                         l.append(i)
                 if l:
-                    temp[l, :] = np.random.normal(loc=NROY[l, :], scale=scale)
+                    temp[l, :] = np.random.normal(loc=NROY[l, :], scale=SCALE)
                 else:
                     break
 
             self.find_regions(temp)
             NROY = np.vstack((NROY, self.NIMP))
 
-        TESTS = dp.subset.psa_select(NROY, n_tests)
+            a, b = (
+                NROY.shape[0] if NROY.shape[0] < n_tests else n_tests,
+                n_tests - NROY.shape[0] if n_tests - NROY.shape[0] > 0 else 0,
+            )
+            print(
+                f"[Iteration: {count:<2}] Found: {a:<{len(str(n_tests))}} ({'{:.2f}'.format(100*a/n_tests):>6}%) | Missing: {b:<{len(str(n_tests))}}"
+            )
+
+        print("\nDone.")
+        TESTS = np.vstack(
+            (
+                NROY[: len(nsidx)],
+                dp.subset.psa_select(NROY[len(nsidx) :], n_tests - len(nsidx)),
+            )
+        )
         return TESTS
 
     def plot_wave(self, xlabels=None, display="impl", filename="./wave_impl"):
