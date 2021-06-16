@@ -89,7 +89,7 @@ def main():
     for i, p in enumerate(perturbation_list):
         x[idx] = p
         y, s = f_emul(emulator, x)
-        t, lvv, lvp = upvl(edp, y)
+        t, lvv, lvp = upvl(p*edp if param == "p" else edp, y)
         ax1, ax2, ax3 = pvloop(
             (ax1, ax2, ax3),
             t,
