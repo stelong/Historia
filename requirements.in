@@ -5,5 +5,4 @@ pandas
 scikit-learn
 scipy
 seaborn
-SALib==1.3.12
 git+git://github.com/stelong/gpytGPE.git@master#egg=gpytGPE
