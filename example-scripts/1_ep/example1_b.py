@@ -20,15 +20,9 @@ def main():
     actionpotential = E.v
     calcium = E.ca
 
-    available_parameters = list(
-        E.constant.keys()
-    )  # list of available constants to be treated as parameters
-    # print(available_parameters)
+    print(list(E.constant.keys()))  # list of available constants to be treated as parameters
 
-    param_idx = 0  # let's consider e.g. the first parameter as a target for perturbations
-    param = available_parameters[param_idx]
-    # print(param)
-
+    param = "g_Na"  # let's consider e.g. the sodium conductance as a target for perturbations
     param_ref_val = E.constant[
         param
     ]  # store the reference value for the selected parameter
