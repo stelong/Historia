@@ -39,17 +39,11 @@ def main():
     Tref = C_ss.constant["Tref"]
 
     pCai = -np.log10(1e-6 * Cai)
-    forcepCa = C_ss.F["F"] / Tref
+    forcepCa = C_ss.F["F"]
 
-    available_parameters = list(
-        C.constant.keys()
-    )  # list of available constants to be treated as parameters (same as C_ss.constant)
-    # print(available_parameters)
+    print(list(C.constant.keys()))  # list of available constants to be treated as parameters (same as C_ss.constant)
 
-    param_idx = 2  # let's consider e.g. the third parameter as a target for perturbations
-    param = available_parameters[param_idx]
-    # print(param)
-
+    param = "Ca50"  # let's consider e.g. the thin filament Ca2+ sensitivity as a target for perturbations
     param_ref_val = C.constant[
         param
     ]  # store the reference value for the selected parameter
@@ -66,7 +60,7 @@ def main():
         # solve the CONTR model and calculate the steady-state solution by providing a new dictionary of altered parameter/s and its/their new value/s:
         new_params_dict = {
             param: param_vals[i]
-        }  # here you can add more altered parameters if you want
+        }  # here you can add more altered parameters if you want, e.g. "lambda": 1.2
 
         C = solcontr.CONTRSolution(rat, calcium, contr_params_path)
         C.solver_sol(p_dict=new_params_dict)
@@ -79,7 +73,7 @@ def main():
 
         Tref = C_ss.constant["Tref"]
 
-        FpCa = C_ss.F["F"] / Tref
+        FpCa = C_ss.F["F"]
         FpCa_list.append(FpCa)
 
     # ---------------------------------------------------------------
@@ -106,8 +100,8 @@ def main():
         )
 
     axes[0].legend(loc="upper left")
-    axes[0].set_xlabel("pCa", fontsize=12)
-    axes[0].set_ylabel("Normalised Force", fontsize=12)
+    axes[0].set_xlabel("pCa (-log$_{10}$[M])", fontsize=12)
+    axes[0].set_ylabel("Force (kPa)", fontsize=12)
     axes[0].invert_xaxis()
 
     axes[1].legend(loc="upper right")
