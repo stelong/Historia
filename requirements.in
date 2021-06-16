@@ -1,8 +1,2 @@
 diversipy
-matplotlib
-numpy
-pandas
-scikit-learn
-scipy
-seaborn
 git+git://github.com/stelong/gpytGPE.git@master#egg=gpytGPE
