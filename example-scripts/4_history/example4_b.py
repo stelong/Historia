@@ -84,9 +84,9 @@ def main():
         X
     )  # enforce the implausibility criterion to detect regions of non-implausible and of implausible points
     W.print_stats()  # show statistics about the two obtained spaces
-    W.plot_impl(
-        xlabels, f"./wave_{waveno}"
-    )  # plot the current wave of history matching
+    
+    W.plot_wave(xlabels=xlabels, display="impl", filename=f"./wave_{waveno}_impl")  # plot the current wave of history matching (implausibility measure plot)
+    W.plot_wave(xlabels=xlabels, display="var", filename=f"./wave_{waveno}_var")  # we can also check the accuracy of the GPEs for the current wave
 
     # ----------------------------------------------------------------
     # To continue on the next wave:
@@ -106,8 +106,9 @@ def main():
     # (4) Start a new wave of history matching, where the initial parameter space to be split into non-implausible and implausible regions is no more a Latin hypercube design but is now the non-implausible region obtained in the previous wave and saved as:
     n_tests = 100000  # number of test points we want for the next wave (from the current non-implausible region)
     TESTS = W.add_points(
-        n_tests
-    )  # use the "cloud technique" to populate what is left from W.NIMP\SIMULS (set difference) if points left are < the chosen n_tests
+        n_tests,
+        scale=0.1,
+    )  # use the "cloud technique" to populate what is left from W.NIMP\SIMULS (set difference) if points left are < the chosen n_tests. scale parameter regulate how far from the current NIMP we want to sample new tests points: it can be lowered till 0.01 if the algorithm is too slow
     np.savetxt(f"./X_test_{waveno}.txt", TESTS, fmt="%.6f")
     # NOTE: do not save the wave object after having called W.add_points(n_tests), otherwise you will loose the wave original structure
 
