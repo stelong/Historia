@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.optimize import curve_fit
 
 
 class LeftVentricle:
@@ -67,16 +66,10 @@ class LeftVentricle:
 
                 time = [S.t[i] for i in ind_r]
 
-                dP = np.gradient(self.lv_p, self.t)
-                dP = check_der(dP)
-
-                m = max(self.lv_p)
-                ind_m = self.lv_p.index(m)
-
                 ps1 = list(np.where(np.array(self.phase) == 1)[0])
                 lvv1 = [self.lv_v[i] for i in ps1]
 
-                p1 = max(lvv1)  # EDV (end-diastolic volume)
+                p1 = np.max(lvv1)  # EDV (end-diastolic volume)
                 p2 = S.lv_v[ind_r[3]]  # ESV (end-systolic volume)
                 p3 = p1 - p2  # SV (stroke volume)
                 p4 = 100 * p3 / p1  # EF (ejection fraction)
@@ -85,21 +78,27 @@ class LeftVentricle:
                 p7 = time[5] - time[4]  # IVRT (isovolumetric relaxation time)
                 p8 = time[7] - time[4]  # Tdiast (diastolic time)
 
-                y_tmp = np.array(S.lv_p[ind_r[4] : ind_r[5] + 1])
-                t_tmp = np.array(S.t[ind_r[4] : ind_r[5] + 1])
-                t_tmp = t_tmp - t_tmp[0]
-                xy1 = t_tmp[0], y_tmp[0]
-                xy2 = t_tmp[-1], y_tmp[-1]
-                tau = curve_fit(
-                    lambda t, tau: exponential(t, tau, xy1, xy2), t_tmp, y_tmp
-                )[0][0]
+                ind_max = np.argmax(self.lv_p)
 
-                q1 = m  # PeakP (peak pressure)
-                q2 = self.t[ind_m] - self.t[0]  # Tpeak (time to peak pressure)
+                q1 = self.lv_p[ind_max]  # PeakP (peak pressure)
+                q2 = (
+                    self.t[ind_max] - self.t[0]
+                )  # Tpeak (time to peak pressure)
                 q3 = S.lv_p[ind_r[3]]  # ESP (end-systolic pressure)
-                q4 = max(dP)  # maxdP (maximum pressure rise rate)
-                q5 = min(dP)  # mindP (maximum pressure decay rate)
-                q6 = tau  # tau (isovolumetric pressure relaxation constant)
+
+                dP = np.gradient(self.lv_p, self.t)
+                dP = check_der(dP)
+
+                idx_relax = np.where(np.array(self.lv_p) == q3)[0][0]
+                idx_min = np.argmin(dP[idx_relax:])
+                idx_min += idx_relax
+
+                PA = 2 * (self.lv_p[idx_min] - np.min(self.lv_p[idx_min:]))
+                tau = -0.25 * PA / dP[idx_min]
+
+                q4 = np.max(dP)  # maxdP (maximum pressure rise rate)
+                q5 = dP[idx_min]  # mindP (maximum pressure decay rate)
+                q6 = tau  # Tau logistic (isovolumetric pressure relaxation constant)
 
                 self.f = [
                     p1,
@@ -167,13 +166,3 @@ def check_der(y):
             elif delta[idx] < 0:
                 y[idx] = y[idx + 1]
     return y
-
-
-def exponential(t, tau, p1, p2):
-    t_max, y_max = p1
-    t_f, y_f = p2
-
-    C1 = (1 - np.exp(-t / tau)) / (1 - np.exp(-t_f / tau))
-    C2 = (np.exp(-t / tau) - np.exp(-t_f / tau)) / (1 - np.exp(-t_f / tau))
-
-    return C1 * y_f + C2 * y_max
