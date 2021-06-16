@@ -159,7 +159,7 @@ def plot_pairwise_waves(XL, colors, xlabels, wnames):
         ncols=in_dim,
         sharex="col",
         sharey="row",
-        figsize=(2 * width, 2 * height/2),
+        figsize=(2 * width, 2 * height / 2),
     )
     for t, ax in enumerate(axes.flatten()):
         i = t % in_dim
