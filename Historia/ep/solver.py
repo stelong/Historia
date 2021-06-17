@@ -4,6 +4,11 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 from Historia.ep.model import Gattoni2016
+from Historia.shared.constants import RESOURCES_PARAMETERS_DIR, posix_path
+
+DEFAULT_PARAMS_PATH = posix_path(
+    RESOURCES_PARAMETERS_DIR, "ep/parameters.json"
+)
 
 
 class EPSolution:
@@ -12,7 +17,7 @@ class EPSolution:
     *https://physoc.onlinelibrary.wiley.com/doi/full/10.1113/JP273879
     """
 
-    def __init__(self, rat, hz, paramspath):
+    def __init__(self, rat, hz, paramspath=DEFAULT_PARAMS_PATH):
         self.rat = rat
         self.hz = hz
         self.paramspath = paramspath

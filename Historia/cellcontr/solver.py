@@ -4,6 +4,11 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 from Historia.cellcontr.model import Land2012
+from Historia.shared.constants import RESOURCES_PARAMETERS_DIR, posix_path
+
+DEFAULT_PARAMS_PATH = posix_path(
+    RESOURCES_PARAMETERS_DIR, "cellcontr/parameters.json"
+)
 
 
 class CONTRSolution:
@@ -12,7 +17,7 @@ class CONTRSolution:
     *https://physoc.onlinelibrary.wiley.com/doi/full/10.1113/jphysiol.2012.231928
     """
 
-    def __init__(self, rat, Cai, paramspath):
+    def __init__(self, rat, Cai, paramspath=DEFAULT_PARAMS_PATH):
         self.rat = rat
         self.Cai = Cai
         self.paramspath = paramspath

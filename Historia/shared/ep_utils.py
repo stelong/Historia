@@ -1,22 +1,25 @@
 import numpy as np
 from scipy import interpolate
 
+from Historia.shared.constants import RESOURCES_HEADERS_DIR, posix_path
+
 
 def init_header(rat, n_stims, filename):
-    with open("headers/" + rat + "/MeshFlatBase.in", "r") as f:
-        with open(filename + ".in", "w") as fh:
+    default_header_file = posix_path(
+        RESOURCES_HEADERS_DIR, f"{rat}/MeshFlatBase.in"
+    )
+    with open(default_header_file, "r") as f:
+        with open(filename, "w") as fh:
             for line in f:
                 fh.write(line)
             fh.write("\n")
-            fh.write("stims: {}".format(n_stims))
+            fh.write(f"stims: {n_stims}")
             fh.write("\n")
-    return
 
 
 def append_to_header(f, stim, ca):
     f.write(f"ca{stim} {len(ca)-1} 1 ")
     np.savetxt(f, ca.reshape(1, -1), fmt="%.6f")
-    return
 
 
 def calculate_bio(t, Ca):

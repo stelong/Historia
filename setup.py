@@ -42,7 +42,7 @@ setup(
     },
     include_package_data=True,
     package_data={
-        '': ['*.yaml', '*.repo']
+        '': ['*.yaml', '*.repo', '*.in', '*.json']
     },
     classifiers=[
         'Development Status :: 3 - Alpha',
