@@ -1,18 +1,6 @@
 import numpy as np
 
 
-def initStates():
-    sizeStates = 4
-    states = np.zeros((sizeStates,), dtype=float)
-
-    states[0] = 8e-02
-    states[1] = 2e-03
-    states[2] = 0.0
-    states[3] = 0.0
-
-    return states
-
-
 def initConsts(c_dict):
     sizeConstants = 17
     constants = np.zeros((sizeConstants,), dtype=float)

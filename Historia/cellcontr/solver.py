@@ -6,10 +6,6 @@ from scipy.integrate import solve_ivp
 from Historia.cellcontr.model import Land2012
 from Historia.shared.constants import RESOURCES_PARAMETERS_DIR, posix_path
 
-DEFAULT_PARAMS_PATH = posix_path(
-    RESOURCES_PARAMETERS_DIR, "cellcontr/parameters.json"
-)
-
 
 class CONTRSolution:
     """
@@ -17,25 +13,36 @@ class CONTRSolution:
     *https://physoc.onlinelibrary.wiley.com/doi/full/10.1113/jphysiol.2012.231928
     """
 
-    def __init__(self, rat, Cai, paramspath=DEFAULT_PARAMS_PATH):
-        self.rat = rat
+    def __init__(self, rat, Cai, paramsdir=RESOURCES_PARAMETERS_DIR):
+        constantspath = posix_path(paramsdir, "cellcontr/parameters.json")
+        with open(constantspath, "r") as f:
+            dct_p = json.load(f)
+
+        initstatespath = posix_path(paramsdir, "cellcontr/init_states.json")
+        with open(initstatespath, "r") as f:
+            dct_is = json.load(f)
+
         self.Cai = Cai
-        self.paramspath = paramspath
+        self.constant = dct_p[rat]
+        self.init_state = dct_is
 
-        with open(self.paramspath, "r") as f:
-            dct = json.load(f)
-
-        self.constant = dct[self.rat]
-
-    def solver_sol(self, p_dict=None):
+    def solver_sol(self, p_dict=None, i_dict=None):
         if p_dict is not None:
             for key in p_dict.keys():
                 self.constant[key] = p_dict[key]
 
+        if i_dict is not None:
+            for key in i_dict.keys():
+                self.init_state[key] = i_dict[key]
+
         self.t = np.arange(len(self.Cai))
         tspan = [0, self.t[-1]]
 
-        Y0 = Land2012.initStates()
+        sizeStates = len(self.init_state.keys())
+        Y0 = np.zeros((sizeStates,), dtype=float)
+        for i, item in enumerate(self.init_state.items()):
+            Y0[i] = item[1]
+
         Y = solve_ivp(
             lambda t, y: Land2012.computeRates(t, y, self.Cai, self.constant),
             t_span=tspan,
