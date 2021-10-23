@@ -26,7 +26,7 @@ with open(os.path.join(here, 'README.md')) as f:
 
 setup(
     name='Historia',
-    version='1.0.0',
+    version='1.1.0',
     url='https://github.com/stelong/Historia',
     author="Stefano Longobardi",
     author_email="stefano.longobardi.8@gmail.com",
