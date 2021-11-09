@@ -196,37 +196,51 @@ def plot_pairwise_waves(XL, colors, xlabels, wnames):
     return
 
 
-def plot_pvloop(S, RS):
-    """Plot LV volume and pressure curves and pv-loop.
+def plot_pvloop(M, M_lc, ventricle="LV"):
+    """Plot LV/RV volume (V) and pressure (P) transients and associated PV loop.
     Args:
-            - S: mechanics simulation solution class
-            - RS: last heart beat solution class
+            - M: full mechanics simulation solution matrix
+            - M_lc: limit cycle mechanics simulation solution matrix
     """
-    c = get_col("blue")[1]
-    gs = grsp.GridSpec(2, 2, width_ratios=[1, 1.2])
+    t_full = M[:, 0]
+    t = M_lc[:, 0]
+
+    if ventricle == "LV":
+        v_full = M[:, 2]
+        p_full = M[:, 3]
+        v = M_lc[:, 2]
+        p = M_lc[:, 3]
+
+    elif ventricle == "RV":
+        v_full = M[:, 5]
+        p_full = M[:, 6]
+        v = M_lc[:, 5]
+        p = M_lc[:, 6]
+
     width = 5.91667
     height = 9.36111
     figsize = (2 * width, 2 * height / 3)
     fig = plt.figure(figsize=figsize)
-    for i in range(2):
-        ax = fig.add_subplot(gs[i, 0])
-        if i == 0:
-            ax.plot(RS.t, RS.lv_v, color=c, linewidth=1.0)
-            ax.plot(S.t, S.lv_v, color=c, linewidth=2.5)
-            plt.xlim(RS.t[0], S.t[-1])
-            plt.xlabel("Time (ms)")
-            plt.ylabel("Left ventricular volume (μL)")
-        else:
-            ax.plot(RS.t, RS.lv_p, color=c, linewidth=1.0)
-            ax.plot(S.t, S.lv_p, color=c, linewidth=2.5)
-            plt.xlim(RS.t[0], S.t[-1])
-            plt.xlabel("Time (ms)")
-            plt.ylabel("Left ventricular pressure (kPa)")
+    gs = grsp.GridSpec(2, 2, width_ratios=[1, 1.2])
 
-    ax = fig.add_subplot(gs[:, 1])
-    ax.plot(S.lv_v, S.lv_p, color=c, linewidth=2.5)
-    plt.xlabel("LVV (μL)")
-    plt.ylabel("LVP (kPa)")
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax3 = fig.add_subplot(gs[:, 1])
+
+    ax1.plot(t_full, v_full, color="C0", linewidth=1.0)
+    ax1.plot(t, v, color="C0", linewidth=2.5)
+    ax1.set_xlabel("Time (ms)")
+    ax1.set_ylabel(f"{ventricle} volume (μL)")
+
+    ax2.plot(t_full, p_full, color="C0", linewidth=1.0)
+    ax2.plot(t, p, color="C0", linewidth=2.5)
+    ax2.set_xlabel("Time (ms)")
+    ax2.set_ylabel(f"{ventricle} pressure (kPa)")
+
+    ax3.plot(v, p, color="C0", linewidth=2.5)
+    ax3.set_xlabel(f"{ventricle}V (μL)")
+    ax3.set_ylabel(f"{ventricle}P (kPa)")
+
     fig.tight_layout()
     plt.show()
     return
