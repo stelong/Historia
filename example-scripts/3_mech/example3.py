@@ -1,52 +1,60 @@
-from Historia.mech import mech_out, scan_logfile
-from Historia.shared.design_utils import read_labels
+from Historia.mech.mechanics_solution import (
+    calculate_features,
+    extract_data_from_logfile,
+    extract_limit_cycle,
+)
 from Historia.shared.plot_utils import plot_pvloop
-
-N_BEATS = 4
 
 
 def main():
     path = "data/"
+    nbeats = 4  # extract 4th-beat simulation solution (assuming you have run at least nbeats)
 
-    S = scan_logfile.MECHSolution(
-        path + "output_log.txt"
-    )  # MECH model solution class, instantiate by providing the path to the log file of the simulation
-    S.extract_loginfo()  # extract parameters used for the simulation, full solution curves and convergence info
+    # -------------------------------------------------------------------------
+    parameters = [
+        "p",
+        "ap",
+        "z",
+        "c1",
+        "ca50",
+        "beta1",
+        "koff",
+        "ntrpn",
+        "kxb",
+        "nperm",
+        "perm50",
+        "Tref",
+    ]  # pass parameter names as they chronologically appear in the logfile, otherwise they won't be regex-ed
+
+    M, parameters = extract_data_from_logfile(
+        path + "output_log.txt", parameters
+    )
+    print(
+        parameters
+    )  # dictionary of param: param value-s used for the run simulation
+    print(M.shape)  # full mechanics solution, a 7-column matrix where:
+    # column 1: lambda+time vector; columns 2-3-4: phase, lvv, lvp; columns 5-6-7 phase, rvv, rvp
+
+    conv = True
+    try:
+        M_lc = extract_limit_cycle(M, nbeats=nbeats)
+        features = calculate_features(
+            M_lc
+        )  # if we are able to extract the limit cycle, we can also extract the LV features of interest from it
+        print(
+            features
+        )  # dictionary of feat: feat value-s extracted from the limit cycle LV volume and pressure transients and PV loop
+    except:
+        conv = (
+            not conv
+        )  # if we are not able to extract the nbeats-th limit cycle: either we didn't run nbeats or most likely the simulation did not converge
+    else:
+        pass
 
     if (
-        S.conv
-    ):  # if the mechanics run successfully completed, we can further extract the final heart beat solution curves and calculate the LV features of interest
-        RS = (
-            mech_out.LeftVentricle()
-        )  # instantiate the last heart beat solution curves class
-        RS.get_lvfeatures(
-            S, N_BEATS
-        )  # get the last heart beat solution and its features from the full solution (S) by providing the number of beats the simulation was run for (N_BEATS)
-
-        if (
-            RS.conv
-        ):  # mechanics might have converged but at same time producing non-physiological curves: discard this simulation if it did
-            plot_pvloop(
-                RS, S
-            )  # plot the results by providing the full solution and the last heart beat solution classes
-
-    # relevant classes' attributes:
-    xlabels = read_labels(path + "xlabels.txt")
-    ylabels = read_labels(path + "ylabels.txt")
-    params_dict = {key: val for key, val in zip(xlabels, S.p)}
-    features_dict = {key: val for key, val in zip(ylabels, RS.f)}
-    print(params_dict)  # input parameters used to run the mechanics simulation
-    print(features_dict)  # resulting output LV features
-
-    # full simulation solution curves:
-    # print(np.array(S.t).shape) # time vector
-    # print(np.array(S.lv_v).shape) # LV volume curve
-    # print(np.array(S.lv_p).shape) # LV pressure curve
-
-    # last heart beat solution curves:
-    # print(np.array(RS.t).shape) # time vector
-    # print(np.array(RS.lv_v).shape) # LV volume curve
-    # print(np.array(RS.lv_p).shape) # LV pressure curve
+        conv
+    ):  # plot LV volume and pressure transients and corresponding PV loop
+        plot_pvloop(M, M_lc)
 
 
 if __name__ == "__main__":
