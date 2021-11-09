@@ -23,12 +23,11 @@ def computeAlgebraics(t, y, Cai, constants):
         algebraics[1] = Cai[-1]
 
     algebraics[2] = constants[2] * (
-        1.0 + constants[11] * (constants[0] - 1.0)
-    )  # safe lambda = np.min([1.2, np.max([0.8, constants[0]])])
-    algebraics[3] = np.sqrt(np.power(y[0] / constants[4], constants[8]))
-    algebraics[4] = (
-        1.0 / algebraics[3]
-    )  # safe 1/permtot = np.min([100.0, 1.0/algebraics[3]])
+        1.0
+        + constants[11] * (np.min([1.2, np.max([0.8, constants[0]])]) - 1.0)
+    )
+    algebraics[3] = np.power(y[0] / constants[4], constants[8] / 2.0)
+    algebraics[4] = np.min([100.0, 1.0 / algebraics[3]])
     algebraics[5] = y[2] + y[3]
 
     if algebraics[5] <= 0.0:
