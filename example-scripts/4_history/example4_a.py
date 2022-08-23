@@ -99,7 +99,8 @@ def main():
 
     W.find_regions(X)
     W.print_stats()
-    W.plot_wave(xlabels=labels, filename=f"./wave_{waveno}")
+    W.plot_wave(xlabels=labels, display="impl", filename=f"./wave_{waveno}_impl")
+    W.plot_wave(xlabels=labels, display="var", filename=f"./wave_{waveno}_var")
 
     # ----------------------------------------------------------------
     # Check that the found non-implausible parameter space is actually compatible with matching the syntatic experimental datum

@@ -25,8 +25,8 @@ def main():
 
 	xlabels = [f"p{i+1}" for i in range(9)]
 	
-	# wnames = ["Initial space"] + [f"wave {idx}" for i in waves_list]
-	wnames = [f"wave {idx}" for i in waves_list]
+	# wnames = ["Initial space"] + [f"wave {idx}" for idx in waves_list]
+	wnames = [f"wave {idx}" for idx in waves_list]
 	
 	plot_pairwise_waves(XL, colors, xlabels, wnames)
 
