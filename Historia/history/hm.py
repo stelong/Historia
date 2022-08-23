@@ -22,7 +22,6 @@ class Wave:
     ):
         self.emulator = emulator
         self.Itrain = Itrain
-        self.output_dim = len(emulator) if emulator is not None else 0
         self.cutoff = cutoff
         self.maxno = maxno
         self.mean = mean
@@ -35,17 +34,20 @@ class Wave:
         self.imp_idx = None
 
     def compute_impl(self, X):
-        M = np.zeros((self.n_samples, self.output_dim), dtype=float)
-        V = np.zeros((self.n_samples, self.output_dim), dtype=float)
+        n_samples = X.shape[0]
+        output_dim = len(self.emulator)
+
+        M = np.zeros((n_samples, output_dim), dtype=float)
+        V = np.zeros((n_samples, output_dim), dtype=float)
         for j, emul in enumerate(self.emulator):
             mean, std = emul.predict(X)
             var = np.power(std, 2)
             M[:, j] = mean
             V[:, j] = var
 
-        I = np.zeros((self.n_samples,), dtype=float)
-        PV = np.zeros((self.n_samples,), dtype=float)
-        for i in range(self.n_samples):
+        I = np.zeros((n_samples,), dtype=float)
+        PV = np.zeros((n_samples,), dtype=float)
+        for i in range(n_samples):
             In = np.sqrt(
                 (np.power(M[i, :] - self.mean, 2)) / (V[i, :] + self.var)
             )
@@ -57,12 +59,10 @@ class Wave:
         return I, PV
 
     def find_regions(self, X):
-        self.n_samples = X.shape[0]
-        self.input_dim = X.shape[1]
-
+        n_samples = X.shape[0]
         I, PV = self.compute_impl(X)
-        l = np.where(I < self.cutoff)[0]
-        nl = diff(range(self.n_samples), l)
+        l = list(np.where(I < self.cutoff)[0])
+        nl = diff(range(n_samples), l)
 
         self.I = I
         self.PV = PV
@@ -85,7 +85,9 @@ class Wave:
         print(stats)
 
     def reconstruct_tests(self):
-        X = np.zeros((self.n_samples, self.input_dim), dtype=float)
+        n_samples = self.NIMP.shape[0] + self.IMP.shape[0]
+        input_dim = self.NIMP.shape[1]
+        X = np.zeros((n_samples, input_dim), dtype=float)
         X[self.nimp_idx] = self.NIMP
         X[self.imp_idx] = self.IMP
         return X
@@ -104,51 +106,52 @@ class Wave:
         for k, v in obj_dict.items():
             setattr(self, k, v)
 
-    def get_points(self, n_simuls):
-        NROY = np.copy(self.NIMP)
-        if n_simuls >= NROY.shape[0] - 1:
+    def get_nimps(self, n_points):
+        nimp = len(self.nimp_idx)
+        if n_points >= nimp - 1:
             raise ValueError(
-                "Not enough points for simulations! n_simuls must be strictly less than W.NIMP.shape[0] - 1."
+                "Not enough NIMP points to choose from! n_points must be strictly less than W.NIMP.shape[0] - 1."
             )
         else:
-            SIMULS = dp.subset.psa_select(NROY, n_simuls)
+            X = dp.subset.psa_select(
+                self.NIMP, n_points, selection_target="random_uniform"
+            )
+            _, nl = whereq_whernot(self.NIMP, X)
+        return X, self.NIMP[nl]
 
-        self.simul_idx, self.nsimul_idx = whereq_whernot(NROY, SIMULS)
-
-        return SIMULS
-
-    def add_points(
+    def augment_nimp(
         self,
-        n_tests,
+        n_total_points,
         scale=0.1,
-    ):  # NOTE: the Wave object instance internal structure will be compromised after calling this method: we recommend calling self.save() beforehand!
-        nsidx = self.nsimul_idx
-        NROY = np.copy(self.NIMP[nsidx])
+    ):  # NOTE: the Wave object instance internal structure will be compromised after calling this method: we recommend calling self.copy() and/or self.save() beforehand!
+        X = np.copy(self.NIMP)
         lbounds = self.Itrain[:, 0]
         ubounds = self.Itrain[:, 1]
 
         print(
-            f"\nRequested points: {n_tests}\nAvailable points: {NROY.shape[0]}\nStart searching..."
+            f"\nRequested points: {n_total_points}\nAvailable points: {X.shape[0]}\nStart searching..."
         )
 
         count = 0
         a, b = (
-            NROY.shape[0] if NROY.shape[0] < n_tests else n_tests,
-            n_tests - NROY.shape[0] if n_tests - NROY.shape[0] > 0 else 0,
+            X.shape[0] if X.shape[0] < n_total_points else n_total_points,
+            n_total_points - X.shape[0]
+            if n_total_points - X.shape[0] > 0
+            else 0,
         )
         print(
-            f"\n[Iteration: {count:<2}] Found: {a:<{len(str(n_tests))}} ({'{:.2f}'.format(100*a/n_tests):>6}%) | Missing: {b:<{len(str(n_tests))}}"
+            f"\n[Iteration: {count:<2}] Found: {a:<{len(str(n_total_points))}} ({'{:.2f}'.format(100*a/n_total_points):>6}%) | Missing: {b:<{len(str(n_total_points))}}"
         )
 
-        while NROY.shape[0] < n_tests:
+        while X.shape[0] < n_total_points:
             count += 1
 
-            I = get_minmax(NROY)
+            bounds = get_minmax(X)
             SCALE = scale * np.array(
-                [I[i, 1] - I[i, 0] for i in range(NROY.shape[1])]
+                [bounds[i, 1] - bounds[i, 0] for i in range(X.shape[1])]
             )
 
-            temp = np.random.normal(loc=NROY, scale=SCALE)
+            temp = np.random.normal(loc=X, scale=SCALE)
             while True:
                 l = []
                 for i in range(temp.shape[0]):
@@ -160,32 +163,70 @@ class Wave:
                     ):
                         l.append(i)
                 if l:
-                    temp[l, :] = np.random.normal(loc=NROY[l, :], scale=SCALE)
+                    temp[l, :] = np.random.normal(loc=X[l, :], scale=SCALE)
                 else:
                     break
 
-            self.find_regions(temp)
-            NROY = np.vstack((NROY, self.NIMP))
+            I, _ = self.compute_impl(temp)
+            nimp_idx = np.where(I < self.cutoff)[0]
+            X = np.vstack((X, temp[nimp_idx]))
 
             a, b = (
-                NROY.shape[0] if NROY.shape[0] < n_tests else n_tests,
-                n_tests - NROY.shape[0] if n_tests - NROY.shape[0] > 0 else 0,
+                X.shape[0] if X.shape[0] < n_total_points else n_total_points,
+                n_total_points - X.shape[0]
+                if n_total_points - X.shape[0] > 0
+                else 0,
             )
             print(
-                f"[Iteration: {count:<2}] Found: {a:<{len(str(n_tests))}} ({'{:.2f}'.format(100*a/n_tests):>6}%) | Missing: {b:<{len(str(n_tests))}}"
+                f"[Iteration: {count:<2}] Found: {a:<{len(str(n_total_points))}} ({'{:.2f}'.format(100*a/n_total_points):>6}%) | Missing: {b:<{len(str(n_total_points))}}"
             )
 
         print("\nDone.")
-        TESTS = np.vstack(
-            (
-                NROY[: len(nsidx)],
-                dp.subset.psa_select(NROY[len(nsidx) :], n_tests - len(nsidx)),
-            )
+
+        nimp = len(self.nimp_idx)
+        NIMP_aug = dp.subset.psa_select(
+            X[nimp:], n_total_points - nimp, selection_target="random_uniform"
         )
-        return TESTS
+        I, PV = self.compute_impl(NIMP_aug)
+        self.NIMP = np.vstack((X[:nimp], NIMP_aug))
+        self.I = np.concatenate((self.I, I))
+        self.PV = np.concatenate((self.PV, PV))
+        imp = len(self.imp_idx)
+        self.nimp_idx += list(range(nimp + imp, imp + n_total_points))
+
+    def get_trains(self, X, n_points):
+        n_samples = X.shape[0]
+        if n_points > n_samples:
+            raise ValueError(
+                "Cannot return more points than totally available points! Choose n_points <= X_train.shape[0]."
+            )
+        elif n_points == n_samples:
+            return X
+        else:
+            I, PV = self.compute_impl(X)
+            l = np.argsort(I)[:n_points]
+            return X[l]
+
+    def copy(self):
+        W = Wave(
+            emulator=self.emulator,
+            Itrain=self.Itrain,
+            cutoff=self.cutoff,
+            maxno=self.maxno,
+            mean=self.mean,
+            var=self.var,
+        )
+        W.I = np.copy(self.I)
+        W.PV = np.copy(self.PV)
+        W.NIMP = np.copy(self.NIMP)
+        W.nimp_idx = self.nimp_idx.copy()
+        W.IMP = np.copy(self.IMP)
+        W.imp_idx = self.imp_idx.copy()
+        return W
 
     def plot_wave(self, xlabels=None, display="impl", filename="./wave_impl"):
         X = self.reconstruct_tests()
+        input_dim = X.shape[1]
 
         if xlabels is None:
             xlabels = [f"p{i+1}" for i in range(X.shape[1])]
@@ -221,16 +262,16 @@ class Wave:
 
         height = 9.36111
         width = 5.91667
-        fig = plt.figure(figsize=(3 * width, 3 * height / 3))
+        fig = plt.figure(figsize=(2 * width, 1.2 * 2 * height / 3))
         gs = grsp.GridSpec(
-            self.input_dim - 1,
-            self.input_dim,
-            width_ratios=(self.input_dim - 1) * [1] + [0.1],
+            input_dim - 1,
+            input_dim,
+            width_ratios=(input_dim - 1) * [1] + [0.1],
         )
 
-        for k in range(self.input_dim * self.input_dim):
-            i = k % self.input_dim
-            j = k // self.input_dim
+        for k in range(input_dim * input_dim):
+            i = k % input_dim
+            j = k // input_dim
 
             if i > j:
                 axis = fig.add_subplot(gs[i - 1, j])
@@ -250,7 +291,7 @@ class Wave:
                 axis.set_xlim([self.Itrain[j, 0], self.Itrain[j, 1]])
                 axis.set_ylim([self.Itrain[i, 0], self.Itrain[i, 1]])
 
-                if i == self.input_dim - 1:
+                if i == input_dim - 1:
                     axis.set_xlabel(xlabels[j], fontsize=12)
                 else:
                     axis.set_xticklabels([])
@@ -259,8 +300,8 @@ class Wave:
                 else:
                     axis.set_yticklabels([])
 
-        cbar_axis = fig.add_subplot(gs[:, self.input_dim - 1])
+        cbar_axis = fig.add_subplot(gs[:, input_dim - 1])
         cbar = fig.colorbar(im, cax=cbar_axis)
-        cbar.set_label(cbar_label, size=12)
+        cbar.set_label(cbar_label, fontsize=12)
         fig.tight_layout()
         plt.savefig(filename + ".png", bbox_inches="tight", dpi=300)
