@@ -1,2 +1,2 @@
 diversipy
-git+git://github.com/stelong/gpytGPE.git@master#egg=gpytGPE
+git+https://github.com/stelong/gpytGPE.git@master#egg=gpytGPE
