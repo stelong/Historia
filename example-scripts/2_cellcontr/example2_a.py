@@ -11,10 +11,9 @@ def fun(axes, rat, color):
     # Electrophysiology
     hz = 6  # pacing frequency (either 1 or 6)
     nbeats = 1  # number of heart beats to simulate
-    ep_params_path = "../1_ep/data/parameters.json"  # path to parameter file
 
     E = solep.EPSolution(
-        rat, hz, ep_params_path
+        rat, hz
     )  # instantiate the class of EP model solution
     E.solver_sol(nbeats)  # solve the model
 
@@ -25,10 +24,8 @@ def fun(axes, rat, color):
 
     # ---------------------------------------------------------------
     # Cellular contraction
-    contr_params_path = "data/parameters.json"  # path to parameter file
-
     C = solcontr.CONTRSolution(
-        rat, calcium, contr_params_path
+        rat, calcium
     )  # instantiate the class of CONTR model solution
     C.solver_sol()  # solve the model using the simulated calcium transient provided above
 
@@ -39,7 +36,7 @@ def fun(axes, rat, color):
     Cai = np.logspace(-1, 1, 1000)  # define equally spaced log calcium values
 
     C_ss = solcontr.CONTRSolution(
-        rat, Cai, contr_params_path
+        rat, Cai
     )  # instantiate the class of CONTR model steady-state solution
     C_ss.steadystate_sol()  # calculate the steady-state solution using the given equally spaced log calcium values
 

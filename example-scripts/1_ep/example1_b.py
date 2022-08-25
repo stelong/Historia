@@ -11,9 +11,8 @@ def main():
     rat = "sham"
     hz = 6
     nbeats = 1
-    ep_params_path = "data/parameters.json"
 
-    E = solep.EPSolution(rat, hz, ep_params_path)
+    E = solep.EPSolution(rat, hz)
     E.solver_sol(nbeats)
 
     t = E.t
@@ -41,7 +40,7 @@ def main():
             param: param_vals[i]
         }  # here you can add more altered parameters if you want
 
-        E = solep.EPSolution(rat, hz, ep_params_path)
+        E = solep.EPSolution(rat, hz)
         E.solver_sol(nbeats, p_dict=new_params_dict)
 
         V = E.v

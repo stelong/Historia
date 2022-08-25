@@ -13,9 +13,8 @@ def main():
     # Electrophysiology - needed for generating the calcium transient
     hz = 6
     nbeats = 1
-    ep_params_path = "../1_ep/data/parameters.json"
 
-    E = solep.EPSolution(rat, hz, ep_params_path)
+    E = solep.EPSolution(rat, hz)
     E.solver_sol(nbeats)
 
     t = E.t
@@ -23,9 +22,7 @@ def main():
 
     # ---------------------------------------------------------------
     # Cellular contraction
-    contr_params_path = "data/parameters.json"
-
-    C = solcontr.CONTRSolution(rat, calcium, contr_params_path)
+    C = solcontr.CONTRSolution(rat, calcium)
     C.solver_sol()
 
     t = C.t
@@ -33,7 +30,7 @@ def main():
 
     Cai = np.logspace(-1, 1, 1000)
 
-    C_ss = solcontr.CONTRSolution(rat, Cai, contr_params_path)
+    C_ss = solcontr.CONTRSolution(rat, Cai)
     C_ss.steadystate_sol()
 
     Tref = C_ss.constant["Tref"]
@@ -62,13 +59,13 @@ def main():
             param: param_vals[i]
         }  # here you can add more altered parameters if you want, e.g. "lambda": 1.2
 
-        C = solcontr.CONTRSolution(rat, calcium, contr_params_path)
+        C = solcontr.CONTRSolution(rat, calcium)
         C.solver_sol(p_dict=new_params_dict)
 
         T = C.T
         T_list.append(T)
 
-        C_ss = solcontr.CONTRSolution(rat, Cai, contr_params_path)
+        C_ss = solcontr.CONTRSolution(rat, Cai)
         C_ss.steadystate_sol(p_dict=new_params_dict)
 
         Tref = C_ss.constant["Tref"]
