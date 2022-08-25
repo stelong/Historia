@@ -312,7 +312,9 @@ def save_stats(
     np.savetxt(savepath + "x.txt", x.reshape(1, -1), fmt="%.6f")
 
     try:
-        M_lc = extract_limit_cycle(M, nbeats=4, ventricle=ventricle, shifted=True)
+        M_lc = extract_limit_cycle(
+            M, nbeats=4, ventricle=ventricle, shifted=True
+        )
         features_dict = calculate_features(M_lc, ventricle=ventricle)
         y = np.array(list(features_dict.values()))
         np.savetxt(savepath + "M_lc.txt", M_lc, fmt="%.6f")
