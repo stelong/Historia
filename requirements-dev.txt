@@ -5,12 +5,10 @@
 #    pip-compile requirements-dev.in
 #
 appdirs==1.4.4
-    # via
-    #   black
-    #   virtualenv
-black==20.8b1
+    # via virtualenv
+black==24.3.0
     # via -r requirements-dev.in
-click==7.1.2
+click==8.1.7
     # via
     #   black
     #   pip-tools
@@ -28,12 +26,16 @@ mccabe==0.6.1
     # via flake8
 mypy-extensions==0.4.3
     # via black
-packaging==20.9
-    # via tox
-pathspec==0.8.1
+packaging==24.0
+    # via
+    #   black
+    #   tox
+pathspec==0.12.1
     # via black
 pip-tools==5.5.0
     # via -r requirements-dev.in
+platformdirs==4.2.0
+    # via black
 pluggy==0.13.1
     # via tox
 py==1.10.0
@@ -42,23 +44,17 @@ pycodestyle==2.6.0
     # via flake8
 pyflakes==2.2.0
     # via flake8
-pyparsing==2.4.7
-    # via packaging
-regex==2020.11.13
-    # via black
 six==1.15.0
     # via
     #   tox
     #   virtualenv
 toml==0.10.2
-    # via
-    #   black
-    #   tox
+    # via tox
+tomli==2.0.1
+    # via black
 tox==3.21.4
     # via -r requirements-dev.in
-typed-ast==1.4.2
-    # via black
-typing-extensions==3.7.4.3
+typing-extensions==4.10.0
     # via black
 virtualenv==20.4.2
     # via tox
